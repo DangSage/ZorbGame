@@ -1,7 +1,9 @@
 #ifndef ZORBAPPEARANCE_HPP3
 #define ZORBAPPEARANCE_HPP
 
-#include "zUtility.hpp"
+#include <map>
+#include <unordered_map>
+#include "gameDefs.hpp"
 
 enum appearanceEnum {
     APPEARANCE_DEFAULT, // normal cat enum
@@ -157,7 +159,7 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         std::string line;
 
         while (std::getline(iss, line)) {
-            if(line.size() > ZORBWIDTH)
+            if(line.size() > ZORBWIDTH || line.size() < ZORBWIDTH)
             {
                 std::cout << "EXCEPTION: appearance not set, line width error" << std::endl;
                 std::cout << "Character @ " << static_cast<int>(_enum) << std::endl;

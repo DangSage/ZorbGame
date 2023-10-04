@@ -1,8 +1,8 @@
 #ifndef Z_UI_HPP
 #define Z_UI_HPP
 
-#include "Zorb.hpp"
-#include "zUtility.hpp"
+#include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
+#include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
 
 enum DisplayFormat {
         TABLE,
@@ -181,6 +181,8 @@ void UI::DisplayTitleScreen() const {
         "   /     /(  <_> )  | \\/ \\_\\ \\  /     /\\  ___/|   |  \\  ||  | |   Y  \\\n"
         "  /_______ \\____/|__|  |___  / /_______ \\___  >___|  /__||__| |___|  /\n"
         "          \\/               \\/          \\/   \\/     \\/              \\/ ";
+    
+    titleText = z_debug::CenterAlignString(titleText, DISPLAYWIDTH);
 
     // Define menu options
     std::string menuText =

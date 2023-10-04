@@ -1,34 +1,12 @@
 #ifndef Z_UTILITY_HPP
 #define Z_UTILITY_HPP
 
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <vector>
-#include <string>
+#include "gameDefs.hpp"
 #include <utility>
 #include <regex>
-#include <map>
-#include <unordered_map>
 #include <random>
 #include <stdexcept>
-#define STR(x) #x
-#define STRINGIZE(x) STR(x)
 
-// Define ANSI escape codes as macros
-#define ANSI_RESET "\x1B[0m"
-#define ANSI_BLACK "\x1B[30m"
-#define ANSI_RED "\x1B[31m"
-#define ANSI_GREEN "\x1B[32m"
-#define ANSI_YELLOW "\x1B[33m"
-#define ANSI_BLUE "\x1B[34m"
-#define ANSI_MAGENTA "\x1B[35m"
-#define ANSI_CYAN "\x1B[36m"
-#define ANSI_WHITE "\x1B[37m"
-
-// define size of display limit
-#define CONSOLESIZE 75
-#define ZORBWIDTH 7
 
 namespace z_debug {
     // Track the counts of Zorb and ZorbAppearance objects

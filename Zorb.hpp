@@ -1,8 +1,8 @@
 #ifndef ZORB_H
 #define ZORB_H
 
-#include "ZorbAppearance.hpp"
-#include "zUtility.hpp"
+#include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
+#include "ZorbAppearance.hpp" // Include ZorbAppearance.hpp for Zorb class usage
 
 class Zorb {
 public:
@@ -98,7 +98,7 @@ namespace z_debug {
         int _enumNUM = APPEARANCE_DEFAULT;
         
         // Calculate margin
-        size_t margin = (CONSOLESIZE%ZORBWIDTH) / 2;
+        size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
         while (_enumNUM < NUM_APPEARANCES) {
             _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_YELLOW);
