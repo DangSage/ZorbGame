@@ -3,13 +3,8 @@
 ## Overview
 The Zorb Game Project is a personal endeavor aimed at applying fundamental principles of C++ programming to develop a text-based game. As a learning project, it incorporates key concepts such as object-oriented programming (OOP), classes, functions, and modular code organization.
 
-## Header Files
-The project employs the following header files, each contributing to the game's functionality:
-
-- `zUtility.hpp`: Provides utility functions for random number generation, text formatting, and memory management.
-- `Zorb.hpp`: Defines the Zorb class, representing game objects with various properties and behaviors.
-- `ZorbAppearance.hpp`: Manages the appearance of Zorb game objects, allowing customization.
-- `Z_UI.hpp`: Handles the user interface by displaying game information and Zorb objects in an organized manner.
+## Project Overview
+The goal of this project is to create a text-based Alien Cat Army Rogue-Like using the fundamental principles of the C++ programming language. In this game, players will take control of a group of alien cat Zorb objects and engage in battles to absorb the power of other Zorbs. It's a clash of Alien Cats vs. Alien Cats in a short-sequence terminal game.
 
 ## Principles Applied
 ### 1. Object-Oriented Programming (OOP)
