@@ -1,60 +1,37 @@
-# Zorb Game Header Files
+# Zorb Game Project - Applying C++ Principles
 
-This repository contains several header files that are essential for the Zorb game project. Each header file serves a specific purpose and provides various functions and classes. Here's an overview of each header file and its functions:
+## Overview
+The Zorb Game Project is a personal endeavor aimed at applying fundamental principles of C++ programming to develop a text-based game. As a learning project, it incorporates key concepts such as object-oriented programming (OOP), classes, functions, and modular code organization.
 
-## `zUtility.hpp`
+## Header Files
+The project employs the following header files, each contributing to the game's functionality:
 
-### Functions
-- `RandomValue(min, max)`: Generates a random value within a specified range.
-- `SplitMultilineString(multilineString)`: Splits a multi-line string into individual lines.
-- `CenterAlignString(input, width)`: Center-aligns a string within a given width.
-- `PrintFormattedText(text, color)`: Prints text with optional color formatting.
-- `FormattedText(text, color)`: Returns text with optional color formatting.
-- `CountGameObjectsInMemory()`: Prints counts of Zorb and ZorbAppearance objects in memory.
-- `SpaceToPrint(spaces)`: Returns a string with a specified number of spaces.
-- `GetLengthWithoutEscapeCodes(input)`: Calculates the length of a string without ANSI escape codes.
+- `zUtility.hpp`: Provides utility functions for random number generation, text formatting, and memory management.
+- `Zorb.hpp`: Defines the Zorb class, representing game objects with various properties and behaviors.
+- `ZorbAppearance.hpp`: Manages the appearance of Zorb game objects, allowing customization.
+- `Z_UI.hpp`: Handles the user interface by displaying game information and Zorb objects in an organized manner.
 
-### Summary
-`zUtility.hpp` provides utility functions and macros for various purposes. This header is essential for general utility functions used throughout the Zorb project.
+## Principles Applied
+### 1. Object-Oriented Programming (OOP)
+- The `Zorb` and `ZorbAppearance` classes encapsulate game object properties and appearance, respectively.
+- OOP principles like inheritance, encapsulation, and abstraction are applied.
 
----
+### 2. Modularization
+- The project is organized into separate header files, promoting modularity and code reusability.
+- Each header file serves a specific purpose, enhancing code maintainability.
 
-## `Zorb.hpp`
+### 3. Abstraction
+- Header files abstract the implementation details, allowing users to interact with game objects and utilities through well-defined interfaces.
 
-### Functions
-- Constructors for Zorb objects with various parameters.
-- Copy and move constructors for Zorb objects.
-- Accessor and mutator functions for Zorb properties.
-- Overloaded operators for output, comparison, and addition of Zorb objects.
+### 4. Code Reusability
+- Utility functions in `zUtility.hpp` can be reused across the project, reducing redundancy.
 
-### Summary
-`Zorb.hpp` defines the Zorb class, which represents a game object in the Zorb game. This header is responsible for creating, managing, and displaying Zorb objects.
+### 5. Operator Overloading
+- `Zorb` class overloads operators for custom behaviors, improving code readability.
 
----
+## Learning and Growth
+This project is my attempt at applying C++ principles and techniques learned during my current sophomore fall semester. It serves as a practical exercise to reinforce understanding and enhance programming skills.
 
-## `ZorbAppearance.hpp`
+As the project evolves, the goal is to create an engaging text-based game with a user-friendly interface while adhering to best practices in C++ programming.
 
-### Functions
-- Constructors for ZorbAppearance objects with various parameters.
-- `SetAppearance` function to set the appearance based on an enum.
-- Accessor functions for appearance and color.
-
-### Summary
-`ZorbAppearance.hpp` defines the ZorbAppearance class, responsible for managing the appearance of Zorb game objects. It provides functions to set and retrieve appearance information.
-
----
-
-## `Z_UI.hpp`
-
-### Functions
-- Constructors for the UI class with default display format.
-- Functions for displaying Zorbs in different formats.
-- Functions for creating styled text boxes, dividers, and clearing the screen.
-- Functions for displaying title and debug screens.
-
-### Summary
-`Z_UI.hpp` defines the UI class, responsible for displaying Zorb game information in a user-friendly way. It enhances the user interface of the game by providing functions for displaying Zorbs and other UI elements.
-
-These header files collectively provide the essential components for the Zorb game, including utility functions, the Zorb and ZorbAppearance classes, and the user interface through the UI class. They work together to create and display Zorb objects, manage their appearances, and provide a user-friendly interface for the game.
-
-For detailed usage and implementation, please refer to the individual header files and their associated source code in this repository.
+Please refer to the source code and header files within the repository for more details.
