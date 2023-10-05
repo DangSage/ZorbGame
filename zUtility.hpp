@@ -31,6 +31,30 @@ namespace z_debug {
         }
     }
 
+    std::string SpaceToPrint(size_t spaces) {
+        return std::string(spaces, ' ');
+    }
+    
+    size_t GetLengthWithoutEscapeCodes(const std::string& input) {
+        size_t length = 0;
+        bool inEscape = false;
+
+        for (char c : input) {
+            if (c == '\033') { // Check for escape code
+                inEscape = true;
+                continue;
+            }
+            
+            if (inEscape) {
+                if (c >= 'A' && c <= 'Z') {
+                    inEscape = false;
+                }
+                continue;
+            }
+            length++;
+        }
+        return length;
+    }
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString) {
         std::vector<std::string> lines;
@@ -45,25 +69,14 @@ namespace z_debug {
     }
     // Function to center-align a string within a given width
     std::string CenterAlignString(const std::string& input, int width) {
-        std::string result;
-        int inputLength = static_cast<int>(input.length());
+        std::string output;
+        std::vector<std::string> lines = SplitMultilineString(input);
 
-        if (inputLength >= width) {
-            // If the input string is longer than the width, return it as is
-            return input;
+        for (const std::string& line : lines) {
+            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
+            output += SpaceToPrint(margin) + line + '\n';
         }
-
-        int padding = (width - inputLength) / 2;
-        result.append(padding, ' ');
-        result.append(input);
-        result.append(padding, ' ');
-
-        // Adjust for odd width
-        if (inputLength % 2 != 0) {
-            result.push_back(' ');
-        }
-
-        return result;
+        return output;
     }
 
     void PrintFormattedText(const std::string& text, const std::string& color = "") {
@@ -85,30 +98,12 @@ namespace z_debug {
         std::cout << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl;
     }
 
-    std::string SpaceToPrint(size_t spaces) {
-        return std::string(spaces, ' ');
+    // GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
+    std::string GetRandomColor() {
+        const std::string ANSI_COLOR_CODES[] = {ANSI_RED, ANSI_GREEN, ANSI_YELLOW, ANSI_BLUE, ANSI_MAGENTA, ANSI_CYAN, ANSI_WHITE};
+        return ANSI_COLOR_CODES[RandomValue<int>(0, ANSI_COLOR_CODES->size() - 1)];
     }
-
-    size_t GetLengthWithoutEscapeCodes(const std::string& input) {
-        size_t length = 0;
-        bool inEscape = false;
-
-        for (char c : input) {
-            if (c == '\033') { // Check for escape code
-                inEscape = true;
-                continue;
-            }
-            
-            if (inEscape) {
-                if (c >= 'A' && c <= 'Z') {
-                    inEscape = false;
-                }
-                continue;
-            }
-            length++;
-        }
-        return length;
-    }
-}
+} // namespace z_debug
+    
 
 #endif // Z_UTILITY_HPP

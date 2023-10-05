@@ -294,9 +294,59 @@ void UI::DisplayZorbsAsTable(const std::vector<Zorb>& zorbs) {
 }
 
 void UI::DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs) {
+    // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
+    std::vector<std::string> charLines;
+    std::vector<std::vector<std::string>> rowBuffers;
+    
+    // Calculate margin
+    size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
+
     for (const Zorb& zorb : zorbs) {
-        std::cout << zorb;
+        std::string appearanceText = zorb.GetAppearance();
+        std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
+        
+        std::string nameText = zorb.GetName();
+        std::string powerText = std::to_string(&zorb - &zorbs[0]) + ", " + std::to_string(zorb.GetPower()) + 'p';
+
+        if (charLines.size() < appearanceLines.size()+1) {
+            charLines.resize(appearanceLines.size()+2);
+        }
+        //resize nameText to fit the zorb width, if it doesn't, remove the difference between the margin and the zorb width, then replace the last 2 letters with ..
+        if(nameText.size() > ZORBWIDTH)
+        {
+            nameText.resize(ZORBWIDTH);
+            nameText.replace(ZORBWIDTH-2, 2, "..");
+        }
+        else if(nameText.size() < ZORBWIDTH)
+        {
+            nameText.resize(ZORBWIDTH, ' ');
+        }
+        //format the powerText to be centered
+        powerText.resize(ZORBWIDTH, ' ');
+        
+        
+        // check if Zorb will fit on the current line in the console window
+        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
+            rowBuffers.push_back(charLines);
+            charLines.clear();
+        } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
+        {
+            for (size_t i = 0; i < appearanceLines.size(); ++i) {
+                charLines[i] += z_debug::SpaceToPrint(margin);
+                charLines[i] += appearanceLines[i];
+            }
+            charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
+            charLines[appearanceLines.size()+1] += z_debug::SpaceToPrint(margin) + powerText;
+        }
     }
+
+    rowBuffers.push_back(charLines);
+    for (const auto& rowBuffer : rowBuffers) {
+        for (const std::string& charLine : rowBuffer) {
+            std::cout << charLine << std::endl;
+        }
+    }
+
 }
 
 void UI::DisplayZorbsSimple(const std::vector<Zorb>& zorbs) {
