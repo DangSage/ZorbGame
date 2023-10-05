@@ -7,14 +7,13 @@
 class Zorb {
 public:
     // Default constructor (Empty Space)
-    Zorb() : power(0), team_id(-1), name(""), appearance() { z_debug::zorbCount++; }
+    Zorb() : power(0), team_id(-1), name(""), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
     // Team ID constructor (Creates Default Zorb)
-    Zorb(appearanceEnum _enum, std::string _color) : power(0), team_id(-1), name(""), appearance() { 
-        SetAppearance(_enum, _color); 
+    Zorb(appearanceEnum _enum, std::string _color) : power(0), team_id(0), name("Gleep"), appearance(ZorbAppearance(_enum, _color)) {
         z_debug::zorbCount++;
     }
     // Power, ID, name constructor
-    Zorb(int power, int team_id, const std::string& name) : power(power), team_id(team_id), name(name), appearance() { z_debug::zorbCount++; }
+    Zorb(int power, int team_id, const std::string& name) : power(power), team_id(team_id), name(name), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
     // Fully parameterized constructor
     Zorb(int power, int team_id, const std::string& name, ZorbAppearance _appearance) : power(power), team_id(team_id), name(name), appearance(std::move(_appearance)) { z_debug::zorbCount++; }
     // Copy constructor
@@ -42,9 +41,9 @@ public:
     ZorbAppearance ReturnAppearanceObject() const { return appearance; }
 
     // Mutator Functions
-    void SetAppearance(appearanceEnum _enum, std::string color="") { appearance.SetAppearance(_enum, color); }
     void SetPower(int _power) { this->power = _power; }
     void SetName(std::string _name) { this->name = _name; }
+    void SetAppearance(appearanceEnum _enum, std::string _color = "") { appearance.SetAppearance(_enum, _color); }
 
     friend std::ostream& operator<<(std::ostream& os, const Zorb& zorb); // Overload the insertion operator to print a Zorb
     friend bool operator<(const Zorb& left, const Zorb& right); // Overload the < operator to compare Zorbs
@@ -61,7 +60,7 @@ private:
 
 // Overload the insertion operator
 std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
-    std::string zorbInfo = zorb.GetAppearance() + " " + zorb.name + "\nT" + std::to_string(zorb.team_id) + ":" + std::to_string(zorb.power) + '\n';
+    std::string zorbInfo = zorb.appearance.GetAppearance() + " " + zorb.name + "\nT" + std::to_string(zorb.team_id) + ":" + std::to_string(zorb.power) + '\n';
 
     std::istringstream iss(zorbInfo);
     std::string line;
@@ -101,7 +100,7 @@ namespace z_debug {
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
         while (_enumNUM < NUM_APPEARANCES) {
-            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_YELLOW);
+            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_CYAN);
             
             std::string enumName = appearanceNames[static_cast<appearanceEnum>(_enumNUM)];
             std::string appearanceText = _debugappearance.GetAppearance() + enumName;

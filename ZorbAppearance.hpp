@@ -43,21 +43,21 @@ class ZorbAppearance {
 public:
     ZorbAppearance();
     ZorbAppearance(appearanceEnum _enum, std::string _color = "") { 
+        ZorbAppearance();
         SetAppearance(_enum, _color); 
-        z_debug::zorbAppearanceCount++;
     }
     ZorbAppearance(const ZorbAppearance* other) {
         // Copy the values from the other object
+        this->appearanceMap = other->appearanceMap;
         this->color = other->color;
         this->currentAppearance = other->currentAppearance;
-        z_debug::zorbAppearanceCount++;
     }
 
     ~ZorbAppearance() { z_debug::zorbAppearanceCount--; }
 
     void SetAppearance(appearanceEnum zorbAppearance, std::string COLOR = "");   //setting appearance
 
-    std::string GetAppearance() const { return currentAppearance; }
+    std::string GetAppearance() const;
     std::string GetColor() const { return color; }
 private:
     std::string color;
@@ -141,8 +141,7 @@ _/___{_
  > W <|)"}
     // Add more appearance strings here
 }; // Unordered map to store appearance strings
-    SetAppearance(APPEARANCE_DEFAULT);
-    z_debug::zorbAppearanceCount++; 
+    z_debug::zorbAppearanceCount++;
 }
 
 void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
@@ -174,9 +173,21 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         currentAppearance = _appearance;
         color = COLOR;
     } else {
-        std::cout << "EXCEPTION: appearance not set, null enum error" << std::endl;
+        std::cout << "EXCEPTION: appearance not set, invalid enum." << std::endl
+            << "No appearance set for enum " << static_cast<int>(_enum) << ' ' << std::to_string(_enum) << std::endl;
         exit(0);
     }
+}
+
+std::string ZorbAppearance::GetAppearance() const
+{
+    if(currentAppearance == "")
+    {   
+        std::cout << "EXCEPTION: no appearance, initalization error." << std::endl
+            << "Check that the appearance is set before calling GetAppearance()" << std::endl;
+        exit(0);
+    }
+    return currentAppearance;
 }
 
 
