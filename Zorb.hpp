@@ -9,6 +9,8 @@ public:
     // Default constructor (Empty Space)
     Zorb() : power(0), team_id(-1), name(""), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
     // Team ID constructor (Creates Default Zorb)
+    Zorb(int team_id) : power(0), team_id(team_id), name(""), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
+    // Appearance constructor
     Zorb(appearanceEnum _enum, std::string _color) : power(0), team_id(0), name("Gleep"), appearance(ZorbAppearance(_enum, _color)) {
         z_debug::zorbCount++;
     }
