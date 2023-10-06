@@ -18,12 +18,20 @@ enum appearanceEnum {
     APPEARANCE_DEVIL,   // devil zorb enum
     APPEARANCE_KNIGHT,  // knight zorb enum
     APPEARANCE_WIZARD,  // wizard zorb enum
+    APPEARANCE_NINJA,   // ninja zorb enum
+    APPEARANCE_SILLY,   // silly zorb enum
+    APPEARANCE_SKEL,    // skeleton zorb enum
+    APPEARANCE_ZOMBIE,  // zombie zorb enum
+    APPEARANCE_VAMP,     // zamp zorb enum
+    //generate some more appearances enums here using the naming scheme APPEARANCE_<NAME>
+
 
     // Placeholder for the total number of appearances
     NUM_APPEARANCES
 };
 
 std::map<appearanceEnum, const std::string> appearanceNames = {
+    //All of these names must be 7 characters long and unique to the enum
     {APPEARANCE_DEFAULT, "default"}, // normal cat enum
     {APPEARANCE_HAPPY, "happier"},   // happy cat enum
     {APPEARANCE_WINK, "winking"},    // winking cat enum
@@ -32,11 +40,15 @@ std::map<appearanceEnum, const std::string> appearanceNames = {
     {APPEARANCE_ANGRY, "angrily"},   // angry cat enum
     {APPEARANCE_MONEY, "greeder"},   // merchant cat enum
     {APPEARANCE_FOLD, "foldear"},    // scottish-fold cat enum
-    {APPEARANCE_MONK, "enlyten"},    // bald zorb enum
+    {APPEARANCE_MONK, "nirvana"},    // bald zorb enum
     {APPEARANCE_DEVIL, "hellish"},   // devil zorb enum
     {APPEARANCE_KNIGHT, "knighty"},  // knight zorb enum
-    {APPEARANCE_WIZARD, "magical"}   // wizard zorb enum
-
+    {APPEARANCE_WIZARD, "magical"},   // wizard zorb enum
+    {APPEARANCE_NINJA, "sneaker"},   // ninja zorb enum
+    {APPEARANCE_SILLY, "clownly"},   // silly zorb enum
+    {APPEARANCE_SKEL, "skeletn"},    // skeleton zorb enum
+    {APPEARANCE_ZOMBIE, "zombier"},  // zombie zorb enum
+    {APPEARANCE_VAMP, "vampier"}     // zamp zorb enum
 };
 
 class ZorbAppearance {
@@ -138,7 +150,37 @@ R"(
   ,/^\_
 _/___{_
 ( o.o T
- > W <|)"}
+ > W <|)"},
+    {APPEARANCE_NINJA,
+R"(       
+   o   
+./\|/\.
+([o.o])
+ >   < )"},
+    {APPEARANCE_SILLY,
+R"(       
+.( - ).
+(/\|/\)
+(.oCo.)
+ > = < )"},
+    {APPEARANCE_SKEL,
+R"(       
+   .   
+./\|/\.
+< 0+0 >
+ >)w(< )"},
+    {APPEARANCE_ZOMBIE,
+R"(       
+   o   
+./\|/\.
+(#o.0 )
+ >_C#< )"},
+    {APPEARANCE_VAMP,
+R"(       
+   o   
+./\|/\.
+( o^o )
+^>v v<^)"}
     // Add more appearance strings here
 }; // Unordered map to store appearance strings
     z_debug::zorbAppearanceCount++;

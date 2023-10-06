@@ -100,7 +100,7 @@ namespace z_debug {
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
         while (_enumNUM < NUM_APPEARANCES) {
-            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_CYAN);
+            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_YELLOW);
             
             std::string enumName = appearanceNames[static_cast<appearanceEnum>(_enumNUM)];
             std::string appearanceText = _debugappearance.GetAppearance() + enumName;

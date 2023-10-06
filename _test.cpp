@@ -50,9 +50,11 @@ int main() {
         
         //declare a vector of Zorb objects called zorbs (refer back to the zorb.hpp header)
         std::vector<Zorb> zorbs;
-        for (int i=0; i <= z_debug::RandomValue(0,100); ++i) {
-            zorbs.push_back(Zorb(z_debug::RandomValue(0,100), z_debug::RandomValue(0,100), "Zorb " + std::to_string(i)));
-        }
+
+        zorbs.push_back(Zorb(1000, 0, "Gleepy"));
+        zorbs.push_back(Zorb(z_debug::RandomValue(0,100), 0, "Glorpglorp"));
+        zorbs.push_back(Zorb(z_debug::RandomValue(0,100), 0, "Ralph"));
+
         //set appearances for the zorbs at random
         for (auto& zorb : zorbs) {
             zorb.SetAppearance(static_cast<appearanceEnum>(z_debug::RandomValue(0, static_cast<int>(NUM_APPEARANCES-1))), z_debug::GetRandomColor());

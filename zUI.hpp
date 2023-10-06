@@ -306,7 +306,7 @@ void UI::DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs) {
         std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
         
         std::string nameText = zorb.GetName();
-        std::string powerText = std::to_string(&zorb - &zorbs[0]) + ", " + std::to_string(zorb.GetPower()) + 'p';
+        std::string powerText = z_debug::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p';
 
         if (charLines.size() < appearanceLines.size()+1) {
             charLines.resize(appearanceLines.size()+2);
@@ -346,7 +346,6 @@ void UI::DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs) {
             std::cout << charLine << std::endl;
         }
     }
-
 }
 
 void UI::DisplayZorbsSimple(const std::vector<Zorb>& zorbs) {

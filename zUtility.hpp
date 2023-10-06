@@ -90,7 +90,10 @@ namespace z_debug {
         if (!color.empty())
             return color + text + ANSI_RESET;   // Wrap the text with the specified color codes
         else
+        {
+            OutputDebugString("Log: No color specified at call of FormattedText()\n\tYou may want to pass text element instead.\n");
             return text; // Return the text as is if no color is specified
+        }
     }
 
     void CountGameObjectsInMemory() {
@@ -101,7 +104,7 @@ namespace z_debug {
     // GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
     std::string GetRandomColor() {
         const std::string ANSI_COLOR_CODES[] = {ANSI_RED, ANSI_GREEN, ANSI_YELLOW, ANSI_BLUE, ANSI_MAGENTA, ANSI_CYAN, ANSI_WHITE};
-        return ANSI_COLOR_CODES[RandomValue<int>(0, ANSI_COLOR_CODES->size() - 1)];
+        return ANSI_COLOR_CODES[RandomValue<int>(0, ANSI_COLOR_CODES->size())];
     }
 } // namespace z_debug
     
