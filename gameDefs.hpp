@@ -32,7 +32,7 @@
 #define CONSOLESIZE 70
 #define ZORBWIDTH 7
 
-// define function to force terminal to accept ansi color codes depending on operating system
+// define function to force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
     #ifdef _WIN32
         HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -49,13 +49,13 @@ void ForceTerminalColor() {
 
 // define function to change font size of terminal executeable depending on operating system
 void ChangeFont(int spacing) {
-        #ifdef _WIN32
+    #ifdef _WIN32
         CONSOLE_FONT_INFOEX info = {0};
         info.cbSize = sizeof(info);
         info.dwFontSize.Y = spacing;
         info.FontWeight = FW_NORMAL;
         wcscpy(info.FaceName, L"Consolas");
-        SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), NULL, &info);
+        SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &info);
     #endif
 }
 
@@ -67,7 +67,7 @@ void ForceTerminalBorder() {    //make the text and console thinner like the ter
         GetWindowRect(console, &r); //stores the console's current dimensions
         MoveWindow(console, r.left, r.top, 700, 700, TRUE); // 700 width, 100 height
         SetConsoleTitle("Zorb Zenith"); //set the title of the console
-        ChangeFont(11);
+        ChangeFont(14);
     #endif
 }
 

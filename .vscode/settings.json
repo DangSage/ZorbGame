@@ -76,8 +76,11 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "numbers": "cpp"
     },
     "C_Cpp.dimInactiveRegions": true,
-    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
+    "workbench.panel.defaultLocation": "right",
+    "terminal.integrated.defaultProfile.windows": "bash (MSYS2)"
 }
