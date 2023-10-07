@@ -211,7 +211,7 @@ void UI::DisplayDebugScreen() const {
                   << std::setw(columnWidth) << option2 << std::endl;
     };
 
-    columnDisplay("Battle Display Type:", "Other Options:");
+    columnDisplay("Battle Display Type: "+GetDisplayFormatAsString(), "Other Options:");
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
     columnDisplay(" 3. Display Zorbs (Table Format)", " C. option");
