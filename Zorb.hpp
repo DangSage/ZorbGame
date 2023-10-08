@@ -64,26 +64,24 @@ private:
 
 // Overload the insertion operator
 std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
-    // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
+    // Display the Zorb as ASCII art
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;
-    
+
     // Calculate margin
-    size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
+    size_t margin = (CONSOLESIZE % ZORBWIDTH) + ZORBWIDTH / 2;
 
     std::string appearanceText = zorb.GetAppearance();
     std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
-    
+
     std::string nameText = zorb.GetName();
     std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p');
 
     for (size_t i = 0; i < appearanceLines.size(); ++i) {
-        charLines[i] += z_debug::SpaceToPrint(margin);
-        charLines[i] += appearanceLines[i];
+        charLines.push_back(z_debug::SpaceToPrint(margin) + appearanceLines[i]);
     }
-    charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
-    charLines[appearanceLines.size()+1] += z_debug::SpaceToPrint(margin) + powerText;
-
+    charLines.push_back(z_debug::SpaceToPrint(margin) + nameText);
+    charLines.push_back(z_debug::SpaceToPrint(margin) + powerText);
 
     rowBuffers.push_back(charLines);
     for (const auto& rowBuffer : rowBuffers) {
