@@ -1,7 +1,7 @@
 #include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
-#include "ZorbAppearance.hpp" // Include ZorbAppearance.hpp for Zorb class usage
+#include "gameManager.hpp"
 
-int main2() {
+int main() {
     // UI ui;
     // ui.SetDisplayFormat(ASCII_ART);
     // _createStyledTextBox("This is a quick driver to show all of the debug stuff that is going to be core functions of the game.");
@@ -13,5 +13,12 @@ int main2() {
     // ui.DisplayTitleScreen();
     // std::cout << std::endl;
     // _pauseSystem()
+
+    //declare a game manager object from our gameManager.hpp class
+    UI _uiM;
+    GameManager _gM(_uiM);
+
+    //call the game manager's show debug screen
+    _gM.startGame();
     return 0;
 }

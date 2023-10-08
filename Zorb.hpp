@@ -15,9 +15,11 @@ public:
         z_debug::zorbCount++;
     }
     // Power, ID, name constructor
-    Zorb(int power, int team_id, const std::string& name) : power(power), team_id(team_id), name(name), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
+    Zorb(int power, int team_id, const std::string& name) : 
+        power(power), team_id(team_id), name(name), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
     // Fully parameterized constructor
-    Zorb(int power, int team_id, const std::string& name, ZorbAppearance _appearance) : power(power), team_id(team_id), name(name), appearance(std::move(_appearance)) { z_debug::zorbCount++; }
+    Zorb(int power, int team_id, const std::string& name, ZorbAppearance _appearance) : 
+        power(power), team_id(team_id), name(name), appearance(std::move(_appearance)) { z_debug::zorbCount++; }
     // Copy constructor
     Zorb(const Zorb& other)
         : power(other.power),

@@ -149,25 +149,25 @@ void _createStyledTextBox(const std::string& text) {
 
     while (std::getline(iss, line)) {
         // Split long lines into multiple lines to fit within the box DISPLAYWIDTH
-        while (line.length() > availableWidth) {
+        while (z_debug::GetLengthWithoutEscapeCodes(line) > availableWidth) {
             size_t lastSpace = line.rfind(' ', availableWidth);
             if (lastSpace == std::string::npos || lastSpace == 0) {
                 // No space found within the available DISPLAYWIDTH, split at the exact character
                 std::string part = line.substr(0, availableWidth);
                 line = line.substr(availableWidth);
-                int rightPadding = availableWidth - part.length();
+                int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
                 std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
             } else {
                 // Split at the last space within the available DISPLAYWIDTH
                 std::string part = line.substr(0, lastSpace);
                 line = line.substr(lastSpace + 1); // Skip the space
-                int rightPadding = availableWidth - part.length();
+                int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
                 std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
             }
         }
 
         // Calculate the remaining space on the right for the remaining part of the line
-        int rightPadding = availableWidth - line.length();
+        int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(line);
 
         // Print the remaining part of the line or the short line, centered horizontally
         std::cout << "| " << std::string(rightPadding / 2, ' ') << line << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
@@ -189,18 +189,23 @@ void _createDivider(char borderChar) {
 }
 
 void UI::SetDisplayFormat(DisplayFormat format) {
-    //set the displayformat to the format passed in then create a screen displaying the change before pausing the system
+    if (currentFormat == format) {
+        return; // no need to change the format if it's already set
+    }
+
     currentFormat = format;
     _clearScreen();
-    _createStyledTextBox("Display format changed to " + GetDisplayFormatAsString());
-    //create a array of 2 zorbs that are initialized as Zorb 1 and Zorb 2
-    std::vector samplezorbs = {Zorb(APPEARANCE_DEFAULT, 0, "Zorb 1"), Zorb(APPEARANCE_DEFAULT, 0, "Zorb 2")};
+    _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW));
 
-    DisplayZorbs(samplezorbs);
+    // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
+    std::vector<Zorb> zorbs(2, Zorb());
+    zorbs[0].SetName("Zorb 1");
+    zorbs[1].SetName("Zorb 2");
+
+    DisplayZorbs(zorbs);
     std::cout << std::endl;
     _createHorizontalLine('-');
     _pauseSystem();
-
 }
 
 void UI::screenMainMenu() const {
@@ -241,18 +246,21 @@ void UI::screenDebugOptions() const {
 
     int columnWidth = DISPLAYWIDTH / 2;
     auto columnDisplay = [&](const std::string& option, const std::string& option2) {
+        int optionLength = z_debug::GetLengthWithoutEscapeCodes(option);
+        int option2Length = z_debug::GetLengthWithoutEscapeCodes(option2);
         std::cout << std::left << std::setw(columnWidth) << option
-                  << std::setw(columnWidth) << option2 << std::endl;
+                  << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
 
-    columnDisplay("Battle Display Type: "+GetDisplayFormatAsString(), "Other Options:");
+    columnDisplay("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW) + '\t', "Other Options:");
+    std::cout << std::endl;
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
     columnDisplay(" 3. Display Zorbs (Table Format)", " C. option");
     columnDisplay(" 4. Display Zorbs (Color Coding)", " D. option");
 
     std::cout << std::right << std::setw(0) << std::endl
-    << "Q. Quit back to Title Screen" << std::endl;
+              << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
     std::cout << "your choice: ";
 }

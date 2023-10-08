@@ -7,7 +7,6 @@
 #include <random>
 #include <stdexcept>
 
-
 namespace z_debug {
     // Track the counts of Zorb and ZorbAppearance objects
     static int zorbCount = 0;
