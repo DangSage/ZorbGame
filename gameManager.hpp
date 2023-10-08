@@ -65,6 +65,7 @@ void GameManager::startGame() {
             case GameState::Game:
                 break;
             case GameState::InfoMenu:
+                _clearScreen();
                 _createStyledTextBox("In the furthest reaches of the cosmos, in a galaxy far, far away, there existed a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare.");
                 _pauseSystem();
                 std::cout << "\n\n" << std::endl;
