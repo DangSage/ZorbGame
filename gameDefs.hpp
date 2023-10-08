@@ -16,13 +16,6 @@
 #define ANSI_CYAN "\x1B[36m"
 #define ANSI_WHITE "\x1B[37m"
 
-// Define ANSI background color escape codes as macros
-#define ANSI_BG_BLACK "\x1B[40m"
-#define ANSI_BG_RED "\x1B[41m"
-#define ANSI_BG_GREEN "\x1B[42m"
-#define ANSI_BG_YELLOW "\x1B[43m"
-#define ANSI_BG_BLUE "\x1B[44m"
-
 #include <iostream> // Include necessary standard library headers
 #include <iomanip>
 #include <vector>
