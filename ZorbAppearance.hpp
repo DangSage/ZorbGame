@@ -48,12 +48,12 @@ std::map<appearanceEnum, const std::string> appearanceNames = {
     {APPEARANCE_SILLY, "clownly"},   // silly zorb enum
     {APPEARANCE_SKEL, "skeletn"},    // skeleton zorb enum
     {APPEARANCE_ZOMBIE, "zombier"},  // zombie zorb enum
-    {APPEARANCE_VAMP, "vampier"}     // zamp zorb enum
+    {APPEARANCE_VAMP, "vampire"}     // zamp zorb enum
 };
 
 class ZorbAppearance {
 public:
-    ZorbAppearance();
+    ZorbAppearance() { SetAppearance(APPEARANCE_DEFAULT); z_debug::zorbAppearanceCount++; } //default constructor
     ZorbAppearance(appearanceEnum _enum, std::string _color = "") { 
         ZorbAppearance();
         SetAppearance(_enum, _color); 
@@ -74,11 +74,7 @@ public:
 private:
     std::string color;
     std::string currentAppearance;
-    std::unordered_map<appearanceEnum, std::string> appearanceMap;
-};
-
-ZorbAppearance::ZorbAppearance() {
-    appearanceMap = {
+    std::unordered_map<appearanceEnum, std::string> appearanceMap = {
     {APPEARANCE_DEFAULT, 
 R"(       
    o   
@@ -181,10 +177,8 @@ R"(
 ./\|/\.
 ( o^o )
 ^>v v<^)"}
-    // Add more appearance strings here
-}; // Unordered map to store appearance strings
-    z_debug::zorbAppearanceCount++;
-}
+    };
+};
 
 void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
 {
