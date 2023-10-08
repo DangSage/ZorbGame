@@ -242,8 +242,6 @@ void UI::screenMainMenu() const {
     std::cout << menuText;
 }
 
-
-
 void UI::screenDebugOptions() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
