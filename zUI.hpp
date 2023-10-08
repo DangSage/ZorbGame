@@ -29,7 +29,7 @@ enum DisplayFormat {
 class UI {
 public:
     // Constructor to initialize the default display format
-    UI(DisplayFormat defaultFormat = TABLE) : currentFormat(defaultFormat) {}
+    UI(DisplayFormat defaultFormat = ASCII_ART) : currentFormat(defaultFormat) {}
 
     // display driver for vector of zorbs
     void DisplayZorbs(const std::vector<Zorb>& zorbs);
@@ -200,23 +200,24 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW));
 
     // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
-    std::vector<Zorb> zorbs(2, Zorb());
-    zorbs[0].SetName("Zorb 1");
-    zorbs[1].SetName("Zorb 2");
+    std::vector<Zorb> sample(2, Zorb());
+    sample[0].SetName("Zorb 1");
+    sample[1].SetName("Zorb 2");
 
-    DisplayZorbs(zorbs);
+    DisplayZorbs(sample);
     std::cout << std::endl;
     _createHorizontalLine('-');
     _pauseSystem();
+    //clear the vector sample with the deconstructor
+    sample.clear();
 }
 
 void UI::screenMainMenu() const {
     _clearScreen();
-    _createStyledTextBox("This is a game made by Dang. Dedicated to Thomas Worrall...");
-
+    _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\nhttps://github.com/DangSage/ZorbGame");
     // Define the title text
     std::string titleText =
-        "  __________         ___.      __________            .__  __  .__     \n"
+        "\n  __________         ___.      __________            .__  __  .__     \n"
         "  \\____    /__________\\ |__    \\____    /____   ____ |__|/  |_|  |__  \n"
         "    /     //  _ \\_  __ \\ __ \\    /     // __ \\ /    \\|  \\   __\\  |  \\ \n"
         "   /     /(  <_> )  | \\/ \\_\\ \\  /     /\\  ___/|   |  \\  ||  | |   Y  \\\n"
@@ -227,19 +228,21 @@ void UI::screenMainMenu() const {
 
     // Define menu options
     std::string menuText =
-        "\n"
+        "<3 Dedicated to Thomas Worrall <3\n\n"
         "1. Start Game\n"
         "2. Instructions\n"
         "3. Debug Settings\n"
-        "Q. Quit\n"
-        "Enter your choice: ";
+        "Q. Quit\n";
 
     // Display the title text
     _createHorizontalLine('-');
     std::cout << titleText << std::endl;
+    z_debug::PrintZorbAppearances(4, false, ANSI_CYAN);
     _createHorizontalLine('-');
     // Display menu options
     std::cout << menuText;
+    _createHorizontalLine('-');
+    std::cout << "Enter your choice: ";
 }
 
 void UI::screenDebugOptions() const {
@@ -264,19 +267,19 @@ void UI::screenDebugOptions() const {
     std::cout << std::right << std::setw(0) << std::endl
               << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
-    std::cout << "your choice: ";
+    std::cout << "Enter your choice: ";
 }
 
 void UI::screenInfo() const {
     _pauseSystem();
+    std::cout << "\n" << std::endl;
     _createStyledTextBox("In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess. But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield.");
     _pauseSystem();
+    std::cout << "\n" << std::endl;
     _createStyledTextBox("The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits.");
     _createHorizontalLine('-');
-    std::cout << "CONTINUE TO THE GAME.. ";
-    //take any user input to continue to the game without prompting the user to press enter
-    char input;
-    std::cin >> input;
+    std::cout << "CONTINUE TO THE MAIN MENU: ";
+    _pauseSystem();
 }
 
 void UI::screenGameOver() const {

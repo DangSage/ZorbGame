@@ -9,7 +9,6 @@
 // int main() {
 //     ForceTerminal();
 //     UI ui;
-//     ui.SetDisplayFormat(ASCII_ART);
 //     // _createStyledTextBox("This is a quick driver to show all of the debug stuff that is going to be core functions of the game.");
 //     // _pauseSystem();
 
@@ -51,9 +50,12 @@
 //         //declare a vector of Zorb objects called zorbs (refer back to the zorb.hpp header)
 //         std::vector<Zorb> zorbs;
 
-//         zorbs.push_back(Zorb(1000, 0, "Gleepy"));
-//         zorbs.push_back(Zorb(z_debug::RandomValue(0,100), 0, "Glorpglorp"));
-//         zorbs.push_back(Zorb(z_debug::RandomValue(0,100), 0, "Ralph"));
+//         //push back 5 zorbs into the vector, all with randomly generated stats and appearances and names
+//         //paick the names from the defined list at random
+//         unsigned int long long a = 0;
+//         for (int i = 0; i < 20; i++) {
+//             zorbs.push_back(Zorb(z_debug::RandomValue(1, 100), z_debug::RandomValue(0, 2), zorbNames[z_debug::RandomValue(a, zorbNames.size()-1)]+zorbNames[z_debug::RandomValue(a, zorbNames.size()-1)]));
+//         }
 
 //         //set appearances for the zorbs at random
 //         for (auto& zorb : zorbs) {
@@ -62,19 +64,23 @@
 //         //display the zorb vector with the predefined ui object
 //         ui.DisplayZorbs(zorbs);
 //         std::cout << std::endl;
-//         //ask the user if they want to continue
+//         z_debug::CountGameObjectsInMemory();
+
 //         _createDivider('=');
-//         std::cout << "Would you like to see another Zorb? (y/n): ";
+//         std::cout << "Would you like to see another Zorb set? (y/n): ";
 //         std::string input;
 //         std::cin >> input;
 //         //clear the screen
 //         _clearScreen();
+//         //destroy the zorb vector and its contents to free up memory via the destructor
+//         zorbs.clear();
+//         //if the user enters no or n, break the loop
 //         if (input == "N" || input == "n")
 //             break;
 //     }
 
 //     _createStyledTextBox("And these are all the different zorb characters currently in the game.");
-//     z_debug::PrintAllZorbAppearances();
+//     z_debug::PrintZorbAppearances(NUM_APPEARANCES, true, z_debug::GetRandomColor());
 //     std::cout << std::endl;
 
 //     _pauseSystem();
