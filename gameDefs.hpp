@@ -58,9 +58,9 @@ void ForceTerminalBorder() {    //make the text and console thinner like the ter
         HWND console = GetConsoleWindow();
         RECT r;
         GetWindowRect(console, &r); //stores the console's current dimensions
-        MoveWindow(console, r.left, r.top, 700, 700, TRUE); // 700 width, 100 height
+        MoveWindow(console, r.left, r.top, 800, 800, TRUE);
         SetConsoleTitle("Zorb Zenith"); //set the title of the console
-        ChangeFont(14);
+        ChangeFont(15);
     #endif
 }
 
