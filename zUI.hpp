@@ -4,6 +4,21 @@
 #include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
 #include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
 
+namespace z_debug {
+    void DisplayDebugColors() {
+        int columnWidth = CONSOLESIZE / 2;
+        auto columnDisplay = [&](const std::string& option, const std::string& option2) {
+            std::cout << std::left << std::setw(columnWidth) << option
+                    << std::setw(columnWidth) << option2 << std::endl;
+        };
+        std::cout << "Debug ANSI Colors:\n";
+        columnDisplay(FormattedText(" White: Text", ANSI_WHITE), FormattedText("Black: Text", ANSI_BLACK));
+        columnDisplay(FormattedText(" Red: Text", ANSI_RED), FormattedText("Green: Text", ANSI_GREEN));
+        columnDisplay(FormattedText(" Yellow: Text", ANSI_YELLOW), FormattedText("Blue: Text", ANSI_BLUE));
+        columnDisplay(FormattedText(" Magenta: Text", ANSI_MAGENTA), FormattedText("Cyan: Text", ANSI_CYAN));
+    }
+}
+
 enum DisplayFormat {
         TABLE,
         ASCII_ART,
@@ -24,15 +39,19 @@ public:
     std::string GetDisplayFormatAsString() const;   
 
     // mutator for DisplayFormat
-    void SetDisplayFormat(DisplayFormat format) { currentFormat = format; }
+    void SetDisplayFormat(DisplayFormat format);
 
     // Constants
     static const int DISPLAYWIDTH = CONSOLESIZE;
 
     // title screen display
-    void DisplayTitleScreen() const;
+    void screenMainMenu() const;
     // setting screen display
-    void DisplayDebugScreen() const;
+    void screenDebugOptions() const;
+    // gameover screen display
+    void screenGameOver() const;
+    // debug color screen display
+    void screenDebugColors() const;
 
     // wipes output stream in the console
     friend void _clearScreen(); 
@@ -46,10 +65,10 @@ private:
     DisplayFormat currentFormat; // Member variable to store the current display format
 
     // Functions for displaying Zorbs in different formats
-    void DisplayZorbsAsTable(const std::vector<Zorb>& zorbs);
-    void DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs);
-    void DisplayZorbsSimple(const std::vector<Zorb>& zorbs);
-    void DisplayZorbsWithColor(const std::vector<Zorb>& zorbs);
+    void ZorbDisplayTable(const std::vector<Zorb>& zorbs);
+    void ZorbDisplayAscii(const std::vector<Zorb>& zorbs);
+    void ZorbDisplaySimple(const std::vector<Zorb>& zorbs);
+    void ZorbDisplayWithColor(const std::vector<Zorb>& zorbs);
 
     static void _createHorizontalLine(char borderChar);
     static int _countTextLines(const std::string& text);
@@ -169,7 +188,22 @@ void _createDivider(char borderChar) {
     std::cout << std::endl;
 }
 
-void UI::DisplayTitleScreen() const {
+void UI::SetDisplayFormat(DisplayFormat format) {
+    //set the displayformat to the format passed in then create a screen displaying the change before pausing the system
+    currentFormat = format;
+    _clearScreen();
+    _createStyledTextBox("Display format changed to " + GetDisplayFormatAsString());
+    //create a array of 2 zorbs that are initialized as Zorb 1 and Zorb 2
+    std::vector samplezorbs = {Zorb(APPEARANCE_DEFAULT, 0, "Zorb 1"), Zorb(APPEARANCE_DEFAULT, 0, "Zorb 2")};
+
+    DisplayZorbs(samplezorbs);
+    std::cout << std::endl;
+    _createHorizontalLine('-');
+    _pauseSystem();
+
+}
+
+void UI::screenMainMenu() const {
     _clearScreen();
     _createStyledTextBox("This is a game made by Dang. Dedicated to Thomas Worrall...");
 
@@ -201,7 +235,7 @@ void UI::DisplayTitleScreen() const {
     std::cout << menuText;
 }
 
-void UI::DisplayDebugScreen() const {
+void UI::screenDebugOptions() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
 
@@ -223,19 +257,44 @@ void UI::DisplayDebugScreen() const {
     std::cout << "your choice: ";
 }
 
+void UI::screenGameOver() const {
+    _clearScreen();
+    _createStyledTextBox("GAME OVER! R.I.P. To your last Zorb :(");
+
+    //display a zorb appearance into the middle of the screen
+    std::string deadZorb = R"(
+       o   
+    ./\|/\.
+    ( x.x )
+     > n < )";
+    
+    deadZorb = z_debug::CenterAlignString(deadZorb, DISPLAYWIDTH);
+
+    std::cout << std::right << std::setw(0) << std::endl
+    << "Q. Quit back to Title Screen" << std::endl;
+    _createHorizontalLine('-');
+    std::cout << "your choice: ";
+}
+
+void UI::screenDebugColors() const {
+    _clearScreen();
+    _createStyledTextBox("DEBUG MENU: Change game settings here!");
+    z_debug::DisplayDebugColors();
+}
+
 void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
     switch (currentFormat) {
         case TABLE:
-            DisplayZorbsAsTable(zorbs);
+            ZorbDisplayTable(zorbs);
             break;
         case ASCII_ART:
-            DisplayZorbsAsAscii(zorbs);
+            ZorbDisplayAscii(zorbs);
             break;
         case SIMPLE:
-            DisplayZorbsSimple(zorbs);
+            ZorbDisplaySimple(zorbs);
             break;
         case COLOR:
-            DisplayZorbsWithColor(zorbs);
+            ZorbDisplayWithColor(zorbs);
             break;
         default:
             std::cout << "Invalid display format\n";
@@ -245,16 +304,16 @@ void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
 void UI::DisplayZorb(const Zorb& zorb) {
     switch (currentFormat) {
         case TABLE:
-            DisplayZorbsAsTable({zorb});
+            ZorbDisplayTable({zorb});
             break;
         case ASCII_ART:
-            DisplayZorbsAsAscii({zorb});
+            ZorbDisplayAscii({zorb});
             break;
         case SIMPLE:
-            DisplayZorbsSimple({zorb});
+            ZorbDisplaySimple({zorb});
             break;
         case COLOR:
-            DisplayZorbsWithColor({zorb});
+            ZorbDisplayWithColor({zorb});
             break;
         default:
             std::cout << "Invalid display format\n";
@@ -276,7 +335,7 @@ std::string UI::GetDisplayFormatAsString() const {
     }
 }
 
-void UI::DisplayZorbsAsTable(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) {
     _createDivider('-');
     std::cout << std::left << std::setw(20) << "Name" 
     << std::setw(10) << "Team" 
@@ -293,7 +352,7 @@ void UI::DisplayZorbsAsTable(const std::vector<Zorb>& zorbs) {
     std::cout << std::right << std::setw(0);
 }
 
-void UI::DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;
@@ -348,7 +407,7 @@ void UI::DisplayZorbsAsAscii(const std::vector<Zorb>& zorbs) {
     }
 }
 
-void UI::DisplayZorbsSimple(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
     for (const Zorb& zorb : zorbs) {
         std::cout << "Zorb Name: " << zorb.GetName() << "\n";
         std::cout << "Team: T" << zorb.GetTeamId() << "\n";
@@ -357,7 +416,7 @@ void UI::DisplayZorbsSimple(const std::vector<Zorb>& zorbs) {
     }
 }
 
-void UI::DisplayZorbsWithColor(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayWithColor(const std::vector<Zorb>& zorbs) {
     std::cout << "DISPLAY WITH COLOR:\n";
 
     for (const Zorb& zorb : zorbs) {
@@ -369,22 +428,6 @@ void UI::DisplayZorbsWithColor(const std::vector<Zorb>& zorbs) {
         std::cout << textColor << "Team: T" << zorb.GetTeamId() << resetColor << "\n";
         std::cout << textColor << "Power: " << zorb.GetPower() << resetColor << "\n";
         std::cout << "\n";
-    }
-}
-
-
-namespace z_debug {
-    void DisplayDebugColors() {
-        int columnWidth = UI::DISPLAYWIDTH / 2;
-        auto columnDisplay = [&](const std::string& option, const std::string& option2) {
-            std::cout << std::left << std::setw(columnWidth) << option
-                    << std::setw(columnWidth) << option2 << std::endl;
-        };
-        std::cout << "Debug ANSI Colors:\n";
-        columnDisplay(FormattedText(" White: Text", ANSI_WHITE), FormattedText("Black: Text", ANSI_BLACK));
-        columnDisplay(FormattedText(" Red: Text", ANSI_RED), FormattedText("Green: Text", ANSI_GREEN));
-        columnDisplay(FormattedText(" Yellow: Text", ANSI_YELLOW), FormattedText("Blue: Text", ANSI_BLUE));
-        columnDisplay(FormattedText(" Magenta: Text", ANSI_MAGENTA), FormattedText("Cyan: Text", ANSI_CYAN));
     }
 }
 #endif // Z_UI_HPP
