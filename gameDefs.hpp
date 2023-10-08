@@ -25,7 +25,7 @@
 #define CONSOLESIZE 70
 #define ZORBWIDTH 7
 
-// define function to force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
+//force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
     #ifdef _WIN32
         HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -40,7 +40,7 @@ void ForceTerminalColor() {
     #endif
 }
 
-// define function to change font size of terminal executeable depending on operating system
+// function to change font size of terminal executeable depending on operating system
 void ChangeFont(int spacing) {
     #ifdef _WIN32
         CONSOLE_FONT_INFOEX info = {0};
@@ -52,7 +52,7 @@ void ChangeFont(int spacing) {
     #endif
 }
 
-//define function that forces the terminal to have borders and a title
+//function that forces the terminal to have borders and a title
 void ForceTerminalBorder() {    //make the text and console thinner like the terminal console in VSC
     #ifdef _WIN32
         HWND console = GetConsoleWindow();
@@ -70,5 +70,79 @@ void ForceTerminal() {
 }
 
 
+//region INGAME DEFINITIONS
+
+enum class GameState {
+    MainMenu,
+    OptionsMenu,
+    Game,
+    GameOver,
+    InfoMenu,
+    End = -1
+};
+
+//make a list of names that we can access later
+const std::vector<std::string> zorbNames = {
+    "Barg",
+        "Blarg",
+        "Borp",
+        "Bugg",
+        "Gleep",
+        "Gleepy",
+        "Glip",
+        "Glarp",
+        "Greep",
+        "Groopy",
+        "Lap",
+        "Leep",
+        "Lip",
+        "Map",
+        "Mip",
+        "Neep",
+        "Nip",
+        "Nipp",
+        "Norp",
+        "Peeg",
+        "Porg",
+        "Plip",
+        "Waby",
+        "Weep",
+        "Wree",
+        "Zaby",
+        "Zap",
+        "Zip",
+        "Zep",
+        "Zug",
+        "Zorp",
+        "Flap",
+        "Quip",
+        "Snarp",
+        "Snip",
+        "Twip",
+        "Vorp",
+        "Whap",
+        "Yip",
+        "Beepy",
+        "Quor",
+        "Qazy",
+        "Qee-Qee",
+        "Beeb",
+        "Gegy",
+        "Glorb",
+        "Norb",
+        "Zleep",
+        "Zeegul",
+        "Poogl",
+        "Yoolg",
+        "Cthulhu",
+        "Breemy",
+        "Byny",
+        "Glorp",
+        "Lorg",
+        "Loop",
+        "Borner"
+};
+
+//endregion
 #endif
 
