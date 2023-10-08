@@ -109,7 +109,15 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
 }
 
 namespace z_debug {
-    void PrintAllZorbAppearances() {
+    void PrintZorbAppearances(int i = NUM_APPEARANCES) {
+        if(z_debug::zorbAppearanceCount == 0) {
+            std::cout << "No ZorbAppearances in memory" << std::endl;
+            return;
+        }
+        else if(i > NUM_APPEARANCES || i < 0) {
+            std::cout << "Invalid number of appearances to print" << std::endl;
+            return;
+        }
         ZorbAppearance _debugappearance;
         std::vector<std::string> charLines;
         std::vector<std::vector<std::string>> rowBuffers;
@@ -118,7 +126,7 @@ namespace z_debug {
         // Calculate margin
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
-        while (_enumNUM < NUM_APPEARANCES) {
+        while (_enumNUM < i) {
             _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_YELLOW);
             
             std::string enumName = appearanceNames[static_cast<appearanceEnum>(_enumNUM)];
