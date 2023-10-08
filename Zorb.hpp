@@ -35,7 +35,9 @@ public:
         appearance(std::move(other.appearance)) {}
 
     // Default destructor
-    ~Zorb() { z_debug::zorbCount--; }
+    ~Zorb() {
+        z_debug::zorbCount--;
+    }
 
     // Accessor functions
     int GetPower() const { return power; }
@@ -109,7 +111,7 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
 }
 
 namespace z_debug {
-    void PrintZorbAppearances(int i = NUM_APPEARANCES) {
+    void PrintZorbAppearances(int i = NUM_APPEARANCES, bool printNames = false, std::string color = ANSI_YELLOW) {
         if(z_debug::zorbAppearanceCount == 0) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;
@@ -121,16 +123,17 @@ namespace z_debug {
         ZorbAppearance _debugappearance;
         std::vector<std::string> charLines;
         std::vector<std::vector<std::string>> rowBuffers;
+        std::string appearanceText;
         int _enumNUM = APPEARANCE_DEFAULT;
         
         // Calculate margin
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
         while (_enumNUM < i) {
-            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), ANSI_YELLOW);
+            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), color);
             
             std::string enumName = appearanceNames[static_cast<appearanceEnum>(_enumNUM)];
-            std::string appearanceText = _debugappearance.GetAppearance() + enumName;
+            printNames==true ? appearanceText = _debugappearance.GetAppearance()+enumName : appearanceText = _debugappearance.GetAppearance();
             std::vector<std::string> appearanceLines = SplitMultilineString(appearanceText);
 
             if (charLines.size() < appearanceLines.size()) {

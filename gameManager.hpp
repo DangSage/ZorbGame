@@ -5,7 +5,7 @@
 
 class GameManager {
 public:
-    GameManager(UI& ui) : m_ui(ui) {}
+    GameManager(UI& ui) : m_ui(ui) { ForceTerminal(); } //default constructor, initialize game manager with a UI object & force terminal
 
     void startGame();
     void endGame();
@@ -41,10 +41,8 @@ void GameManager::startGame() {
     // Initialize game objects
     //initialize one Zorb object that is a default green zorb named "Neep Narp" that is pushed back into the vector of Zorbs
     m_zorbs.push_back(Zorb(0, 1, "Neep Narp"));
-    m_zorbs.at(0).SetAppearance(APPEARANCE_DEFAULT);
-
-    m_zorbs.push_back(Zorb(2)); // Enemy zorb
-    m_zorbs.push_back(Zorb(0)); // Player zorb
+    m_zorbs.at(0).SetAppearance(APPEARANCE_DEFAULT, ANSI_GREEN);
+    m_zorbs.push_back(Zorb(0)); // NPC zorb
     SortZorbsByTeamId();
 
     // Game loop
@@ -68,9 +66,9 @@ void GameManager::startGame() {
                 _clearScreen();
                 _createStyledTextBox("In the furthest reaches of the cosmos, in a galaxy far, far away, there existed a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare.");
                 _pauseSystem();
-                std::cout << "\n\n" << std::endl;
+                std::cout << std::endl;
                 _createStyledTextBox("This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos.");
-                std::cout << m_zorbs.at(0);
+                std::cout << m_zorbs.at(0) << std::endl;
                 m_ui.screenInfo();
                 m_gameState = GameState::MainMenu;
                 break;
@@ -109,7 +107,7 @@ void GameManager::endGame() {
 void GameManager::handleMainMenuInput(char input) {
     switch (input) {
         case '1':
-            m_gameState = GameState::Game;
+            //m_gameState = GameState::Game;
             break;
         case '2':
             m_gameState = GameState::InfoMenu;
