@@ -48,6 +48,8 @@ public:
     void screenMainMenu() const;
     // setting screen display
     void screenDebugOptions() const;
+    // info screen display
+    void screenInfo() const;
     // gameover screen display
     void screenGameOver() const;
     // debug color screen display
@@ -240,6 +242,8 @@ void UI::screenMainMenu() const {
     std::cout << menuText;
 }
 
+
+
 void UI::screenDebugOptions() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
@@ -263,6 +267,18 @@ void UI::screenDebugOptions() const {
               << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
     std::cout << "your choice: ";
+}
+
+void UI::screenInfo() const {
+    _pauseSystem();
+    _createStyledTextBox("In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess. But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield.");
+    _pauseSystem();
+    _createStyledTextBox("The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits.");
+    _createHorizontalLine('-');
+    std::cout << "CONTINUE TO THE GAME.. ";
+    //take any user input to continue to the game without prompting the user to press enter
+    char input;
+    std::cin >> input;
 }
 
 void UI::screenGameOver() const {
