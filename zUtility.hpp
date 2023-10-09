@@ -123,6 +123,6 @@ namespace z_debug {
         return ANSI_COLOR_CODES[RandomValue<int>(0, ANSI_COLOR_CODES->size())];
     }
 } // namespace z_debug
-    
+
 
 #endif // Z_UTILITY_HPP

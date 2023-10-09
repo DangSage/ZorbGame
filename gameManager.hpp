@@ -44,7 +44,7 @@ void GameManager::startGame() {
     // Initialize game objects
     
     m_zorbs.push_back(Zorb(0, 1, "Neep Narp"));
-    m_zorbs.at(0).SetAppearance(APPEARANCE_DEFAULT, ANSI_GREEN);
+    m_zorbs.at(0).SetAppearance(static_cast<appearanceEnum>(0), ANSI_GREEN);
     m_zorbs.push_back(Zorb(0)); // NPC zorb
     SortZorbsByTeamId();
 
