@@ -3,6 +3,8 @@
 
 #include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
 #include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
+#include <chrono>
+#include <Thread>
 
 namespace z_debug {
     void DisplayDebugColors() {
@@ -140,6 +142,7 @@ void _createStyledTextBox(const std::string& text) {
     // Calculate the vertical padding
     int topPadding = (boxHeight - UI::_countTextLines(text) - topMargin - bottomMargin) / 2;
     int bottomPadding = boxHeight - UI::_countTextLines(text) - topMargin - bottomMargin - topPadding;
+    int rightPadding;
 
     // Print top margin
     for (int i = 0; i < topMargin + topPadding; ++i) {
@@ -148,6 +151,7 @@ void _createStyledTextBox(const std::string& text) {
 
     std::istringstream iss(text);
     std::string line;
+    std::string part;
 
     while (std::getline(iss, line)) {
         // Split long lines into multiple lines to fit within the box DISPLAYWIDTH
@@ -155,21 +159,19 @@ void _createStyledTextBox(const std::string& text) {
             size_t lastSpace = line.rfind(' ', availableWidth);
             if (lastSpace == std::string::npos || lastSpace == 0) {
                 // No space found within the available DISPLAYWIDTH, split at the exact character
-                std::string part = line.substr(0, availableWidth);
+                part = line.substr(0, availableWidth);
                 line = line.substr(availableWidth);
-                int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
-                std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
             } else {
                 // Split at the last space within the available DISPLAYWIDTH
-                std::string part = line.substr(0, lastSpace);
+                part = line.substr(0, lastSpace);
                 line = line.substr(lastSpace + 1); // Skip the space
-                int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
-                std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
             }
+            rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
+            std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
         }
 
         // Calculate the remaining space on the right for the remaining part of the line
-        int rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(line);
+        rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(line);
 
         // Print the remaining part of the line or the short line, centered horizontally
         std::cout << "| " << std::string(rightPadding / 2, ' ') << line << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
