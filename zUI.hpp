@@ -256,7 +256,28 @@ void UI::screenDebugOptions() const {
         std::cout << std::left << std::setw(columnWidth) << option
                   << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
+    std::string debugArt = R"(
+    ` : | | | |:  ||  :     `  :  |  |+|: | : : :|   .        `              .
+         .' ':  ||  |:  |  '       ` || | : | |: : |   .  `           .   :.=
+         *    *       `  |  : :  |  .      ` ' :| | :| . : :         *   :.||
+        .    _o_            .    ` *|  || :       `    | | :| | :      |:| |
+.           <___> .          .        || |.: *          | || : :     :|||
+        .            .   . *    .   .  ` |||.  +        + '| |||  .  ||`
+    .             *              .     +:`|!             . ||||  :.||`
++       Where do we    .                ..!|*          . | :`||+ |||`
+    .     go from here?       +      : |||`        .| :| | | |.| ||`     .
+    *     +   '               +  :|| |`     :.+. || || | |:`|| `
+                            .      .||` .    ..|| | |: '` `| | |`  +
+.       +++                      ||        !|!: `       :| |
+            +         .      .    | .      `|||.:      .||    .      .    `
+        '                           `|.   .  `:|||   + ||'     `
+__    +      *                         `'       `'|.    `:
+"'  `---"""----....____,..^---`^``----.,.___          `.    `.  .    ____,.,-
+    ___,--'""`---"'   ^  ^ ^        ^       """'---,..___ __,..---""'
+--"')";
 
+    std::cout << debugArt << std::endl;
+    _createHorizontalLine('-');
     columnDisplay("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW) + '\t', "Other Options:");
     std::cout << std::endl;
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
