@@ -1,6 +1,10 @@
 
 # Zorb Game Project - Applying C++ Principles
 
+## Guidelines for JSON file (appearances.json)
+The appearances.json file is the main way that the game initializes Zorb appearances, or the way Zorbs look. You can simply copy and paste to add more Zorbs of your own design,
+but they MUST be 5x7 characters- otherwise the game WILL throw an exception.
+
 ## Overview
 The Zorb Game Project is a personal endeavor aimed at applying fundamental principles of C++ programming to develop a text-based terminal game. This will incorporate key concepts in object-oriented programming (OOP) including classes, functions, and modular code organization.
 

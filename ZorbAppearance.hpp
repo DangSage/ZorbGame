@@ -9,81 +9,50 @@
 
 using json = nlohmann::json;
 
-//region appearance enums and map
-enum appearanceEnum {
-    APPEARANCE_DEFAULT, // normal cat enum
-    APPEARANCE_ANGRY,   // angry cat enum
-    APPEARANCE_HAPPY,   // happy cat enum
-    APPEARANCE_WINK,    // winking cat enum
-    APPEARANCE_SLEEPY,  // sleepy cat enum
-    APPEARANCE_SNOTTY,  // snotty cat enum
-    APPEARANCE_MONEY,   // merchant cat enum
-    APPEARANCE_FOLD,    // scottish-fold cat enum
-    APPEARANCE_MONK,    // bald zorb enum
-    APPEARANCE_DEVIL,   // devil zorb enum
-    APPEARANCE_KNIGHT,  // knight zorb enum
-    APPEARANCE_WIZARD,  // wizard zorb enum
-    APPEARANCE_NINJA,   // ninja zorb enum
-    APPEARANCE_SILLY,   // silly zorb enum
-    APPEARANCE_SKEL,    // skeleton zorb enum
-    APPEARANCE_ZOMBIE,  // zombie zorb enum
-    APPEARANCE_VAMP,     // zamp zorb enum
+//region appearance enums and maps
+enum class appearanceEnum : int {};
 
-    // Placeholder for the total number of appearances
-    NUM_APPEARANCES
-};
-std::map<appearanceEnum, const std::string> appearanceNames = {
-    //All of these names must be 7 characters long and unique to the enum
-    {APPEARANCE_DEFAULT, "default"}, // normal cat enum
-    {APPEARANCE_ANGRY, "angrily"}   // angry cat enum
-    // {APPEARANCE_HAPPY, "happier"},   // happy cat enum
-    // {APPEARANCE_WINK, "winking"},    // winking cat enum
-    // {APPEARANCE_SLEEPY, "sleeper"},  // sleepy cat enum
-    // {APPEARANCE_SNOTTY, "snotter"},  // snotty cat enum
-    // {APPEARANCE_MONEY, "greeder"},   // merchant cat enum
-    // {APPEARANCE_FOLD, "foldear"},    // scottish-fold cat enum
-    // {APPEARANCE_MONK, "nirvana"},    // bald zorb enum
-    // {APPEARANCE_DEVIL, "hellish"},   // devil zorb enum
-    // {APPEARANCE_KNIGHT, "knighty"},  // knight zorb enum
-    // {APPEARANCE_WIZARD, "magical"},   // wizard zorb enum
-    // {APPEARANCE_NINJA, "sneaker"},   // ninja zorb enum
-    // {APPEARANCE_SILLY, "clownly"},   // silly zorb enum
-    // {APPEARANCE_SKEL, "skeletn"},    // skeleton zorb enum
-    // {APPEARANCE_ZOMBIE, "zombier"},  // zombie zorb enum
-    // {APPEARANCE_VAMP, "vampire"}     // zamp zorb enum
-};
-std::unordered_map<appearanceEnum, std::string> appearanceMap = {
-    {APPEARANCE_DEFAULT, 
-R"(       
-   o   
-./\|/\.
-( o.o )
- > ^ < )"},
-    {APPEARANCE_ANGRY, 
-R"(       
-   o   
-./\|/\.
-{(\./)}
- > ^ < )"}
-    };
-//endregion
+//create a dynamic enum for each appearance from the JSON file (appearance.json), and map it to a string of the appearance that can be called later to an integer
+std::map<appearanceEnum, std::string> appearanceMap;
+std::map<appearanceEnum, std::string> appearanceNames;
 
-// Reads appearances.json file and inserts every entry into appearanceEnum, and appearance & names maps
 void initAppearanceMaps() {
-    std::ifstream i("appearances.json");
+    std::ifstream file("appearances.json");
     json j;
-    i >> j;
-
-    // in the json file, the first entry is the 3rd appearance, so we start at 2 and go to the end and apply those names and appearances of each object in the JSON to the corresponding maps
-    for (int i = 2; i < j.size(); i++) {
-        appearanceNames.insert({ static_cast<appearanceEnum>(i), j[i]["name"] });
-        appearanceMap.insert({ static_cast<appearanceEnum>(i), j[i]["appearance"] });
+    file >> j;
+    int appNum = 0;
+    // Loop through the JSON array and add each appearance to the appearance map
+    for (auto& appearance : j) {
+        std::string appearanceString;
+        int lineCount = 0;
+        /* Example JSON entry:
+            "       ",
+            "   o   ",
+            "./\\|/\\.",
+            "( o.o )",
+            " > ^ < "
+        ]
+        */
+        for (auto& line : appearance["appearance"]) {
+            if (static_cast<std::string>(line).length() != ZORBWIDTH) { //exception handling for invalid appearance width
+                std::cout << ANSI_YELLOW << "EXCEPTION: appearance width != to ZORBWIDTH, initalization error." << std::endl
+                << "\tLine: " << lineCount << " of enum " << appearance["enum"] << std::endl
+                << "\tAppearance width: " << static_cast<std::string>(line).length() << ANSI_RESET << std::endl;
+                exit(0);
+            }
+            appearanceString += line;
+            appearanceString += "\n";
+            lineCount++;
+        }
+        appearanceMap[static_cast<appearanceEnum>(appNum)] = appearanceString;
+        appearanceNames[static_cast<appearanceEnum>(appNum)] = appearance["name"];
+        appNum++;
     }
 }
 
 class ZorbAppearance {
 public:
-    ZorbAppearance() { SetAppearance(APPEARANCE_DEFAULT); z_debug::zorbAppearanceCount++; } //default constructor
+    ZorbAppearance() { SetAppearance(static_cast<appearanceEnum>(0)); z_debug::zorbAppearanceCount++; } //default constructor
     ZorbAppearance(appearanceEnum _enum, std::string _color = "") { 
         ZorbAppearance();
         SetAppearance(_enum, _color); 
@@ -120,13 +89,6 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         std::string line;
 
         while (std::getline(iss, line)) {
-            if(line.size() > ZORBWIDTH || line.size() < ZORBWIDTH)
-            {
-                std::cout << "EXCEPTION: appearance not set, line width error (ZorbAppearance::SetAppearance)" << std::endl;
-                std::cout << "Character associated w/ enum " << static_cast<int>(_enum) << ' ' << std::to_string(_enum) << std::endl;
-                //remember that the enum 0-1 are indexed, so check the JSON file for the correct enum
-                exit(0);
-            }
             _appearance += COLOR;
             _appearance += line;
             if(COLOR != "")
@@ -137,7 +99,7 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         color = COLOR;
     } else {
         std::cout << "EXCEPTION: appearance not set, invalid enum. (ZorbAppearance::SetAppearance)" << std::endl
-            << "No appearance set for enum " << static_cast<int>(_enum) << ' ' << std::to_string(_enum) << std::endl;
+            << "No appearance set for enum " << static_cast<int>(_enum) << std::endl;
         exit(0);
     }
 }
