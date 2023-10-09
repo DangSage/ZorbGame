@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "gameDefs.hpp"
 
+//region appearance enums and map
 enum appearanceEnum {
     APPEARANCE_DEFAULT, // normal cat enum
     APPEARANCE_HAPPY,   // happy cat enum
@@ -29,7 +30,6 @@ enum appearanceEnum {
     // Placeholder for the total number of appearances
     NUM_APPEARANCES
 };
-
 std::map<appearanceEnum, const std::string> appearanceNames = {
     //All of these names must be 7 characters long and unique to the enum
     {APPEARANCE_DEFAULT, "default"}, // normal cat enum
@@ -50,6 +50,7 @@ std::map<appearanceEnum, const std::string> appearanceNames = {
     {APPEARANCE_ZOMBIE, "zombier"},  // zombie zorb enum
     {APPEARANCE_VAMP, "vampire"}     // zamp zorb enum
 };
+//endregion
 
 class ZorbAppearance {
 public:
@@ -180,6 +181,7 @@ R"(
     };
 };
 
+//region ZorbAppearance Functions
 void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
 {
     // Check if the specified appearanceEnum exists in the map
@@ -214,7 +216,6 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         exit(0);
     }
 }
-
 std::string ZorbAppearance::GetAppearance() const
 {
     if(currentAppearance == "")
@@ -225,6 +226,6 @@ std::string ZorbAppearance::GetAppearance() const
     }
     return currentAppearance;
 }
-
+//endregion
 
 #endif // ZORBAPPEARANCE_HPP

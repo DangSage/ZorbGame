@@ -34,6 +34,7 @@ namespace z_debug {
         return std::string(spaces, ' ');
     }
     
+    // Function to get the length of a string without counting escape codes
     size_t GetLengthWithoutEscapeCodes(const std::string& input) {
         size_t length = 0;
         bool inEscape = false;
@@ -54,6 +55,7 @@ namespace z_debug {
         }
         return length;
     }
+
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString) {
         std::vector<std::string> lines;
@@ -66,6 +68,7 @@ namespace z_debug {
 
         return lines;
     }
+
     // Function to center-align a string within a given width
     std::string CenterAlignString(const std::string& input, int width) {
         std::string output;
@@ -78,6 +81,7 @@ namespace z_debug {
         return output;
     }
 
+    // Function to print a string with color and reset color codes
     void PrintFormattedText(const std::string& text, const std::string& color = "") {
         if (!color.empty()) {
             std::cout << color;
@@ -85,6 +89,7 @@ namespace z_debug {
         std::cout << text << ANSI_RESET;
     }
 
+    // Function to return a string with colors and color reset codes
     std::string FormattedText(const std::string& text, const std::string& color = "") {
         if (!color.empty())
             return color + text + ANSI_RESET;   // Wrap the text with the specified color codes
@@ -95,6 +100,7 @@ namespace z_debug {
         }
     }
 
+    // Returns the static number of objects in memory
     void CountGameObjectsInMemory() {
         std::cout << zorbCount << " Zorb Object(s) in Memory" << std::endl;
         std::cout << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl;

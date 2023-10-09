@@ -63,13 +63,7 @@ void GameManager::startGame() {
             case GameState::Game:
                 break;
             case GameState::InfoMenu:
-                _clearScreen();
-                _createStyledTextBox("In the furthest reaches of the cosmos, in a galaxy far, far away, there existed a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare.");
-                _pauseSystem();
-                std::cout << std::endl;
-                _createStyledTextBox("This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos.");
-                std::cout << m_zorbs.at(0) << std::endl;
-                m_ui.screenInfo();
+                m_ui.screenInfo(m_zorbs);
                 m_gameState = GameState::MainMenu;
                 break;
             case GameState::GameOver:
@@ -91,7 +85,6 @@ void GameManager::startGame() {
     _createStyledTextBox(asciiArt+"\n<3 Thank you for playing Zorb Zenith! <3\nMay you attain your own inner zen!\n\n-Dang");
     _pauseSystem();
 }
-
 void GameManager::endGame() {
     // Clean up game objects
     z_debug::CountGameObjectsInMemory();
@@ -100,7 +93,6 @@ void GameManager::endGame() {
     m_playerZorbs.clear();
     m_enemyZorbs.clear();
 }
-
 //endregion
 
 //region Input Handling
@@ -125,7 +117,6 @@ void GameManager::handleMainMenuInput(char input) {
             break;
     }
 }
-
 void GameManager::handleOptionsMenuInput(char input) {
     switch (input) {
         case '1':
@@ -148,7 +139,6 @@ void GameManager::handleOptionsMenuInput(char input) {
             break;
     }
 }
-
 void GameManager::handleGameOverInput(char input) {
     endGame();
     switch (input) {
@@ -178,7 +168,6 @@ void GameManager::SortZorbsByTeamId() {
         }
     }
 }
-
 //have a function that generates a random zorb
 void GameManager::GenerateZorb(int team_id) {
     //randomly generate the power for this zorb object
