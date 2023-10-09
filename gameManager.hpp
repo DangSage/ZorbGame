@@ -5,7 +5,10 @@
 
 class GameManager {
 public:
-    GameManager(UI& ui) : m_ui(ui) { ForceTerminal(); } //default constructor, initialize game manager with a UI object & force terminal
+    GameManager(UI& ui) : m_ui(ui) { 
+        ForceTerminal();
+        initAppearanceMaps();
+    } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
 
     void startGame();
     void endGame();
@@ -39,7 +42,7 @@ private:
 //region GameManager Functions
 void GameManager::startGame() {
     // Initialize game objects
-    //initialize one Zorb object that is a default green zorb named "Neep Narp" that is pushed back into the vector of Zorbs
+    
     m_zorbs.push_back(Zorb(0, 1, "Neep Narp"));
     m_zorbs.at(0).SetAppearance(APPEARANCE_DEFAULT, ANSI_GREEN);
     m_zorbs.push_back(Zorb(0)); // NPC zorb

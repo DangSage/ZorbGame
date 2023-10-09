@@ -115,7 +115,8 @@ namespace z_debug {
             return;
         }
         else if(i > NUM_APPEARANCES || i < 0) {
-            std::cout << "Invalid number of appearances to print" << std::endl;
+            std::cout << "Invalid number of appearances to print" << std::endl
+                << "current number of appearances: " << NUM_APPEARANCES << std::endl;
             return;
         }
         ZorbAppearance _debugappearance;
