@@ -22,7 +22,7 @@
 #include <string>
 
 // define size of display limit
-#define CONSOLESIZE 70
+#define CONSOLESIZE 80
 #define ZORBWIDTH 7
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
