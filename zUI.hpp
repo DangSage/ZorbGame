@@ -3,8 +3,6 @@
 
 #include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
 #include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
-#include <chrono>
-#include <Thread>
 
 namespace z_debug {
     void DisplayDebugColors() {
@@ -165,11 +163,7 @@ void _createStyledTextBox(const std::string& text) {
             }
             rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
             std::cout << "| " << std::string(rightPadding / 2, ' ');
-            for (const auto& c : part) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(25));
-                std::cout << c;
-                std::cout.flush();
-            } 
+            std::cout << part;
             std::cout << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
         }
 
@@ -197,6 +191,8 @@ void _createDivider(char borderChar) {
 //region screen Display Functions
 void UI::SetDisplayFormat(DisplayFormat format) {
     if (currentFormat == format) {
+        std::cout << z_debug::FormattedText("Display format is already set to " + GetDisplayFormatAsString(), ANSI_YELLOW) << std::endl;
+        z_debug::clearInputBuffer();
         return; // no need to change the format if it's already set
     }
 
@@ -260,32 +256,8 @@ void UI::screenDebugOptions() const {
         std::cout << std::left << std::setw(columnWidth) << option
                   << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
-    std::string debugArt = R"(
-  ` : | | | |:  ||  :     `  :  |  |+|: | : : :|   .        `              .
-      ` : | :|  ||  |:  :    `  |  | :| : | : |:   |  .                    :
-         .' ':  ||  |:  |  '       ` || | : | |: : |   .  `           .   :.
-                `'  ||  |  ' |   *    ` : | | :| |*|  :   :               :|
-        *    *       `  |  : :  |  .      ` ' :| | :| . : :         *   :.||
-             .`            | |  |  : .:|       ` | || | : |: |          | ||
-      '          .         + `  |  :  .: .         '| | : :| :    .   |:| ||
-         .                 .    ` *|  || :       `    | | :| | :      |:| |
- .                .          .        || |.: *          | || : :     :|||
-        .            .   . *    .   .  ` |||.  +        + '| |||  .  ||`
-     .             *              .     +:`|!             . ||||  :.||`
- +                      .                ..!|*          . | :`||+ |||`
-     .                         +      : |||`        .| :| | | |.| ||`     .
-       *     +   '               +  :|| |`     :.+. || || | |:`|| `
-                            .      .||` .    ..|| | |: '` `| | |`  +
-  .       +++                      ||        !|!: `       :| |
-              +         .      .    | .      `|||.:      .||    .      .    `
-          '         ___   pick your    `|.   .  `:|||   + ||'     `
-  __    +      *  _[|=|]_  < settings!    `'       `'|.    `:
-"'  `---"""----...( ^.^ ).._--`^``----.,.___           `.    `.  .    ____,.,-
-    ___,--'""`---"o> ^ <n  ^        ^       """'---,..___ __,..---""'
---"'                        ^                         ``--..,__  ^`
-    )";
 
-    std::cout << debugArt << std::endl;
+    std::cout << z_art::optionsScreen << std::endl;
     _createHorizontalLine('-');
     columnDisplay("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW) + '\t', "Other Options:");
     std::cout << std::endl;
@@ -300,45 +272,34 @@ void UI::screenDebugOptions() const {
     std::cout << "Enter your choice: ";
 }
 void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
-    std::string asciiArt = R"(
-        .              +   .                .   . .     .  .
-                   .                    .       .     *
-  .       *                        . . . .  .   .  + .
-            "You Are Here"            .   .  +  . . .
-.                 |             .  .   .    .    . .
-                  |           .     .     . +.    +  .
-                 \|/            .       .   . .
-        . .       V          .    * . . .  .  +   .
-           +      .           .   .      +
-                            .       . +  .+. .
-  .                      .     . + .  . .     .      .
-           .      .    .     . .   . . .        ! /
-      *             .    . .  +    .  .       - O -
-          .     .    .  +   . .  *  .       . / |
-               . + .  .  .  .. +  .
-.      .  .  .  *   .  *  . +..  .            *
- .      .   . .   .   .   . .  +   .    .            +)";
-    //define a lamba function that checks user input. If it is not a newline, then return false
-    auto checkForNewline = [](char input) {
-        if(input != '\n') return false;
-        return true;
+    const std::vector<std::string> introductionText = {
+        "In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...",
+        "This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos...",
+        "In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess.  But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield...",
+        "The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits..."
     };
     
+    _createStyledTextBox("Press any character to skip, other press enter to continue.");
+    if (z_debug::clearInputBuffer() != '\n') {
+        return;
+    }
+    
+    bool firstIteration = true;
+    for (const auto& text : introductionText) {
+        _clearScreen();
+        if (firstIteration) {
+            std::cout << z_art::introSpace << std::endl;
+            firstIteration = false;
+        }
+        else 
+            std::cout << zorbs.at(0) << std::endl;
+        _createStyledTextBox(text);
+        _createHorizontalLine('-');
+        _pauseSystem();
+    }
     _clearScreen();
-    std::cout << asciiArt << "\nPress any character to skip, other press enter to continue." << std::endl;
-    _createStyledTextBox("In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...");
-    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
-    _clearScreen();
-    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
-    _createStyledTextBox("This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos...");
-    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
-    _clearScreen();
-    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
-    _createStyledTextBox("In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess.  But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield...");
-    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
-    _clearScreen();
-    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
-    _createStyledTextBox("The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits...");
+    std::cout << z_art::introSpace << std::endl;
+    _createStyledTextBox("The galaxy is waiting for you, commander. Are you ready to lead the Zorbs to victory?");
     _createHorizontalLine('-');
     std::cout << "CONTINUE TO THE MAIN MENU: ";
     _pauseSystem();
