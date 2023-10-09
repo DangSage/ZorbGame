@@ -102,8 +102,19 @@ namespace z_debug {
 
     // Returns the static number of objects in memory
     void CountGameObjectsInMemory() {
-        std::cout << zorbCount << " Zorb Object(s) in Memory" << std::endl;
-        std::cout << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl;
+        std::cout << ANSI_YELLOW << std::endl
+        << zorbCount << " Zorb Object(s) in Memory" << std::endl
+        << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl
+        //reset color and end of zorb objects
+        << ANSI_RESET << std::endl;
+    }
+
+    // Clears the input buffer to prevent any UI errors and returns the first discarded character
+    char clearInputBuffer() {
+        std::cin.clear(); // clear any error flags
+        char discardedChar = std::cin.get(); // read and return the first discarded character
+        std::cin.ignore(1, '\n'); // read and discard remaining characters until newline
+        return discardedChar;
     }
 
     // GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
