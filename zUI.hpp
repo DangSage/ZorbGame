@@ -51,7 +51,7 @@ public:
     // setting screen display
     void screenDebugOptions() const;
     // info screen display
-    void screenInfo() const;
+    void screenInfo(const std::vector<Zorb>& zorbs) const;
     // gameover screen display
     void screenGameOver() const;
     // debug color screen display
@@ -82,6 +82,7 @@ private:
     UI& operator=(const UI&) = delete;
 };
 
+//region UI Utility Functions
 void _clearScreen() {
     std::cout << std::right << std::setw(0);
     // Code for clearing the screen (platform-dependent)
@@ -91,7 +92,6 @@ void _clearScreen() {
         system("clear"); // Linux and macOS
     #endif
 }
-
 void _pauseSystem() {
     // Code for pausing the system (platform-dependent)
     #ifdef _WIN32
@@ -101,7 +101,6 @@ void _pauseSystem() {
         std::cin.get();
     #endif
 }
-
 int UI::_countTextLines(const std::string& text) {
     int lineCount = 0;
     std::istringstream iss(text);
@@ -111,7 +110,6 @@ int UI::_countTextLines(const std::string& text) {
     }
     return lineCount;
 }
-
 void UI::_createHorizontalLine(char borderChar) {
     for (int i = 0; i < DISPLAYWIDTH; ++i) {
         if(i==0 || i==(DISPLAYWIDTH-1))
@@ -121,7 +119,6 @@ void UI::_createHorizontalLine(char borderChar) {
     }
     std::cout << "\n";
 }
-
 void _createStyledTextBox(const std::string& text) {
     int topMargin = 1,
         bottomMargin = 1;
@@ -167,7 +164,13 @@ void _createStyledTextBox(const std::string& text) {
                 line = line.substr(lastSpace + 1); // Skip the space
             }
             rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
-            std::cout << "| " << std::string(rightPadding / 2, ' ') << part << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
+            std::cout << "| " << std::string(rightPadding / 2, ' ');
+            for (const auto& c : part) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(25));
+                std::cout << c;
+                std::cout.flush();
+            } 
+            std::cout << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
         }
 
         // Calculate the remaining space on the right for the remaining part of the line
@@ -181,17 +184,17 @@ void _createStyledTextBox(const std::string& text) {
     for (int i = 0; i < bottomMargin + bottomPadding; ++i) {
         std::cout << "| " << std::setw(UI::DISPLAYWIDTH - 1) << " |\n";
     }
-
     // Bottom border
     UI::_createHorizontalLine('~');
 }
-
 void _createDivider(char borderChar) {
     for (int i = 0; i < (UI::DISPLAYWIDTH/2); ++i)
             std::cout << borderChar;
     std::cout << std::endl;
 }
+//end region
 
+//region screen Display Functions
 void UI::SetDisplayFormat(DisplayFormat format) {
     if (currentFormat == format) {
         return; // no need to change the format if it's already set
@@ -213,18 +216,18 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     //clear the vector sample with the deconstructor
     sample.clear();
 }
-
 void UI::screenMainMenu() const {
     _clearScreen();
     _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\nhttps://github.com/DangSage/ZorbGame");
     // Define the title text
-    std::string titleText =
-        "\n  __________         ___.      __________            .__  __  .__     \n"
-        "  \\____    /__________\\ |__    \\____    /____   ____ |__|/  |_|  |__  \n"
-        "    /     //  _ \\_  __ \\ __ \\    /     // __ \\ /    \\|  \\   __\\  |  \\ \n"
-        "   /     /(  <_> )  | \\/ \\_\\ \\  /     /\\  ___/|   |  \\  ||  | |   Y  \\\n"
-        "  /_______ \\____/|__|  |___  / /_______ \\___  >___|  /__||__| |___|  /\n"
-        "          \\/               \\/          \\/   \\/     \\/              \\/ ";
+    std::string titleText = R"(
+_/\____/\_             ___.      __________  O            .__   __   .__     
+\____    / ____ _______\_ |__    \____    / _|__    ____  |__|_/  |_ |  |__  
+  /     / /  _ \\_  __ \| __ \     /     /_/ __ \  /    \ |  |\   __\|  |  \ 
+ /     /_(  <_> )|  | \/| \_\ \   /     /_\  ___/ |   |  \|  | |  |  |   Y  \
+/_______ \\____/ |__|   |___  /  /_______ \\___  >|___|  /|__| |__|  |___|  /
+        \/                  \/            \/    \/      \/                 \/ 
+)";
     
     titleText = z_debug::CenterAlignString(titleText, DISPLAYWIDTH);
 
@@ -246,7 +249,6 @@ void UI::screenMainMenu() const {
     _createHorizontalLine('-');
     std::cout << "Enter your choice: ";
 }
-
 void UI::screenDebugOptions() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
@@ -259,24 +261,29 @@ void UI::screenDebugOptions() const {
                   << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
     std::string debugArt = R"(
-    ` : | | | |:  ||  :     `  :  |  |+|: | : : :|   .        `              .
-         .' ':  ||  |:  |  '       ` || | : | |: : |   .  `           .   :.=
-         *    *       `  |  : :  |  .      ` ' :| | :| . : :         *   :.||
-        .    _o_            .    ` *|  || :       `    | | :| | :      |:| |
-.           <___> .          .        || |.: *          | || : :     :|||
+  ` : | | | |:  ||  :     `  :  |  |+|: | : : :|   .        `              .
+      ` : | :|  ||  |:  :    `  |  | :| : | : |:   |  .                    :
+         .' ':  ||  |:  |  '       ` || | : | |: : |   .  `           .   :.
+                `'  ||  |  ' |   *    ` : | | :| |*|  :   :               :|
+        *    *       `  |  : :  |  .      ` ' :| | :| . : :         *   :.||
+             .`            | |  |  : .:|       ` | || | : |: |          | ||
+      '          .         + `  |  :  .: .         '| | : :| :    .   |:| ||
+         .                 .    ` *|  || :       `    | | :| | :      |:| |
+ .                .          .        || |.: *          | || : :     :|||
         .            .   . *    .   .  ` |||.  +        + '| |||  .  ||`
-    .             *              .     +:`|!             . ||||  :.||`
-+       Where do we    .                ..!|*          . | :`||+ |||`
-    .     go from here?       +      : |||`        .| :| | | |.| ||`     .
-    *     +   '               +  :|| |`     :.+. || || | |:`|| `
+     .             *              .     +:`|!             . ||||  :.||`
+ +                      .                ..!|*          . | :`||+ |||`
+     .                         +      : |||`        .| :| | | |.| ||`     .
+       *     +   '               +  :|| |`     :.+. || || | |:`|| `
                             .      .||` .    ..|| | |: '` `| | |`  +
-.       +++                      ||        !|!: `       :| |
-            +         .      .    | .      `|||.:      .||    .      .    `
-        '                           `|.   .  `:|||   + ||'     `
-__    +      *                         `'       `'|.    `:
-"'  `---"""----....____,..^---`^``----.,.___          `.    `.  .    ____,.,-
-    ___,--'""`---"'   ^  ^ ^        ^       """'---,..___ __,..---""'
---"')";
+  .       +++                      ||        !|!: `       :| |
+              +         .      .    | .      `|||.:      .||    .      .    `
+          '         ___   pick your    `|.   .  `:|||   + ||'     `
+  __    +      *  _[|=|]_  < settings!    `'       `'|.    `:
+"'  `---"""----...( ^.^ ).._--`^``----.,.___           `.    `.  .    ____,.,-
+    ___,--'""`---"o> ^ <n  ^        ^       """'---,..___ __,..---""'
+--"'                        ^                         ``--..,__  ^`
+    )";
 
     std::cout << debugArt << std::endl;
     _createHorizontalLine('-');
@@ -292,19 +299,50 @@ __    +      *                         `'       `'|.    `:
     _createHorizontalLine('-');
     std::cout << "Enter your choice: ";
 }
-
-void UI::screenInfo() const {
-    _pauseSystem();
-    std::cout << "\n" << std::endl;
-    _createStyledTextBox("In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess. But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield.");
-    _pauseSystem();
-    std::cout << "\n" << std::endl;
-    _createStyledTextBox("The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits.");
+void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
+    std::string asciiArt = R"(
+        .              +   .                .   . .     .  .
+                   .                    .       .     *
+  .       *                        . . . .  .   .  + .
+            "You Are Here"            .   .  +  . . .
+.                 |             .  .   .    .    . .
+                  |           .     .     . +.    +  .
+                 \|/            .       .   . .
+        . .       V          .    * . . .  .  +   .
+           +      .           .   .      +
+                            .       . +  .+. .
+  .                      .     . + .  . .     .      .
+           .      .    .     . .   . . .        ! /
+      *             .    . .  +    .  .       - O -
+          .     .    .  +   . .  *  .       . / |
+               . + .  .  .  .. +  .
+.      .  .  .  *   .  *  . +..  .            *
+ .      .   . .   .   .   . .  +   .    .            +)";
+    //define a lamba function that checks user input. If it is not a newline, then return false
+    auto checkForNewline = [](char input) {
+        if(input != '\n') return false;
+        return true;
+    };
+    
+    _clearScreen();
+    std::cout << asciiArt << "\nPress any character to skip, other press enter to continue." << std::endl;
+    _createStyledTextBox("In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...");
+    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
+    _clearScreen();
+    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
+    _createStyledTextBox("This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos...");
+    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
+    _clearScreen();
+    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
+    _createStyledTextBox("In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess.  But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield...");
+    if(!checkForNewline(std::cin.get())) return; // check for user input and return if any character is entered
+    _clearScreen();
+    std::cout << zorbs.at(0)  << "\nPress any character to skip, other press enter to continue." << std::endl;;
+    _createStyledTextBox("The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits...");
     _createHorizontalLine('-');
     std::cout << "CONTINUE TO THE MAIN MENU: ";
     _pauseSystem();
 }
-
 void UI::screenGameOver() const {
     _clearScreen();
     _createStyledTextBox("GAME OVER! R.I.P. To your last Zorb :(");
@@ -323,13 +361,14 @@ void UI::screenGameOver() const {
     _createHorizontalLine('-');
     std::cout << "your choice: ";
 }
-
 void UI::screenDebugColors() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
     z_debug::DisplayDebugColors();
 }
+//end region
 
+//region Zorb display functions
 void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
     switch (currentFormat) {
         case TABLE:
@@ -348,7 +387,6 @@ void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
             std::cout << "Invalid display format\n";
     }
 }
-
 void UI::DisplayZorb(const Zorb& zorb) {
     switch (currentFormat) {
         case TABLE:
@@ -367,7 +405,6 @@ void UI::DisplayZorb(const Zorb& zorb) {
             std::cout << "Invalid display format\n";
     }
 }
-
 std::string UI::GetDisplayFormatAsString() const {
     switch (currentFormat) {
         case TABLE:
@@ -399,7 +436,6 @@ void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) {
     _createDivider('-');
     std::cout << std::right << std::setw(0);
 }
-
 void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
@@ -454,7 +490,6 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
         }
     }
 }
-
 void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
     for (const Zorb& zorb : zorbs) {
         std::cout << "Zorb Name: " << zorb.GetName() << "\n";
@@ -463,7 +498,6 @@ void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
         std::cout << "\n";
     }
 }
-
 void UI::ZorbDisplayWithColor(const std::vector<Zorb>& zorbs) {
     std::cout << "DISPLAY WITH COLOR:\n";
 
@@ -478,4 +512,5 @@ void UI::ZorbDisplayWithColor(const std::vector<Zorb>& zorbs) {
         std::cout << "\n";
     }
 }
+//end region
 #endif // Z_UI_HPP

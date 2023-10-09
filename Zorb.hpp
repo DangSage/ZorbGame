@@ -62,8 +62,6 @@ private:
     ZorbAppearance appearance;
 };
 
-// IMPLEMENTATIONS AFTER THIS POINT //
-
 // Overload the insertion operator
 std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     // Display the Zorb as ASCII art
