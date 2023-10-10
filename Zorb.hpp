@@ -37,7 +37,6 @@ public:
     // Default destructor
     ~Zorb() {
         z_debug::zorbCount--;
-        appearance.~ZorbAppearance();
     }
 
     // Accessor functions
