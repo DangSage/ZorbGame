@@ -14,7 +14,7 @@ int dmain() {
     std::cout << "There are " << appearanceMap.size() << " Zorb Appearances" << std::endl;
     std::cout << "There are " << appearanceNames.size() << " Zorb Names" << std::endl;
 
-    z_debug::PrintZorbAppearances(true, ANSI_GREEN);
+    z_debug::PrintZorbAppearances(appearanceMap.size(), true, ANSI_GREEN);
 
     return 0;
 }
