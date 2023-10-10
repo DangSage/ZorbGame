@@ -5,8 +5,13 @@
     #include <Windows.h>
 #endif
 
+#include <iostream> // Include necessary standard library headers
+#include <iomanip>
+#include <vector>
+#include <string>
+
 // Define ANSI color escape codes as macros
-#define ANSI_RESET "\x1B[0m"
+static std::string ANSI_RESET = "\x1B[0m";
 #define ANSI_BLACK "\x1B[30m"
 #define ANSI_RED "\x1B[31m"
 #define ANSI_GREEN "\x1B[32m"
@@ -15,11 +20,6 @@
 #define ANSI_MAGENTA "\x1B[35m"
 #define ANSI_CYAN "\x1B[36m"
 #define ANSI_WHITE "\x1B[37m"
-
-#include <iostream> // Include necessary standard library headers
-#include <iomanip>
-#include <vector>
-#include <string>
 
 // define size of display limit
 #define CONSOLESIZE 85
@@ -52,6 +52,20 @@ void ChangeFont(int spacing) {
     #endif
 }
 
+void ChangeConsoleTheme(bool isLightTheme) {
+    //set the background color of the console and the text color depending on the theme
+    if (isLightTheme) {
+        system("color F0");
+        //set ANSI_RESET to black on white
+        ANSI_RESET = "\x1B[30m";
+    } else {
+        system("color 07");
+        //set ANSI_RESET to white on black
+        ANSI_RESET = "\x1B[37m";
+    }
+    
+}
+
 //function that forces the terminal to have borders and a title
 void ForceTerminalBorder() {    //make the text and console thinner like the terminal console in VSC
     #ifdef _WIN32
@@ -67,6 +81,7 @@ void ForceTerminalBorder() {    //make the text and console thinner like the ter
 void ForceTerminal() {
     ForceTerminalBorder();
     ForceTerminalColor();
+    ChangeConsoleTheme(true);
 }
 
 
