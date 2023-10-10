@@ -1,0 +1,189 @@
+[
+    {
+        "appearance": [
+            "       ",
+            "   o   ",
+            "./\\|/\\.",
+            "( o.o )",
+            " > ^ < "
+        ],
+        "name": "normal",
+        "enum": "APPEARANCE_DEFAULT"
+    },
+    {
+        "appearance": [
+            "       ",
+            "   o   ",
+            "./\\|/\\.",
+            "{(\\./)}",
+            " > ^ < "
+        ],
+        "name": "angrier",
+        "enum": "APPEARANCE_ANGRY"
+    },    
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( ^.^ )",
+        " > ^ < "
+        ],
+        "name": "happy",
+        "enum": "APPEARANCE_HAPPY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o.^ )",
+        " > u < "
+        ],
+        "name": "winky",
+        "enum": "APPEARANCE_WINK"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( =,= )",
+        "Zzz^ < "
+        ],
+        "name": "zleepy",
+        "enum": "APPEARANCE_SLEEPY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o,o )",
+        " > ^ < "
+        ],
+        "name": "znotty",
+        "enum": "APPEARANCE_SNOTTY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( $.$ )",
+        " > u < "
+        ],
+        "name": "money",
+        "enum": "APPEARANCE_MONEY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        ".n_|_n.",
+        "( o.o )",
+        " > ^ < "
+        ],
+        "name": "folder",
+        "enum": "APPEARANCE_FOLD"
+    },
+    {
+        "appearance": [
+        "       ",
+        "       ",
+        " _---_ ",
+        "( v.v )",
+        "H> ^ <n"
+        ],
+        "name": "monkely",
+        "enum": "APPEARANCE_MONK"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  _*_  ",
+        "./|-|\\.",
+        "( @.@ )",
+        "=> v <="
+        ],
+        "name": "devil",
+        "enum": "APPEARANCE_DEVIL"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   V   ",
+        "./\\|/\\.",
+        "|\\\\|//)",
+        "T> u < "
+        ],
+        "name": "knight",
+        "enum": "APPEARANCE_KNIGHT"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  ,/^\\_",
+        "_/___{_",
+        "( o.o T",
+        " > W <|"
+        ],
+        "name": "wizard",
+        "enum": "APPEARANCE_WIZARD"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "([o.o])",
+        " >   < "
+        ],
+        "name": "Ninja",
+        "enum": "APPEARANCE_NINJA"
+    },
+    {
+        "appearance": [
+        "       ",
+        ".( - ).",
+        "(/\\|/\\)",
+        "(.oCo.)",
+        " > = < "
+        ],
+        "name": "Silly",
+        "enum": "APPEARANCE_SILLY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   .   ",
+        "./\\|/\\.",
+        "< 0+0 >",
+        " >)w(< "
+        ],
+        "name": "Skel",
+        "enum": "APPEARANCE_SKEL"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "(#o.0 )",
+        " >_C#< "
+        ],
+        "name": "Zombie",
+        "enum": "APPEARANCE_ZOMBIE"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o^o )",
+        "^>v v<^"
+        ],
+        "name": "Vamp",
+        "enum": "APPEARANCE_VAMP"
+    }
+]

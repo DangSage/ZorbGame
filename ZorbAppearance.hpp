@@ -4,64 +4,61 @@
 #include <map>
 #include <unordered_map>
 #include "gameDefs.hpp"
+#include "json.hpp"
+#include <fstream>
 
-//region appearance enums and map
-enum appearanceEnum {
-    APPEARANCE_DEFAULT, // normal cat enum
-    APPEARANCE_HAPPY,   // happy cat enum
-    APPEARANCE_WINK,    // winking cat enum
-    APPEARANCE_SLEEPY,  // sleepy cat enum
-    APPEARANCE_SNOTTY,  // snotty cat enum
-    APPEARANCE_ANGRY,   // angry cat enum
-    APPEARANCE_MONEY,   // merchant cat enum
-    APPEARANCE_FOLD,    // scottish-fold cat enum
-    APPEARANCE_MONK,    // bald zorb enum
-    APPEARANCE_DEVIL,   // devil zorb enum
-    APPEARANCE_KNIGHT,  // knight zorb enum
-    APPEARANCE_WIZARD,  // wizard zorb enum
-    APPEARANCE_NINJA,   // ninja zorb enum
-    APPEARANCE_SILLY,   // silly zorb enum
-    APPEARANCE_SKEL,    // skeleton zorb enum
-    APPEARANCE_ZOMBIE,  // zombie zorb enum
-    APPEARANCE_VAMP,     // zamp zorb enum
-    //generate some more appearances enums here using the naming scheme APPEARANCE_<NAME>
+using json = nlohmann::json;
 
+//region appearance enums and maps
+enum class appearanceEnum : int {}; //dynamic enum for appearance
+std::map<appearanceEnum, std::string> appearanceMap; //map of appearance enums to appearance strings
+std::map<appearanceEnum, std::string> appearanceNames; //map of appearance enums to names
 
-    // Placeholder for the total number of appearances
-    NUM_APPEARANCES
-};
-std::map<appearanceEnum, const std::string> appearanceNames = {
-    //All of these names must be 7 characters long and unique to the enum
-    {APPEARANCE_DEFAULT, "default"}, // normal cat enum
-    {APPEARANCE_HAPPY, "happier"},   // happy cat enum
-    {APPEARANCE_WINK, "winking"},    // winking cat enum
-    {APPEARANCE_SLEEPY, "sleeper"},  // sleepy cat enum
-    {APPEARANCE_SNOTTY, "snotter"},  // snotty cat enum
-    {APPEARANCE_ANGRY, "angrily"},   // angry cat enum
-    {APPEARANCE_MONEY, "greeder"},   // merchant cat enum
-    {APPEARANCE_FOLD, "foldear"},    // scottish-fold cat enum
-    {APPEARANCE_MONK, "nirvana"},    // bald zorb enum
-    {APPEARANCE_DEVIL, "hellish"},   // devil zorb enum
-    {APPEARANCE_KNIGHT, "knighty"},  // knight zorb enum
-    {APPEARANCE_WIZARD, "magical"},   // wizard zorb enum
-    {APPEARANCE_NINJA, "sneaker"},   // ninja zorb enum
-    {APPEARANCE_SILLY, "clownly"},   // silly zorb enum
-    {APPEARANCE_SKEL, "skeletn"},    // skeleton zorb enum
-    {APPEARANCE_ZOMBIE, "zombier"},  // zombie zorb enum
-    {APPEARANCE_VAMP, "vampire"}     // zamp zorb enum
-};
+//initialize appearance maps
+void initAppearanceMaps() {
+    std::ifstream file("appearances.json");
+    json j;
+    file >> j;
+    int appNum = 0;
+    // Loop through the JSON array and add each appearance to the appearance map
+    for (auto& appearance : j) {
+        std::string appearanceString;
+        int lineCount = 0;
+        /* Example JSON entry:
+            "       ",
+            "   o   ",
+            "./\\|/\\.",
+            "( o.o )",
+            " > ^ < "
+        ]
+        */
+        for (auto& line : appearance["appearance"]) {
+            if (static_cast<std::string>(line).length() != ZORBWIDTH) { //exception handling for invalid appearance width
+                std::cout << ANSI_YELLOW << "EXCEPTION: appearance width != to ZORBWIDTH, initalization error." << std::endl
+                << "\tLine: " << lineCount << " of enum " << appearance["enum"] << std::endl
+                << "\tAppearance width: " << static_cast<std::string>(line).length() << ANSI_RESET << std::endl;
+                exit(0);
+            }
+            appearanceString += line;
+            appearanceString += "\n";
+            lineCount++;
+        }
+        appearanceMap[static_cast<appearanceEnum>(appNum)] = appearanceString;
+        appearanceNames[static_cast<appearanceEnum>(appNum)] = appearance["name"];
+        appNum++;
+    }
+}
 //endregion
 
 class ZorbAppearance {
 public:
-    ZorbAppearance() { SetAppearance(APPEARANCE_DEFAULT); z_debug::zorbAppearanceCount++; } //default constructor
+    ZorbAppearance() { SetAppearance(static_cast<appearanceEnum>(0)); z_debug::zorbAppearanceCount++; } //default constructor
     ZorbAppearance(appearanceEnum _enum, std::string _color = "") { 
         ZorbAppearance();
         SetAppearance(_enum, _color); 
     }
     ZorbAppearance(const ZorbAppearance* other) {
         // Copy the values from the other object
-        this->appearanceMap = other->appearanceMap;
         this->color = other->color;
         this->currentAppearance = other->currentAppearance;
     }
@@ -75,110 +72,6 @@ public:
 private:
     std::string color;
     std::string currentAppearance;
-    std::unordered_map<appearanceEnum, std::string> appearanceMap = {
-    {APPEARANCE_DEFAULT, 
-R"(       
-   o   
-./\|/\.
-( o.o )
- > ^ < )"},
-    {APPEARANCE_HAPPY, 
-R"(       
-   o   
-./\|/\.
-( ^.^ )
- > ^ < )"},
-    {APPEARANCE_WINK, 
-R"(       
-   o   
-./\|/\.
-( o.^ )
- > u < )"},
-    {APPEARANCE_SLEEPY, 
-R"(       
-   o   
-./\|/\.
-( =,= )
-Zzz^ < )"},
-    {APPEARANCE_SNOTTY, 
-R"(       
-   o   
-./\|/\.
-( o,o )
- > ^ < )"},
-    {APPEARANCE_ANGRY, 
-R"(       
-   o   
-./\|/\.
-{(\./)}
- > ^ < )"},
-    {APPEARANCE_MONEY, 
-R"(       
-   o   
-./\|/\.
-( $.$ )
- > u < )"},
-    {APPEARANCE_FOLD, 
-R"(       
-   o   
-.n_|_n.
-( o.o )
- > ^ < )"},
-    {APPEARANCE_MONK, 
-R"(       
-       
- _---_ 
-( v.v )
-H> ^ <n)"},
-    {APPEARANCE_DEVIL, 
-R"(       
-  _*_  
-./|-|\.
-( @.@ )
-=> v <=)"},
-    {APPEARANCE_KNIGHT, 
-R"(       
-   V   
-./\|/\.
-|\\|//)
-T> u < )"},
-    {APPEARANCE_WIZARD, 
-R"(       
-  ,/^\_
-_/___{_
-( o.o T
- > W <|)"},
-    {APPEARANCE_NINJA,
-R"(       
-   o   
-./\|/\.
-([o.o])
- >   < )"},
-    {APPEARANCE_SILLY,
-R"(       
-.( - ).
-(/\|/\)
-(.oCo.)
- > = < )"},
-    {APPEARANCE_SKEL,
-R"(       
-   .   
-./\|/\.
-< 0+0 >
- >)w(< )"},
-    {APPEARANCE_ZOMBIE,
-R"(       
-   o   
-./\|/\.
-(#o.0 )
- >_C#< )"},
-    {APPEARANCE_VAMP,
-R"(       
-   o   
-./\|/\.
-( o^o )
-^>v v<^)"}
-    };
 };
 
 //region ZorbAppearance Functions
@@ -196,12 +89,6 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         std::string line;
 
         while (std::getline(iss, line)) {
-            if(line.size() > ZORBWIDTH || line.size() < ZORBWIDTH)
-            {
-                std::cout << "EXCEPTION: appearance not set, line width error" << std::endl;
-                std::cout << "Character @ " << static_cast<int>(_enum) << std::endl;
-                exit(0);
-            }
             _appearance += COLOR;
             _appearance += line;
             if(COLOR != "")
@@ -211,8 +98,8 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
         currentAppearance = _appearance;
         color = COLOR;
     } else {
-        std::cout << "EXCEPTION: appearance not set, invalid enum." << std::endl
-            << "No appearance set for enum " << static_cast<int>(_enum) << ' ' << std::to_string(_enum) << std::endl;
+        std::cout << "EXCEPTION: appearance not set, invalid enum. (ZorbAppearance::SetAppearance)" << std::endl
+            << "No appearance set for enum " << static_cast<int>(_enum) << std::endl;
         exit(0);
     }
 }
