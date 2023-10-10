@@ -37,6 +37,7 @@ public:
     // Default destructor
     ~Zorb() {
         z_debug::zorbCount--;
+        appearance.~ZorbAppearance();
     }
 
     // Accessor functions
@@ -136,9 +137,16 @@ namespace z_debug {
             appearanceText = _debugappearance.GetAppearance();
             std::vector<std::string> appearanceLines = SplitMultilineString(appearanceText);
 
-            if (charLines.size() < appearanceLines.size()) {
-                charLines.resize(appearanceLines.size()+1);
+            if(printNames) {
+                if (charLines.size() < appearanceLines.size()) {
+                    charLines.resize(appearanceLines.size()+1);
+                }
+            } else {
+                if (charLines.size() < appearanceLines.size()) {
+                    charLines.resize(appearanceLines.size());
+                }
             }
+
             if(nameText.size() < ZORBWIDTH){
                 nameText.resize(ZORBWIDTH, ' ');
             }

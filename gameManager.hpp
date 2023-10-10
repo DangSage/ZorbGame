@@ -140,9 +140,7 @@ void GameManager::handleOptionsMenuInput(char input) {
             break;
         case 'B':
         case 'b':
-            _clearScreen();
-            z_debug::PrintZorbAppearances(appearanceMap.size(), true);
-            _pauseSystem();
+            m_ui.screenDebugZorbs();
             break;
         case 'q':
         case 'Q':
