@@ -1,0 +1,55 @@
+The appearance editor for Zorb Zenith is pretty much just the appearances.json file. It's pretty simple to use, but here's a guide anyway.
+
+Guidelines for JSON file (appearances.json)
+The appearances.json file is the main way that the game initializes Zorb appearances, or the way Zorbs look. 
+You can simply copy and paste to add more Zorbs of your own design,
+but they MUST be 5x7 characters- otherwise the game WILL throw an exception.
+
+    The JSON file is a list of objects, each of which has a name, a description, and a list of strings. 
+    - The "appearance" is the appearance of the Zorb, and each string is a line of the Zorb.
+        - The strings must be 7 characters long, otherwise the game will throw an exception.
+            - of course, you can use spaces to fill in the gaps.
+            - The characters are also limited to normal alphanumerical characters, and the following symbols:
+                - !@#$%^&*()_+-=,./<>?;:'"[]{}\|~`
+                    - Note that the backslash is included in the list of symbols.
+        - BACKSLASHES HAVE TO BE ESCAPED, so you need to put a backslash before each backslash.
+            - If you don't escape the backslashes, the game will throw an exception.
+            - escaped backslashes are counted as 1 character, so you will not need to account for them in the 7 character limit.
+
+    - The "enum" is the name of the Zorb, and is used in the game to refer to the Zorb.
+        - The enum can be anything, since it's mostly used for exceptions and debugging.
+        - The enum needs to be unique, otherwise the game will throw an exception.
+
+    - The "name" is the description of the Zorb, and is used in the game to describe the Zorb.
+        - The name can be anything, but it needs to be 7 characters long, otherwise you risk formatting issues.
+
+Here's an example of a Zorb appearance:
+```json
+{
+    "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o.o )",
+        " > ^ < "
+    ],
+    "name": "default",
+    "enum": "APPEARANCE_DEFAULT"
+}
+```
+
+Example of a INVALID Zorb appearance:
+```json
+{
+    "appearance": [
+        "      ",       <- this line is 6 characters long, so the game will throw an exception.
+        "   ¢   ",      <- this line has a special character, so the game will replace it with a invalid unicode character/box.
+        "./\\|/\\.",
+        "( o.o  )",     <- this line is 8 characters long, so the game will throw an exception.
+        " > ^ < "
+    ],
+    "name": "normal",
+    "enum": "APPEARANCE_DEFAULT"
+}
+```
+
