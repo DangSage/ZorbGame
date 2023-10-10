@@ -3,9 +3,7 @@
 
 int main() {
     UI _uiM;
-    GameManager _gM(_uiM);
-
-    //call the game manager's start function to start running the game with game states
-    _gM.startGame();
+    GameManager _gameManager(_uiM);
+    _gameManager.startGame();
     return 0;
 }
