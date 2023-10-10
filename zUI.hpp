@@ -8,8 +8,10 @@ namespace z_debug {
     void DisplayDebugColors() {
         int columnWidth = CONSOLESIZE / 2;
         auto columnDisplay = [&](const std::string& option, const std::string& option2) {
+            int optionLength = z_debug::GetLengthWithoutEscapeCodes(option);
+            int option2Length = z_debug::GetLengthWithoutEscapeCodes(option2);
             std::cout << std::left << std::setw(columnWidth) << option
-                    << std::setw(columnWidth) << option2 << std::endl;
+                    << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
         };
         std::cout << "Debug ANSI Colors:\n";
         columnDisplay(FormattedText(" White: Text", ANSI_WHITE), FormattedText("Black: Text", ANSI_BLACK));
@@ -54,6 +56,8 @@ public:
     void screenGameOver() const;
     // debug color screen display
     void screenDebugColors() const;
+    // debug zorb screen display
+    void screenDebugZorbs() const;
 
     // wipes output stream in the console
     friend void _clearScreen(); 
@@ -209,6 +213,7 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     std::cout << std::endl;
     _createHorizontalLine('-');
     _pauseSystem();
+
     //clear the vector sample with the deconstructor
     sample.clear();
 }
@@ -316,8 +321,16 @@ void UI::screenGameOver() const {
 }
 void UI::screenDebugColors() const {
     _clearScreen();
-    _createStyledTextBox("DEBUG MENU: Change game settings here!");
+    _createStyledTextBox("DEBUG MENU: These are all the possible colors for the console defined in this game!");
     z_debug::DisplayDebugColors();
+    _createHorizontalLine('-');
+    _pauseSystem();
+}
+void UI::screenDebugZorbs() const {
+    _clearScreen();
+    _createStyledTextBox("DEBUG MENU: These are all the possible Zorb appearances defined in this game!");
+    z_debug::PrintZorbAppearances(appearanceMap.size(), true);
+    _createHorizontalLine('-');
     _pauseSystem();
 }
 //end region
@@ -445,10 +458,7 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
 }
 void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
     for (const Zorb& zorb : zorbs) {
-        std::cout << "Zorb Name: " << zorb.GetName() << "\n";
-        std::cout << "Team: T" << zorb.GetTeamId() << "\n";
-        std::cout << "Power: " << zorb.GetPower() << "\n";
-        std::cout << "\n";
+        std::cout << zorb.GetName() << ": T" << zorb.GetTeamId() << ", " << zorb.GetPower() << " Power\n";
     }
 }
 void UI::ZorbDisplayWithColor(const std::vector<Zorb>& zorbs) {
