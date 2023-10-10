@@ -216,15 +216,7 @@ void UI::screenMainMenu() const {
     _clearScreen();
     _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\nhttps://github.com/DangSage/ZorbGame");
     // Define the title text
-    std::string titleText = R"(
-_/\____/\_             ___.      __________  O            .__   __   .__     
-\____    / ____ _______\_ |__    \____    / _|__    ____  |__|_/  |_ |  |__  
-  /     / /  _ \\_  __ \| __ \     /     /_/ __ \  /    \ |  |\   __\|  |  \ 
- /     /_(  <_> )|  | \/| \_\ \   /     /_\  ___/ |   |  \|  | |  |  |   Y  \
-/_______ \\____/ |__|   |___  /  /_______ \\___  >|___|  /|__| |__|  |___|  /
-        \/                  \/            \/    \/      \/                 \/ 
-)";
-    
+    std::string titleText = z_art::gameTitle;
     titleText = z_debug::CenterAlignString(titleText, DISPLAYWIDTH);
 
     // Define menu options
