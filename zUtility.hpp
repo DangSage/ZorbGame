@@ -69,14 +69,26 @@ namespace z_debug {
         return lines;
     }
 
-    // Function to center-align a string within a given width
+    // Function to center-align a SINGLE-line string within a given width
     std::string CenterAlignString(const std::string& input, int width) {
         std::string output;
         std::vector<std::string> lines = SplitMultilineString(input);
 
         for (const std::string& line : lines) {
             int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line + '\n';
+            output += SpaceToPrint(margin) + line;
+        }
+        return output;
+    }
+
+     // Function to center-align a MULTI-line string within a given width
+    std::string CenterAlignStrings(const std::string& input, int width = CONSOLESIZE) {
+        std::string output;
+        std::vector<std::string> lines = SplitMultilineString(input);
+
+        for (const std::string& line : lines) {
+            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
+            output += SpaceToPrint(margin) + line + "\n";
         }
         return output;
     }
