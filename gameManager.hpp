@@ -132,7 +132,7 @@ void GameManager::handleOptionsMenuInput(char input) {
             m_ui.SetDisplayFormat(TABLE);
             break;
         case '4':
-            m_ui.SetDisplayFormat(COLOR);
+            m_ui.SetDisplayFormat(COMPACT);
             break;
         case 'A':
         case 'a':
