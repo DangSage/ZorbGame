@@ -34,6 +34,10 @@ namespace z_debug {
         return std::string(spaces, ' ');
     }
     
+    std::string PrintError(const std::string& error) {
+        return ANSI_RED + error + ANSI_RESET;
+    }
+
     // Function to get the length of a string without counting escape codes
     size_t GetLengthWithoutEscapeCodes(const std::string& input) {
         size_t length = 0;

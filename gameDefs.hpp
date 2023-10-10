@@ -24,6 +24,7 @@ static std::string ANSI_RESET = "\x1B[0m";
 // define size of display limit
 #define CONSOLESIZE 85
 #define ZORBWIDTH 7
+bool _LIGHTTHEME = false; //toggle for light theme
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
@@ -52,18 +53,16 @@ void ChangeFont(int spacing) {
     #endif
 }
 
-void ChangeConsoleTheme(bool isLightTheme) {
-    //set the background color of the console and the text color depending on the theme
-    if (isLightTheme) {
+//set the background & text color of the console (F = black, T = white)
+void ChangeConsoleTheme() {
+    if (!_LIGHTTHEME) {
         system("color F0");
-        //set ANSI_RESET to black on white
-        ANSI_RESET = "\x1B[30m";
+        ANSI_RESET = "\x1B[30m";    //set ANSI_RESET to black on white
     } else {
         system("color 07");
-        //set ANSI_RESET to white on black
-        ANSI_RESET = "\x1B[37m";
+        ANSI_RESET = "\x1B[37m";    //set ANSI_RESET to white on black
     }
-    
+    _LIGHTTHEME = !_LIGHTTHEME; //toggle the theme
 }
 
 //function that forces the terminal to have borders and a title
@@ -81,7 +80,7 @@ void ForceTerminalBorder() {    //make the text and console thinner like the ter
 void ForceTerminal() {
     ForceTerminalBorder();
     ForceTerminalColor();
-    ChangeConsoleTheme(true);
+    ChangeConsoleTheme();
 }
 
 
@@ -89,6 +88,7 @@ void ForceTerminal() {
 enum class GameState {
     MainMenu,
     OptionsMenu,
+    OptionsMenuTheme,
     Game,
     GameOver,
     InfoMenu,

@@ -31,6 +31,7 @@ private:
     void handleMainMenuInput(char input);
     void handleOptionsMenuInput(char input);
     void handleGameOverInput(char input);
+    void handleDebugThemeInput(char input);
     //endregion
 
     //region Stats
@@ -76,6 +77,7 @@ void GameManager::startGame() {
                 handleGameOverInput(gameOverInput);
                 break;
             default:
+                z_debug::PrintError("GameManager::startGame() - Invalid GameState");
                 break;
         }
         if(m_gameState == GameState::End)
@@ -142,6 +144,10 @@ void GameManager::handleOptionsMenuInput(char input) {
         case 'b':
             m_ui.screenDebugZorbs();
             break;
+        case 'C':
+        case 'c':
+            ChangeConsoleTheme();
+            break;
         case 'q':
         case 'Q':
             m_gameState = GameState::MainMenu;
@@ -160,6 +166,7 @@ void GameManager::handleGameOverInput(char input) {
         case 'Q':
             break;
         default:
+
             break;
     }
 }
