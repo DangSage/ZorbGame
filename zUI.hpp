@@ -25,7 +25,7 @@ enum DisplayFormat {
         TABLE,
         ASCII_ART,
         SIMPLE,
-        COLOR
+        COMPACT
     };
 
 class UI {
@@ -74,7 +74,7 @@ private:
     void ZorbDisplayTable(const std::vector<Zorb>& zorbs);
     void ZorbDisplayAscii(const std::vector<Zorb>& zorbs);
     void ZorbDisplaySimple(const std::vector<Zorb>& zorbs);
-    void ZorbDisplayWithColor(const std::vector<Zorb>& zorbs);
+    void ZorbDisplayCompact(const std::vector<Zorb>& zorbs);
 
     static void _createHorizontalLine(char borderChar);
     static int _countTextLines(const std::string& text);
@@ -222,7 +222,7 @@ void UI::screenMainMenu() const {
     _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\nhttps://github.com/DangSage/ZorbGame");
     // Define the title text
     std::string titleText = z_art::gameTitle;
-    titleText = z_debug::CenterAlignString(titleText, DISPLAYWIDTH);
+    titleText = z_debug::CenterAlignStrings(titleText);
 
     // Define menu options
     std::string menuText =
@@ -285,7 +285,7 @@ void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
     for (const auto& text : introductionText) {
         _clearScreen();
         if (firstIteration) {
-            std::cout << z_art::introSpace << std::endl;
+            std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
             firstIteration = false;
         }
         else 
@@ -295,7 +295,7 @@ void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
         _pauseSystem();
     }
     _clearScreen();
-    std::cout << z_art::introSpace << std::endl;
+    std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
     _createStyledTextBox("The galaxy is waiting for you, commander. Are you ready to lead the Zorbs to victory?");
     _createHorizontalLine('-');
     std::cout << "CONTINUE TO THE MAIN MENU: ";
@@ -312,7 +312,7 @@ void UI::screenGameOver() const {
     ( x.x )
      > n < )";
     
-    deadZorb = z_debug::CenterAlignString(deadZorb, DISPLAYWIDTH);
+    deadZorb = z_debug::CenterAlignStrings(deadZorb);
 
     std::cout << std::right << std::setw(0) << std::endl
     << "Q. Quit back to Title Screen" << std::endl;
@@ -347,8 +347,8 @@ void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
         case SIMPLE:
             ZorbDisplaySimple(zorbs);
             break;
-        case COLOR:
-            ZorbDisplayWithColor(zorbs);
+        case COMPACT:
+            ZorbDisplayCompact(zorbs);
             break;
         default:
             std::cout << "Invalid display format\n";
@@ -365,8 +365,8 @@ void UI::DisplayZorb(const Zorb& zorb) {
         case SIMPLE:
             ZorbDisplaySimple({zorb});
             break;
-        case COLOR:
-            ZorbDisplayWithColor({zorb});
+        case COMPACT:
+            ZorbDisplayCompact({zorb});
             break;
         default:
             std::cout << "Invalid display format\n";
@@ -380,8 +380,8 @@ std::string UI::GetDisplayFormatAsString() const {
             return "ASCII_ART";
         case SIMPLE:
             return "SIMPLE";
-        case COLOR:
-            return "COLOR";
+        case COMPACT:
+            return "COMPACT";
         default:
             return "Invalid display format";
     }
@@ -461,18 +461,59 @@ void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
         std::cout << zorb.GetName() << ": T" << zorb.GetTeamId() << ", " << zorb.GetPower() << " Power\n";
     }
 }
-void UI::ZorbDisplayWithColor(const std::vector<Zorb>& zorbs) {
-    std::cout << "DISPLAY WITH COLOR:\n";
+void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs) {
+    // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
+    std::vector<std::string> charLines;
+    std::vector<std::vector<std::string>> rowBuffers;
+    
+    // Calculate margin
+    size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
     for (const Zorb& zorb : zorbs) {
-        // Assuming ANSI escape codes for text color (may not work on all systems)
-        std::string textColor = "\x1B[33m"; // Yellow text color
-        std::string resetColor = "\x1B[0m"; // Reset color to default
+        std::string appearanceText = zorb.GetAppearance();
+        std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
+        //resize the appearanceLines vector so that it is the 3rd and 4th lines of the zorb
+        appearanceLines.erase(appearanceLines.begin(), appearanceLines.begin()+2);
 
-        std::cout << textColor << "Zorb Name: " << zorb.GetName() << resetColor << "\n";
-        std::cout << textColor << "Team: T" << zorb.GetTeamId() << resetColor << "\n";
-        std::cout << textColor << "Power: " << zorb.GetPower() << resetColor << "\n";
-        std::cout << "\n";
+        std::string nameText = zorb.GetName();
+        std::string powerText = z_debug::CenterAlignString((z_debug::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p'), ZORBWIDTH);
+
+        if (charLines.size() < appearanceLines.size()) {
+            charLines.resize(appearanceLines.size()+1);
+        }
+        //resize nameText to fit the zorb width, if it doesn't, remove the difference between the margin and the zorb width, then replace the last 2 letters with ..
+        if(nameText.size() > ZORBWIDTH)
+        {
+            nameText.resize(ZORBWIDTH);
+            nameText.replace(ZORBWIDTH-2, 2, "..");
+        }
+        else if(nameText.size() < ZORBWIDTH)
+        {
+            nameText.resize(ZORBWIDTH, ' ');
+        }
+        //format the powerText to be centered
+        powerText.resize(ZORBWIDTH, ' ');
+        
+        // check if Zorb will fit on the current line in the console window
+        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
+            rowBuffers.push_back(charLines);
+            charLines.clear();
+        } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
+        {
+            charLines.at(0) += z_debug::SpaceToPrint(margin) + nameText;
+            for (size_t i = 1; i < appearanceLines.size(); ++i) {
+                charLines[i] += z_debug::SpaceToPrint(margin);
+                charLines[i] += appearanceLines[i];
+            }
+            charLines.at(appearanceLines.size()) += z_debug::SpaceToPrint(margin) + powerText;
+        }
+    }
+
+    rowBuffers.push_back(charLines);
+    for (const auto& rowBuffer : rowBuffers) {
+        for (const std::string& charLine : rowBuffer) {
+            std::cout << charLine << std::endl;
+        }
     }
 }
 //end region
