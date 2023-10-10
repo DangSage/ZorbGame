@@ -143,7 +143,11 @@ const std::vector<std::string> zorbNames = {
     "Zlorg",
     "Zlarp",
     "Zim",
-    "Zorby"
+    "Zorby",
+    "Floob",
+    "Zulone",
+    "Gorpt",
+    "Zop"
 };
 
 //endregion

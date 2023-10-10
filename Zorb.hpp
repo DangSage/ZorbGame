@@ -109,12 +109,12 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
 }
 
 namespace z_debug {
-    void PrintZorbAppearances(int i = appearanceMap.size(), bool printNames = false, std::string color = ANSI_YELLOW) {
+    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string color = ANSI_YELLOW) {
         if(appearanceMap.size() < 1) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;
         }
-        else if(i > appearanceMap.size() || i < 0) {
+        else if(a > appearanceMap.size() || a < 0) {
             std::cout << "Invalid number of appearances to print" << std::endl
                 << "current number of appearances: " << appearanceMap.size() << std::endl;
             return;
@@ -122,21 +122,25 @@ namespace z_debug {
         ZorbAppearance _debugappearance;
         std::vector<std::string> charLines;
         std::vector<std::vector<std::string>> rowBuffers;
-        std::string appearanceText;
+        std::string appearanceText,
+            nameText;
         int _enumNUM = 0;
         
         // Calculate margin
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
-        while (_enumNUM < i) {
+        while (_enumNUM < a) {
             _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), color);
             
-            std::string enumName = appearanceNames[static_cast<appearanceEnum>(_enumNUM)];
-            printNames==true ? appearanceText = _debugappearance.GetAppearance()+enumName : appearanceText = _debugappearance.GetAppearance();
+            std::string nameText = appearanceNames.at(static_cast<appearanceEnum>(_enumNUM));
+            appearanceText = _debugappearance.GetAppearance();
             std::vector<std::string> appearanceLines = SplitMultilineString(appearanceText);
 
             if (charLines.size() < appearanceLines.size()) {
-                charLines.resize(appearanceLines.size());
+                charLines.resize(appearanceLines.size()+1);
+            }
+            if(nameText.size() < ZORBWIDTH){
+                nameText.resize(ZORBWIDTH, ' ');
             }
 
             if ((charLines.back().length() + GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
@@ -147,6 +151,8 @@ namespace z_debug {
                     charLines[i] += z_debug::SpaceToPrint(margin);
                     charLines[i] += appearanceLines[i];
                 }
+                if(printNames)
+                    charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
                 _enumNUM++;
             }
         }

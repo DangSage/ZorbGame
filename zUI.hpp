@@ -318,6 +318,7 @@ void UI::screenDebugColors() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
     z_debug::DisplayDebugColors();
+    _pauseSystem();
 }
 //end region
 
@@ -419,7 +420,6 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
         }
         //format the powerText to be centered
         powerText.resize(ZORBWIDTH, ' ');
-        
         
         // check if Zorb will fit on the current line in the console window
         if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
