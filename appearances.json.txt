@@ -5,24 +5,25 @@ The appearances.json file is the main way that the game initializes Zorb appeara
 You can simply copy and paste to add more Zorbs of your own design,
 but they MUST be 5x7 characters- otherwise the game WILL throw an exception.
 
-    The JSON file is a list of objects, each of which has a name, a description, and a list of strings. 
-    - The "appearance" is the appearance of the Zorb, and each string is a line of the Zorb.
-        - The strings must be 7 characters long, otherwise the game will throw an exception.
+    The appearances in appearance.json has a name, a enums, and a list of strings detailing their appearance:
+    1. The "appearance" is the appearance of the Zorb, and each string is a line of the Zorb.
+        A. The strings must be 7 characters long, otherwise the game will throw an exception.
             - of course, you can use spaces to fill in the gaps.
             - The characters are also limited to normal alphanumerical characters, and the following symbols:
                 - !@#$%^&*()_+-=,./<>?;:'"[]{}\|~`
                     - Note that the backslash is included in the list of symbols.
-        - BACKSLASHES HAVE TO BE ESCAPED, so you need to put a backslash before each backslash.
+        B. BACKSLASHES HAVE TO BE ESCAPED, so you need to put a backslash before each backslash.
             - If you don't escape the backslashes, the game will throw an exception.
             - escaped backslashes are counted as 1 character, so you will not need to account for them in the 7 character limit.
 
-    - The "enum" is the name of the Zorb, and is used in the game to refer to the Zorb.
-        - The enum can be anything, since it's mostly used for exceptions and debugging.
-        - The enum needs to be unique, otherwise the game will throw an exception.
+    2. The "enum" is the name of the Zorb, and is used in the game to refer to the Zorb.
+        A. The enum can be anything, since it's mostly used for exceptions and debugging.
+        B. The enum needs to be unique, otherwise the game will throw an exception.
 
-    - The "name" is the description of the Zorb, and is used in the game to describe the Zorb.
-        - The name can be anything, but it needs to be 7 characters long, otherwise you risk formatting issues.
+    3. The "name" is the description of the Zorb, and is used in the game to describe the Zorb.
+        A. The name can be anything, but it needs to be 7 characters long, otherwise you risk formatting issues.
 
+===============================================================================================================
 Here's an example of a Zorb appearance:
 ```json
 {
