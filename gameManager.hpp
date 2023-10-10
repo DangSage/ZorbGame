@@ -134,6 +134,16 @@ void GameManager::handleOptionsMenuInput(char input) {
         case '4':
             m_ui.SetDisplayFormat(COLOR);
             break;
+        case 'A':
+        case 'a':
+            m_ui.screenDebugColors();
+            break;
+        case 'B':
+        case 'b':
+            _clearScreen();
+            z_debug::PrintZorbAppearances(appearanceMap.size(), true);
+            _pauseSystem();
+            break;
         case 'q':
         case 'Q':
             m_gameState = GameState::MainMenu;
