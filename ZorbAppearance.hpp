@@ -10,12 +10,11 @@
 using json = nlohmann::json;
 
 //region appearance enums and maps
-enum class appearanceEnum : int {};
+enum class appearanceEnum : int {}; //dynamic enum for appearance
+std::map<appearanceEnum, std::string> appearanceMap; //map of appearance enums to appearance strings
+std::map<appearanceEnum, std::string> appearanceNames; //map of appearance enums to names
 
-//create a dynamic enum for each appearance from the JSON file (appearance.json), and map it to a string of the appearance that can be called later to an integer
-std::map<appearanceEnum, std::string> appearanceMap;
-std::map<appearanceEnum, std::string> appearanceNames;
-
+//initialize appearance maps
 void initAppearanceMaps() {
     std::ifstream file("appearances.json");
     json j;
@@ -49,6 +48,7 @@ void initAppearanceMaps() {
         appNum++;
     }
 }
+//endregion
 
 class ZorbAppearance {
 public:
