@@ -140,5 +140,44 @@ namespace z_debug {
     }
 } // namespace z_debug
 
+// Function template to validate user input
+template <typename T>
+T validatedInput(std::initializer_list<T> validInputs, bool debug = false) {
+    std::string validInputsStr;
+    size_t numInputs = validInputs.size();
+    // define maxInputLength as the length of the longest input
+    size_t maxInputLength = 0;
+    for (auto it = validInputs.begin(); it != validInputs.end(); ++it) {
+        if (strlen(it) > maxInputLength) {
+            maxInputLength = strlen(it);
+        }
+        validInputsStr += *it;
+    }
+
+    std::string input;
+    std::cin >> input;
+    std::transform(input.begin(), input.end(), input.begin(), ::toupper);
+    //validate input
+    while (input.size() > maxInputLength || validInputsStr.find(input) == std::string::npos) {
+        //remove the previous output from console output
+        std::cout << "\033[F";
+        std::cout << "\033[K";
+        std::cout << ANSI_RED << "Invalid input. Please try again: " << ANSI_RESET;
+        std::cin.clear();
+        std::cin >> input;
+        std::transform(input.begin(), input.end(), input.begin(), ::toupper);
+    }
+    if (debug) {
+        std::cout << "DEBUG: validatedInput() - input: " << input << std::endl;
+    }
+    //return validated input
+    return static_cast<T>(input.front());
+
+    //example usage:
+    //char validInputs[] = {'a', 'b', 'c'};
+    //char input = validatedInput<char>(validInputs);
+
+}
+
 
 #endif // Z_UTILITY_HPP

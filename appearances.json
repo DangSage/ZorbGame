@@ -1,24 +1,24 @@
 [
     {
         "appearance": [
-            "       ",
-            "   o   ",
-            "./\\|/\\.",
-            "( o.o )",
-            " > ^ < "
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o.o )",
+        " > ^ < "
         ],
         "name": "normal",
         "enum": "APPEARANCE_DEFAULT"
     },
     {
         "appearance": [
-            "       ",
-            "   o   ",
-            "./\\|/\\.",
-            "{(\\./)}",
-            " > ^ < "
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "{(\\./)}",
+        " > ^ < "
         ],
-        "name": "angrier",
+        "name": "aggreso",
         "enum": "APPEARANCE_ANGRY"
     },    
     {
@@ -29,8 +29,30 @@
         "( ^.^ )",
         " > ^ < "
         ],
-        "name": "happy",
+        "name": "happier",
         "enum": "APPEARANCE_HAPPY"
+    },
+    {
+        "appearance": [
+        "   ?   ",
+        " ? o ? ",
+        "./\\|/\\.",
+        "( 9.6 )",
+        " > r < "
+        ],
+        "name": "confused",
+        "enum": "APPEARANCE_CONFUSED"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./]|[\\.",
+        "} o.o {",
+        " > ^ < "
+        ],
+        "name": "mainey",
+        "enum": "APPEARANCE_MAINECOON"
     },
     {
         "appearance": [
@@ -51,7 +73,7 @@
         "( =,= )",
         "Zzz^ < "
         ],
-        "name": "zleepy",
+        "name": "sleepy",
         "enum": "APPEARANCE_SLEEPY"
     },
     {
@@ -59,11 +81,11 @@
         "       ",
         "   o   ",
         "./\\|/\\.",
-        "( o,o )",
-        " > ^ < "
+        "(_o.o_)",
+        " > v < "
         ],
-        "name": "znotty",
-        "enum": "APPEARANCE_SNOTTY"
+        "name": "blusher",
+        "enum": "APPEARANCE_BLUSHED"
     },
     {
         "appearance": [
@@ -73,7 +95,7 @@
         "( $.$ )",
         " > u < "
         ],
-        "name": "money",
+        "name": "greedy",
         "enum": "APPEARANCE_MONEY"
     },
     {
@@ -85,15 +107,37 @@
         " > ^ < "
         ],
         "name": "folder",
-        "enum": "APPEARANCE_FOLD"
+        "enum": "APPEARANCE_SCOTFOLD"
     },
     {
         "appearance": [
         "       ",
+        "   o   ",
+        ".^,|,^.",
+        "( o.o )",
+        " > v < "
+        ],
+        "name": "tinyear",
+        "enum": "APPEARANCE_SCOTFOLD"
+    },
+    {
+        "appearance": [
         "       ",
-        " _---_ ",
+        "   o   ",
+        "./\\l/\\.",
+        "( +.+ )",
+        " > - < "
+        ],
+        "name": "wired",
+        "enum": "APPEARANCE_CAFFEINE"
+    },
+    {
+        "appearance": [
+        "       ",
+        "`,-*-,`",
+        "`_---_`",
         "( v.v )",
-        "H> ^ <n"
+        "u> ^ <n"
         ],
         "name": "monkely",
         "enum": "APPEARANCE_MONK"
@@ -137,29 +181,29 @@
         "   o   ",
         "./\\|/\\.",
         "([o.o])",
-        " >   < "
+        " > b sh"
         ],
-        "name": "Ninja",
+        "name": "sneaky",
         "enum": "APPEARANCE_NINJA"
     },
     {
         "appearance": [
-        "       ",
-        ".( - ).",
-        "(/\\|/\\)",
+        "  _ _  ",
+        ".' ` '.",
+        "(/\\_/\\)",
         "(.oCo.)",
         " > = < "
         ],
-        "name": "Silly",
-        "enum": "APPEARANCE_SILLY"
+        "name": "clowny",
+        "enum": "APPEARANCE_CLOWN"
     },
     {
         "appearance": [
         "       ",
         "   .   ",
         "./\\|/\\.",
-        "< 0+0 >",
-        " >)w(< "
+        "< 0,0 >",
+        " > w < "
         ],
         "name": "Skel",
         "enum": "APPEARANCE_SKEL"
@@ -181,9 +225,31 @@
         "   o   ",
         "./\\|/\\.",
         "( o^o )",
-        "^>v v<^"
+        "^>' '<^"
         ],
         "name": "Vamp",
         "enum": "APPEARANCE_VAMP"
+    },
+    {
+        "appearance": [
+        "       ",
+        "       ",
+        " .---. ",
+        "( .l. )",
+        " > - < "
+        ],
+        "name": "human??",
+        "enum": "APPEARANCE_HUMAN"
+    },
+    {
+        "appearance": [
+        "       ",
+        "       ",
+        ".^.-.^.",
+        "( -,- )",
+        "t> - < "
+        ],
+        "name": "impy",
+        "enum": "APPEARANCE_IMP"
     }
 ]

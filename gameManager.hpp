@@ -2,10 +2,11 @@
 #include "Zorb.hpp"
 #include "zUI.hpp"
 #include "gameDefs.hpp"
+#include "gameplayManager.hpp"
 
 class GameManager {
 public:
-    GameManager(UI& ui) : m_ui(ui) { 
+    GameManager(UI& ui) : m_ui(ui), m_gameplayManager(GameplayManager(*this)) { 
         ForceTerminal();
         initAppearanceMaps();
     } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
@@ -13,30 +14,24 @@ public:
     void startGame();
     void endGame();
 
-private:
-    UI& m_ui;
-    std::vector<Zorb> m_zorbs;  // All zorbs
-    std::vector<Zorb*> m_playerZorbs;   // Player zorbs
-    std::vector<Zorb*> m_enemyZorbs;    // Enemy zorbs
-    std::vector<Zorb*> m_nzorbs;    // npc zorbs
-    bool m_isPaused = false;
+protected:
+    // Add a GameplayManager object to the GameManager that is a friend
+    GameplayManager m_gameplayManager;
     GameState m_gameState = GameState::InfoMenu;
+    std::vector<Zorb> m_zorbs;  // All zorbs
+    UI& m_ui;   // UI object
+    
 
     //region Zorb Management
-    void SortZorbsByTeamId();
-    void GenerateZorb(int team_id);
-    //endregion
-
-    //region Input Handling
-    void handleMainMenuInput(char input);
-    void handleOptionsMenuInput(char input);
-    void handleGameOverInput(char input);
-    void handleDebugThemeInput(char input);
-    //endregion
-
-    //region Stats
     int m_playerScore = 0;
     int m_enemyScore = 0;
+    //endregion
+
+private:
+    //region Input Handling
+    void handleMainMenuInput();
+    void handleOptionsMenuInput();
+    void handleGameOverInput();
     //endregion
 };
 
@@ -47,22 +42,17 @@ void GameManager::startGame() {
     m_zorbs.push_back(Zorb(0, 1, "Neep Narp"));
     m_zorbs.at(0).SetAppearance(static_cast<appearanceEnum>(0), ANSI_GREEN);
     m_zorbs.push_back(Zorb(0)); // NPC zorb
-    SortZorbsByTeamId();
 
     // Game loop
     while (true) {
         switch (m_gameState) {
             case GameState::MainMenu:
                 m_ui.screenMainMenu();
-                char mainMenuInput;
-                std::cin >> mainMenuInput;
-                handleMainMenuInput(mainMenuInput);
+                handleMainMenuInput();
                 break;
             case GameState::OptionsMenu:
                 m_ui.screenDebugOptions();
-                char optionsMenuInput;
-                std::cin >> optionsMenuInput;
-                handleOptionsMenuInput(optionsMenuInput);
+                handleOptionsMenuInput();
                 break;
             case GameState::Game:
                 break;
@@ -72,9 +62,7 @@ void GameManager::startGame() {
                 break;
             case GameState::GameOver:
                 m_ui.screenGameOver();
-                char gameOverInput;
-                std::cin >> gameOverInput;
-                handleGameOverInput(gameOverInput);
+                handleGameOverInput();
                 break;
             default:
                 z_debug::PrintError("GameManager::startGame() - Invalid GameState");
@@ -95,14 +83,12 @@ void GameManager::endGame() {
     z_debug::CountGameObjectsInMemory();
     _pauseSystem();
     m_zorbs.clear();
-    m_playerZorbs.clear();
-    m_enemyZorbs.clear();
 }
 //endregion
 
 //region Input Handling
-void GameManager::handleMainMenuInput(char input) {
-    switch (input) {
+void GameManager::handleMainMenuInput() {
+    switch (validatedInput({'1','2','3','Q'})) {
         case '1':
             //m_gameState = GameState::Game;
             break;
@@ -112,18 +98,18 @@ void GameManager::handleMainMenuInput(char input) {
         case '3':
             m_gameState = GameState::OptionsMenu;
             break;
-        case 'q':
         case 'Q':
             endGame();
             z_debug::CountGameObjectsInMemory();
             m_gameState = GameState::End;
             break;
         default:
+            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
             break;
     }
 }
-void GameManager::handleOptionsMenuInput(char input) {
-    switch (input) {
+void GameManager::handleOptionsMenuInput() {
+    switch (validatedInput({'1','2','3','4','A','B','C','Q'})) {
         case '1':
             m_ui.SetDisplayFormat(SIMPLE);
             break;
@@ -137,66 +123,34 @@ void GameManager::handleOptionsMenuInput(char input) {
             m_ui.SetDisplayFormat(COMPACT);
             break;
         case 'A':
-        case 'a':
             m_ui.screenDebugColors();
             break;
         case 'B':
-        case 'b':
             m_ui.screenDebugZorbs();
             break;
         case 'C':
-        case 'c':
             ChangeConsoleTheme();
             break;
-        case 'q':
         case 'Q':
             m_gameState = GameState::MainMenu;
             break;
         default:
+            z_debug::PrintError("GameManager::handleOptionsMenuInput() - HDWGH?");
             break;
     }
 }
-void GameManager::handleGameOverInput(char input) {
+void GameManager::handleGameOverInput() {
     endGame();
-    switch (input) {
+    switch (validatedInput({'1','Q'}, true)) {
         case '1':
             m_gameState = GameState::MainMenu;
             break;
-        case 'q':
         case 'Q':
             break;
         default:
-
+            z_debug::PrintError("GameManager::handleGameOverInput() - HDWGH?");
             break;
     }
 }
 //endregion
 
-//region Zorb Management
-void GameManager::SortZorbsByTeamId() {
-    for (auto& zorb : m_zorbs) {
-        if (zorb.GetTeamId() == 0) {
-            m_playerZorbs.push_back(&zorb);
-        }
-        else if (zorb.GetTeamId() == 1) {
-            m_enemyZorbs.push_back(&zorb);
-        }
-        else {
-            m_nzorbs.push_back(&zorb);
-        }
-    }
-}
-//have a function that generates a random zorb
-void GameManager::GenerateZorb(int team_id) {
-    //randomly generate the power for this zorb object
-    //make there a factor on the integer power depending on the amount of wins the player has and the size of the vector of zorbs the player has
-    int power;
-    power = rand() % (5 + m_playerScore) + 1;
-
-    //generate a random zorb
-    Zorb newZorb = Zorb(power, team_id, zorbNames[rand() % zorbNames.size()]+' '+zorbNames[rand() % zorbNames.size()]);
-    //add it to the vector of zorbs
-    m_zorbs.push_back(newZorb);
-}
-
-//endregion
