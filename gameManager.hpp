@@ -4,6 +4,9 @@
 #include "gameDefs.hpp"
 #include "gameplayManager.hpp"
 
+std::string url = "https://github.com/DangSage/ZorbGame";
+std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
+
 class GameManager {
 public:
     GameManager(UI& ui) : m_ui(ui), m_gameplayManager(GameplayManager(*this)) { 
@@ -74,8 +77,7 @@ void GameManager::startGame() {
     _clearScreen();
 
     std::cout << "\n\n\n\n\n" << std::endl;
-    std::string asciiArt = "/\\/\\      o      /\\/\\\n\\  /   ./\\|/\\.   \\  /\n \\/    ( ^.^ )    \\/ \n       b> ^ <d       \n";
-    _createStyledTextBox(asciiArt+"\n<3 Thank you for playing Zorb Zenith! <3\nMay you attain your own inner zen!\n\n-Dang");
+    _createStyledTextBox(z_art::endCard+"\n<3 Thank you for playing Zorb Zenith! <3\nMay you attain your own inner zen!\n\n-Dang");
     _pauseSystem();
 }
 void GameManager::endGame() {
@@ -88,7 +90,10 @@ void GameManager::endGame() {
 
 //region Input Handling
 void GameManager::handleMainMenuInput() {
-    switch (validatedInput({'1','2','3','Q'})) {
+    switch (validatedInput({'0','1','2','3','Q'})) {
+        case '0':
+            system(command.c_str());
+            break;
         case '1':
             //m_gameState = GameState::Game;
             break;

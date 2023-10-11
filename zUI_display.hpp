@@ -9,7 +9,7 @@
 //region screen Display Functions
 void UI::screenMainMenu() const {
     _clearScreen();
-    _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\nhttps://github.com/DangSage/ZorbGame");
+    _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\n[0] https://github.com/DangSage/ZorbGame");
     // Define the title text
     std::string titleText = z_art::gameTitle;
     titleText = z_debug::CenterAlignStrings(titleText);
@@ -19,8 +19,8 @@ void UI::screenMainMenu() const {
         "<3 Dedicated to Thomas Worrall <3\n\n"
         "1. Start Game\n"
         "2. Instructions\n"
-        "3. Debug Settings\n"
-        "Q. Quit\n";
+        "3. Debug Settings\n\n"
+        "Q. Quit to Desktop\n";
 
     // Display the title text
     _createHorizontalLine('-');
@@ -60,6 +60,7 @@ void UI::screenDebugOptions() const {
     std::cout << "Enter your choice: ";
 }
 void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
+    int iteration = 0;
     const std::vector<std::string> introductionText = {
         "In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...",
         "This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos...",
@@ -75,12 +76,16 @@ void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
     bool firstIteration = true;
     for (const auto& text : introductionText) {
         _clearScreen();
-        if (firstIteration) {
+        if (iteration==0)
             std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
-            firstIteration = false;
-        }
-        else 
+        else if (iteration==1)
             std::cout << zorbs.at(0) << std::endl;
+        else if (iteration==2)
+            z_debug::PrintZorbAppearances(8, false, ANSI_GREEN);
+        else if (iteration==3)
+            std::cout << z_debug::CenterAlignStrings(z_art::planetZorb) << zorbs.at(0) << std::endl;
+
+        iteration++;
         _createStyledTextBox(text);
         _createHorizontalLine('-');
         _pauseSystem();
