@@ -15,7 +15,7 @@
         "       ",
         "   o   ",
         "./\\|/\\.",
-        "{(\\./)}",
+        "{ d.b }",
         " > ^ < "
         ],
         "name": "aggreso",
@@ -34,20 +34,20 @@
     },
     {
         "appearance": [
+        "       ",
         "   ?   ",
-        " ? o ? ",
         "./\\|/\\.",
         "( 9.6 )",
-        " > r < "
+        " > ~ < "
         ],
-        "name": "confused",
+        "name": "baffled",
         "enum": "APPEARANCE_CONFUSED"
     },
     {
         "appearance": [
         "       ",
         "   o   ",
-        "./]|[\\.",
+        "./[|]\\.",
         "} o.o {",
         " > ^ < "
         ],
@@ -59,7 +59,7 @@
         "       ",
         "   o   ",
         "./\\|/\\.",
-        "( o.^ )",
+        "( o.~ )",
         " > u < "
         ],
         "name": "winky",
@@ -79,7 +79,7 @@
     {
         "appearance": [
         "       ",
-        "   o   ",
+        "   v   ",
         "./\\|/\\.",
         "(_o.o_)",
         " > v < "
@@ -93,27 +93,27 @@
         "   o   ",
         "./\\|/\\.",
         "( $.$ )",
-        " > u < "
+        "n> u <n"
         ],
-        "name": "greedy",
+        "name": "greedle",
         "enum": "APPEARANCE_MONEY"
     },
     {
         "appearance": [
         "       ",
         "   o   ",
-        ".n_|_n.",
+        ".-,|,-.",
         "( o.o )",
         " > ^ < "
         ],
-        "name": "folder",
+        "name": "foldear",
         "enum": "APPEARANCE_SCOTFOLD"
     },
     {
         "appearance": [
         "       ",
         "   o   ",
-        ".^,|,^.",
+        ",^-|-^,",
         "( o.o )",
         " > v < "
         ],
@@ -123,19 +123,19 @@
     {
         "appearance": [
         "       ",
-        "   o   ",
+        "- ~o~ -",
         "./\\l/\\.",
         "( +.+ )",
         " > - < "
         ],
-        "name": "wired",
+        "name": "zappity",
         "enum": "APPEARANCE_CAFFEINE"
     },
     {
         "appearance": [
         "       ",
-        "`,-*-,`",
-        "`_---_`",
+        " ,-*-, ",
+        "'_---_'",
         "( v.v )",
         "u> ^ <n"
         ],
@@ -147,10 +147,10 @@
         "       ",
         "  _*_  ",
         "./|-|\\.",
-        "( @.@ )",
-        "=> v <="
+        "( d.b )",
+        " > v <y"
         ],
-        "name": "devil",
+        "name": "devious",
         "enum": "APPEARANCE_DEVIL"
     },
     {
@@ -161,7 +161,7 @@
         "|\\\\|//)",
         "T> u < "
         ],
-        "name": "knight",
+        "name": "knighty",
         "enum": "APPEARANCE_KNIGHT"
     },
     {
@@ -172,8 +172,19 @@
         "( o.o T",
         " > W <|"
         ],
-        "name": "wizard",
+        "name": "magical",
         "enum": "APPEARANCE_WIZARD"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  ___  ",
+        "_[|=|]_",
+        "( ^.^ )",
+        "c> ^ <P"
+        ],
+        "name": "builder",
+        "enum": "APPEARANCE_CONSTRUCTION"
     },
     {
         "appearance": [
@@ -181,9 +192,9 @@
         "   o   ",
         "./\\|/\\.",
         "([o.o])",
-        " > b sh"
+        " > b < "
         ],
-        "name": "sneaky",
+        "name": "sneaker",
         "enum": "APPEARANCE_NINJA"
     },
     {
@@ -194,7 +205,7 @@
         "(.oCo.)",
         " > = < "
         ],
-        "name": "clowny",
+        "name": "clowner",
         "enum": "APPEARANCE_CLOWN"
     },
     {
@@ -202,10 +213,10 @@
         "       ",
         "   .   ",
         "./\\|/\\.",
-        "< 0,0 >",
-        " > w < "
+        "( 0,0 )",
+        " }'m'{ "
         ],
-        "name": "Skel",
+        "name": "skeleto",
         "enum": "APPEARANCE_SKEL"
     },
     {
@@ -216,7 +227,7 @@
         "(#o.0 )",
         " >_C#< "
         ],
-        "name": "Zombie",
+        "name": "zombite",
         "enum": "APPEARANCE_ZOMBIE"
     },
     {
@@ -227,7 +238,7 @@
         "( o^o )",
         "^>' '<^"
         ],
-        "name": "Vamp",
+        "name": "vampire",
         "enum": "APPEARANCE_VAMP"
     },
     {
@@ -244,12 +255,45 @@
     {
         "appearance": [
         "       ",
+        "   c   ",
+        ",/\\l/\\,",
+        "{~=.=~}",
+        " >{^}< "
+        ],
+        "name": "grandpa",
+        "enum": "APPEARANCE_OLD"
+    },
+    {
+        "appearance": [
         "       ",
-        ".^.-.^.",
-        "( -,- )",
+        "   o   ",
+        ",^\\|/^,",
+        "/ o_o \\",
+        "'> w <'"
+        ],
+        "name": "dawggie",
+        "enum": "APPEARANCE_DOGGY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        ".^.|.^.",
+        "( o,o )",
         "t> - < "
         ],
-        "name": "impy",
+        "name": "impiest",
         "enum": "APPEARANCE_IMP"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        ",n.|.n,",
+        "{ ._. }",
+        " > ^ < "
+        ],
+        "name": "bearboy",
+        "enum": "APPEARANCE_DOGGY"
     }
 ]
