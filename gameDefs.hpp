@@ -26,6 +26,7 @@ static std::string ANSI_RESET = "\x1B[0m";
 #define CONSOLESIZE 85
 #define ZORBWIDTH 7
 bool _LIGHTTHEME = false; //toggle for light theme
+bool _DEBUGMODE = false; //toggle for debug mode
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
@@ -66,15 +67,19 @@ void ChangeConsoleTheme() {
     _LIGHTTHEME = !_LIGHTTHEME; //toggle the theme
 }
 
+void ChangeDebugMode() {
+    _DEBUGMODE = !_DEBUGMODE;
+}
+
 //function that forces the terminal to have borders and a title
 void ForceTerminalBorder() {    //make the text and console thinner like the terminal console in VSC
     #ifdef _WIN32
         HWND console = GetConsoleWindow();
         RECT r;
         GetWindowRect(console, &r); //stores the console's current dimensions
-        MoveWindow(console, r.left, r.top, 800, 800, TRUE);
+        MoveWindow(console, r.left, r.top, CONSOLESIZE*15, CONSOLESIZE*15, TRUE);
         SetConsoleTitle("Zorb Zenith"); //set the title of the console
-        ChangeFont(15);
+        ChangeFont(14);
     #endif
 }
 
@@ -175,6 +180,11 @@ const std::vector<std::string> zorbNames = {
     "Thlok"
 };
 
+//randomly select 2 names from zorb name list and concatenate them into a singular string
+std::string RandomZorbName() {
+    std::string name = zorbNames[rand() % zorbNames.size()] + " " + zorbNames[rand() % zorbNames.size()];
+    return name;
+}
 //endregion
 
 //region ASCII ART DEFINITIONS

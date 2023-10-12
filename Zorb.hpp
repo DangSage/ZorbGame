@@ -6,26 +6,18 @@
 
 class Zorb {
 public:
-    // Default constructor (Empty Space)
-    Zorb() : power(0), team_id(-1), name(""), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
-    // Team ID constructor (Creates Default Zorb)
-    Zorb(int team_id) : power(0), team_id(team_id), name(""), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
-    // Appearance constructor
-    Zorb(appearanceEnum _enum, std::string _color) : power(0), team_id(0), name("Gleep"), appearance(ZorbAppearance(_enum, _color)) {
-        z_debug::zorbCount++;
-    }
-    // Power, ID, name constructor
-    Zorb(int power, int team_id, const std::string& name) : 
-        power(power), team_id(team_id), name(name), appearance(ZorbAppearance()) { z_debug::zorbCount++; }
-    // Fully parameterized constructor
-    Zorb(int power, int team_id, const std::string& name, ZorbAppearance _appearance) : 
-        power(power), team_id(team_id), name(name), appearance(std::move(_appearance)) { z_debug::zorbCount++; }
+    Zorb(int power = 0, int team_id = -1, const std::string& name = RandomZorbName(), ZorbAppearance _appearance = ZorbAppearance()) 
+    : power(power), 
+    team_id(team_id), 
+    name(name), 
+    appearance(std::move(_appearance)) {}
+    
     // Copy constructor
     Zorb(const Zorb& other)
         : power(other.power),
         team_id(other.team_id),
         name(other.name),
-        appearance(other.appearance) { z_debug::zorbCount++; }
+        appearance(other.appearance) {}
 
     // Move constructor
     Zorb(Zorb&& other) noexcept
@@ -35,9 +27,7 @@ public:
         appearance(std::move(other.appearance)) {}
 
     // Default destructor
-    ~Zorb() {
-        z_debug::zorbCount--;
-    }
+    ~Zorb() {}
 
     // Accessor functions
     int GetPower() const { return power; }
@@ -75,7 +65,7 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
 
     std::string nameText = zorb.GetName();
-    std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p');
+    std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ANSI_RESET);
 
     for (size_t i = 0; i < appearanceLines.size(); ++i) {
         charLines.push_back(z_debug::SpaceToPrint(margin) + appearanceLines[i]);
@@ -119,22 +109,22 @@ namespace z_debug {
                 << "current number of appearances: " << appearanceMap.size() << std::endl;
             return;
         }
-        ZorbAppearance _debugappearance;
         std::vector<std::string> charLines;
         std::vector<std::vector<std::string>> rowBuffers;
-        std::string appearanceText,
-            nameText;
-        int _enumNUM = 0;
         
         // Calculate margin
         size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
-        while (_enumNUM < a) {
-            _debugappearance.SetAppearance(static_cast<appearanceEnum>(_enumNUM), color);
-            
-            std::string nameText = appearanceNames.at(static_cast<appearanceEnum>(_enumNUM));
-            appearanceText = _debugappearance.GetAppearance();
+        for(int _enumNUM=0; _enumNUM<a; _enumNUM++) {
+            //define debug appearance object that is the current appearance
+            ZorbAppearance debugAppearance(static_cast<appearanceEnum>(_enumNUM), color);
+            std::string appearanceText = debugAppearance.GetAppearance();
             std::vector<std::string> appearanceLines = SplitMultilineString(appearanceText);
+
+            std::string nameText = appearanceNames.at(static_cast<appearanceEnum>(_enumNUM));
+
+            if(_DEBUGMODE)
+                std::cout << "DEBUG: PrintZorbAppearances() - appearance (" << _enumNUM+1 << "): " << nameText << std::endl;
 
             if(printNames) {
                 if (charLines.size() < appearanceLines.size()) {
@@ -150,7 +140,7 @@ namespace z_debug {
                 nameText.resize(ZORBWIDTH, ' ');
             }
 
-            if ((charLines.back().length() + GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
+            if ((charLines.back().length() + GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) > CONSOLESIZE-margin) {
                 rowBuffers.push_back(charLines);
                 charLines.clear();
             } else {
@@ -160,19 +150,15 @@ namespace z_debug {
                 }
                 if(printNames)
                     charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
-                _enumNUM++;
             }
         }
-
         rowBuffers.push_back(charLines);
-
         for (const auto& rowBuffer : rowBuffers) {
             for (const std::string& charLine : rowBuffer) {
                 std::cout << charLine << std::endl;
             }
         }
     }
-
 }
 
 #endif // ZORB_H

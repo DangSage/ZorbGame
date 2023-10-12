@@ -52,14 +52,14 @@ void UI::screenDebugOptions() const {
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
     columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == true ? "Light" : "Dark"), ANSI_BLUE));
-    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. option");
+    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_debug::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ANSI_RED));
 
     std::cout << std::right << std::setw(0) << std::endl
               << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
     std::cout << "Enter your choice: ";
 }
-void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
+void UI::screenInfo(std::vector<Zorb>& zorbs) const {
     int iteration = 0;
     const std::vector<std::string> introductionText = {
         "In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...",
@@ -69,11 +69,9 @@ void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
     };
     
     _createStyledTextBox("Press any character to skip, other press enter to continue.");
-    if (z_debug::clearInputBuffer() != '\n') {
+    if (z_debug::clearInputBuffer() != '\n')
         return;
-    }
     
-    bool firstIteration = true;
     for (const auto& text : introductionText) {
         _clearScreen();
         if (iteration==0)
@@ -82,8 +80,24 @@ void UI::screenInfo(const std::vector<Zorb>& zorbs) const {
             std::cout << zorbs.at(0) << std::endl;
         else if (iteration==2)
             z_debug::PrintZorbAppearances(8, false, ANSI_GREEN);
-        else if (iteration==3)
-            std::cout << z_debug::CenterAlignStrings(z_art::planetZorb) << zorbs.at(0) << std::endl;
+        else if (iteration==3){
+            std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
+            //define a vector of zorbs to display called sampleZorbs1, make them green
+            std::vector<Zorb> sZorbs = std::vector<Zorb>(0);
+            for(int i = 0; i < 4; i++)
+                sZorbs.push_back(Zorb(0, 1, RandomZorbName(), ZorbAppearance(GetRandomAppearance(), ANSI_GREEN)));
+
+            std::vector<Zorb> eZorbs = std::vector<Zorb>(0);
+            for(int i = 0; i < 4; i++)
+                eZorbs.push_back(Zorb(0, 2, RandomZorbName(), ZorbAppearance(GetRandomAppearance(), ANSI_MAGENTA)));
+
+            std::cout << "Player Zorbs" << std::endl;
+            DisplayZorbs(sZorbs);
+            std::cout << "Enemy Zorbs" << std::endl;
+            DisplayZorbs(eZorbs);
+            sZorbs.clear();
+            eZorbs.clear();
+        }
 
         iteration++;
         _createStyledTextBox(text);

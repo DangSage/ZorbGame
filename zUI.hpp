@@ -34,9 +34,9 @@ public:
     UI(DisplayFormat defaultFormat = ASCII_ART) : currentFormat(defaultFormat) {}
 
     // display driver for vector of zorbs
-    void DisplayZorbs(const std::vector<Zorb>& zorbs);
+    void DisplayZorbs(const std::vector<Zorb>& zorbs) const;
     // display driver for zorb objects
-    void DisplayZorb(const Zorb& zorb);
+    void DisplayZorb(const Zorb& zorb) const;
     // accessor for DisplayFormat (string)
     std::string GetDisplayFormatAsString() const;   
 
@@ -48,7 +48,7 @@ public:
 
     void screenMainMenu() const;                            // title screen display
     void screenDebugOptions() const;                        // setting screen display
-    void screenInfo(const std::vector<Zorb>& zorbs) const;  // info screen display
+    void screenInfo(std::vector<Zorb>& zorbs) const;  // info screen display
     void screenGameOver() const;                            // gameover screen display
     void screenDebugColors() const;                         // debug color screen display
     void screenDebugZorbs() const;                          // debug zorb screen display
@@ -65,10 +65,10 @@ private:
     DisplayFormat currentFormat; // Member variable to store the current display format
 
     // Functions for displaying Zorbs in different formats
-    void ZorbDisplayTable(const std::vector<Zorb>& zorbs);
-    void ZorbDisplayAscii(const std::vector<Zorb>& zorbs);
-    void ZorbDisplaySimple(const std::vector<Zorb>& zorbs);
-    void ZorbDisplayCompact(const std::vector<Zorb>& zorbs);
+    void ZorbDisplayTable(const std::vector<Zorb>& zorbs) const;
+    void ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const;
+    void ZorbDisplaySimple(const std::vector<Zorb>& zorbs) const;
+    void ZorbDisplayCompact(const std::vector<Zorb>& zorbs) const;
 
     static void _createHorizontalLine(char borderChar);
     static int _countTextLines(const std::string& text);
@@ -141,6 +141,13 @@ void _createStyledTextBox(const std::string& text) {
     for (int i = 0; i < topMargin + topPadding; ++i) {
         std::cout << "| " << std::setw(UI::DISPLAYWIDTH - 1) << " |\n";
     }
+    
+    if(_DEBUGMODE) {
+        // Print debug text at the top of the box, make sure to do formatting regarding GetLengthWithoutEscapeCodes
+        const std::string debugText = (z_debug::FormattedText("[ DEBUG MODE ]", ANSI_RED));
+        std::cout << "| " << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') 
+        << debugText << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') << " |\n";
+    }
 
     std::istringstream iss(text);
     std::string line;
@@ -201,9 +208,10 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW));
 
     // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
-    std::vector<Zorb> sample(2, Zorb());
-    sample[0].SetName("Zorb 1");
-    sample[1].SetName("Zorb 2");
+    std::vector<Zorb> sample = {
+        Zorb(0, 1, "Zorb 1", ZorbAppearance()),
+        Zorb(0, 2, "Zorb 2", ZorbAppearance())
+    };
 
     DisplayZorbs(sample);
     std::cout << std::endl;
@@ -213,7 +221,7 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     //clear the vector sample with the deconstructor
     sample.clear();
 }
-void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
+void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) const{
     switch (currentFormat) {
         case TABLE:
             ZorbDisplayTable(zorbs);
@@ -231,7 +239,7 @@ void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) {
             std::cout << "Invalid display format\n";
     }
 }
-void UI::DisplayZorb(const Zorb& zorb) {
+void UI::DisplayZorb(const Zorb& zorb) const{
     switch (currentFormat) {
         case TABLE:
             ZorbDisplayTable({zorb});
@@ -264,7 +272,7 @@ std::string UI::GetDisplayFormatAsString() const {
     }
 }
 
-void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) const{
     _createDivider('-');
     std::cout << std::left << std::setw(20) << "Name" 
     << std::setw(10) << "Team" 
@@ -280,7 +288,7 @@ void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) {
     _createDivider('-');
     std::cout << std::right << std::setw(0);
 }
-void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const{
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;
@@ -312,7 +320,7 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
         powerText.resize(ZORBWIDTH, ' ');
         
         // check if Zorb will fit on the current line in the console window
-        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
+        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) >= CONSOLESIZE) {
             rowBuffers.push_back(charLines);
             charLines.clear();
         } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
@@ -333,12 +341,12 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) {
         }
     }
 }
-void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) const{
     for (const Zorb& zorb : zorbs) {
         std::cout << zorb.GetName() << ": T" << zorb.GetTeamId() << ", " << zorb.GetPower() << " Power\n";
     }
 }
-void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs) {
+void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs) const{
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;
