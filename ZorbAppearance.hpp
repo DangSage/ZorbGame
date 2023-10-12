@@ -46,42 +46,57 @@ void initAppearanceMaps() {
         appearanceMap[static_cast<appearanceEnum>(appNum)] = appearanceString;
         appearanceNames[static_cast<appearanceEnum>(appNum)] = appearance["name"];
         appNum++;
+        if(_DEBUGMODE)
+            std::cout << "appearance " << appNum << '-' << appearance["name"] << std::endl;
     }
+    if(_DEBUGMODE) {
+            std::cout << "DEBUG: initAppearanceMaps() - total appearances: " << appNum << std::endl;
+            std::cout << "DEBUG: initAppearanceMaps() - appearanceMap size: " << appearanceMap.size() << std::endl;
+            std::cout << "DEBUG: initAppearanceMaps() - appearanceNames size: " << appearanceNames.size() << std::endl;
+    }
+}
+
+appearanceEnum GetRandomAppearance() {
+    //randomly pick an appearance from the map and return the enum
+    int randomAppearance = z_debug::RandomValue<int>(0, appearanceMap.size()-1);
+    if(_DEBUGMODE)
+        std::cout << "DEBUG: GetRandomAppearance() - rolled: " << randomAppearance << ": " << appearanceNames.at(static_cast<appearanceEnum>(randomAppearance)) << std::endl;
+    return static_cast<appearanceEnum>(randomAppearance);
 }
 //endregion
 
 class ZorbAppearance {
+private:
+    std::string color;
+    std::string currentAppearance;
+    appearanceEnum currentEnum;
 public:
-    ZorbAppearance() { SetAppearance(static_cast<appearanceEnum>(0)); z_debug::zorbAppearanceCount++; } //default constructor
-    ZorbAppearance(appearanceEnum _enum, std::string _color = "") { 
-        ZorbAppearance();
-        SetAppearance(_enum, _color); 
-    }
+    ZorbAppearance(appearanceEnum _enum = GetRandomAppearance(), std::string _color = "") 
+    : color(_color), currentEnum(_enum), currentAppearance(SetAppearance(_enum, _color)) {}
+    
     ZorbAppearance(const ZorbAppearance* other) {
         // Copy the values from the other object
         this->color = other->color;
         this->currentAppearance = other->currentAppearance;
+        this->currentAppearance = other->currentAppearance;
     }
 
-    ~ZorbAppearance() { z_debug::zorbAppearanceCount--; }
+    ~ZorbAppearance() {} //destructor
 
-    void SetAppearance(appearanceEnum zorbAppearance, std::string COLOR = "");   //setting appearance
+    std::string SetColor(std::string _color) { color = _color; currentAppearance = SetAppearance(currentEnum, color); return currentAppearance; }
+    std::string SetAppearance(appearanceEnum _enum, std::string COLOR = "");   //setting appearance
 
     std::string GetAppearance() const;
     std::string GetColor() const { return color; }
-private:
-    std::string color;
-    std::string currentAppearance;
 };
 
 //region ZorbAppearance Functions
-void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
+std::string ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
 {
     // Check if the specified appearanceEnum exists in the map
     auto it = appearanceMap.find(_enum);
     if (it != appearanceMap.end()) {
         std::string before = it->second; // Use the mapped string
-
         std::string _appearance;
 
         // Split the multi-line string into individual lines
@@ -95,8 +110,7 @@ void ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)
                 _appearance += ANSI_RESET;
             _appearance += "\n";
         }
-        currentAppearance = _appearance;
-        color = COLOR;
+        return _appearance;
     } else {
         std::cout << "EXCEPTION: appearance not set, invalid enum. (ZorbAppearance::SetAppearance)" << std::endl
             << "No appearance set for enum " << static_cast<int>(_enum) << std::endl;

@@ -295,5 +295,16 @@
         ],
         "name": "bearboy",
         "enum": "APPEARANCE_DOGGY"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   x   ",
+        "._-|-_.",
+        "| 0+0 |",
+        " > H < "
+        ],
+        "name": "robotic",
+        "enum": "APPEARANCE_ROBOT"
     }
 ]

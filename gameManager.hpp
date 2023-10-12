@@ -42,9 +42,7 @@ private:
 void GameManager::startGame() {
     // Initialize game objects
     
-    m_zorbs.push_back(Zorb(0, 1, "Neep Narp"));
-    m_zorbs.at(0).SetAppearance(static_cast<appearanceEnum>(0), ANSI_GREEN);
-    m_zorbs.push_back(Zorb(0)); // NPC zorb
+    m_zorbs.push_back(Zorb(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ANSI_GREEN))); // initialize first zorb
 
     // Game loop
     while (true) {
@@ -114,7 +112,7 @@ void GameManager::handleMainMenuInput() {
     }
 }
 void GameManager::handleOptionsMenuInput() {
-    switch (validatedInput({'1','2','3','4','A','B','C','Q'})) {
+    switch (validatedInput({'1','2','3','4','A','B','C','D','Q'})) {
         case '1':
             m_ui.SetDisplayFormat(SIMPLE);
             break;
@@ -136,6 +134,9 @@ void GameManager::handleOptionsMenuInput() {
         case 'C':
             ChangeConsoleTheme();
             break;
+        case 'D':
+            ChangeDebugMode();
+            break;
         case 'Q':
             m_gameState = GameState::MainMenu;
             break;
@@ -146,7 +147,7 @@ void GameManager::handleOptionsMenuInput() {
 }
 void GameManager::handleGameOverInput() {
     endGame();
-    switch (validatedInput({'1','Q'}, true)) {
+    switch (validatedInput({'1','Q'})) {
         case '1':
             m_gameState = GameState::MainMenu;
             break;

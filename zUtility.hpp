@@ -9,8 +9,8 @@
 
 namespace z_debug {
     // Track the counts of Zorb and ZorbAppearance objects
-    static int zorbCount = 0;
-    static int zorbAppearanceCount = 0;
+    static int zorbCount;
+    static int zorbAppearanceCount;
 
     // Function template to generate a random value within a specified range
     template <typename T>
@@ -142,7 +142,7 @@ namespace z_debug {
 
 // Function template to validate user input
 template <typename T>
-T validatedInput(std::initializer_list<T> validInputs, bool debug = false) {
+T validatedInput(std::initializer_list<T> validInputs) {
     std::string validInputsStr;
     size_t numInputs = validInputs.size();
     // define maxInputLength as the length of the longest input
@@ -167,8 +167,9 @@ T validatedInput(std::initializer_list<T> validInputs, bool debug = false) {
         std::cin >> input;
         std::transform(input.begin(), input.end(), input.begin(), ::toupper);
     }
-    if (debug) {
+    if (_DEBUGMODE) {
         std::cout << "DEBUG: validatedInput() - input: " << input << std::endl;
+        z_debug::clearInputBuffer();
     }
     //return validated input
     return static_cast<T>(input.front());
