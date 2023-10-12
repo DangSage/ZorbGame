@@ -23,8 +23,8 @@ static std::string ANSI_RESET = "\x1B[0m";
 #define ANSI_WHITE "\x1B[37m"
 
 // define size of display limit
-#define CONSOLESIZE 85
-#define ZORBWIDTH 7
+constexpr int CONSOLESIZE = 85;
+constexpr int ZORBWIDTH = 7;
 bool _LIGHTTHEME = false; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
 
