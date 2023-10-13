@@ -9,7 +9,7 @@ std::string command = "start " + url; // "start" is a Windows command to open a 
 
 class GameManager {
 public:
-    GameManager(UI& ui) : m_ui(ui), m_gameplayManager(GameplayManager(*this)) { 
+    GameManager(UI& ui) : m_ui(ui) { 
         ForceTerminal();
         initAppearanceMaps();
     } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
@@ -18,8 +18,8 @@ public:
     void endGame();
 
 protected:
-    // Add a GameplayManager object to the GameManager that is a friend
-    GameplayManager m_gameplayManager;
+    // Add a GameplayManager object to the GameManager that is a child object
+    GameplayManager m_gameplayManager = GameplayManager(*this);
     GameState m_gameState = GameState::InfoMenu;
     std::vector<Zorb> m_zorbs;  // All zorbs
     UI& m_ui;   // UI object
