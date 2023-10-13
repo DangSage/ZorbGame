@@ -1,7 +1,5 @@
-#include <vector>
 #include "Zorb.hpp"
 #include "zUI.hpp"
-#include "gameDefs.hpp"
 #include "gameplayManager.hpp"
 
 std::string url = "https://github.com/DangSage/ZorbGame";
@@ -41,7 +39,6 @@ private:
 //region GameManager Functions
 void GameManager::startGame() {
     // Initialize game objects
-    
     m_zorbs.push_back(Zorb(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN))); // initialize first zorb
 
     // Game loop

@@ -3,58 +3,8 @@
 
 #include <map>
 #include <unordered_map>
-#include "gameDefs.hpp"
-#include "json.hpp"
+#include "pch.hpp"
 #include <fstream>
-
-using json = nlohmann::json;
-
-//region appearance enums and maps
-enum class appearanceEnum : int {}; //dynamic enum for appearance
-std::map<appearanceEnum, std::string> appearanceMap; //map of appearance enums to appearance strings
-std::map<appearanceEnum, std::string> appearanceNames; //map of appearance enums to names
-
-//initialize appearance maps
-void initAppearanceMaps() {
-    std::ifstream file("appearances.json");
-    json j;
-    file >> j;
-    int appNum = 0;
-    // Loop through the JSON array and add each appearance to the appearance map
-    for (auto& appearance : j) {
-        std::string appearanceString;
-        int lineCount = 0;
-        /* Example JSON entry:
-            "       ",
-            "   o   ",
-            "./\\|/\\.",
-            "( o.o )",
-            " > ^ < "
-        ]
-        */
-        for (auto& line : appearance["appearance"]) {
-            if (static_cast<std::string>(line).length() != ZORBWIDTH) { //exception handling for invalid appearance width
-                std::cout << ansi::YELLOW << "EXCEPTION: appearance width != to ZORBWIDTH, initalization error." << std::endl
-                << "\tLine: " << lineCount << " of enum " << appearance["enum"] << std::endl
-                << "\tAppearance width: " << static_cast<std::string>(line).length() << ansi::RESET << std::endl;
-                exit(0);
-            }
-            appearanceString += line;
-            appearanceString += "\n";
-            lineCount++;
-        }
-        appearanceMap[static_cast<appearanceEnum>(appNum)] = appearanceString;
-        appearanceNames[static_cast<appearanceEnum>(appNum)] = appearance["name"];
-        appNum++;
-        if(_DEBUGMODE)
-            std::cout << "appearance " << appNum << '-' << appearance["name"] << std::endl;
-    }
-    if(_DEBUGMODE) {
-            std::cout << "DEBUG: initAppearanceMaps() - total appearances: " << appNum << std::endl;
-            std::cout << "DEBUG: initAppearanceMaps() - appearanceMap size: " << appearanceMap.size() << std::endl;
-            std::cout << "DEBUG: initAppearanceMaps() - appearanceNames size: " << appearanceNames.size() << std::endl;
-    }
-}
 
 appearanceEnum GetRandomAppearance() {
     //randomly pick an appearance from the map and return the enum

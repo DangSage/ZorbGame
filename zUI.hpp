@@ -2,7 +2,7 @@
 #define Z_UI_HPP
 
 #include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
-#include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
+#include "pch.hpp" // Include pch.hpp for precompiled header usage
 
 namespace z_debug {
     void DisplayDebugColors() {
