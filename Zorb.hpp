@@ -6,7 +6,7 @@
 
 class Zorb {
 public:
-    Zorb(int power = 0, int team_id = -1, const std::string& name = RandomZorbName(), ZorbAppearance _appearance = ZorbAppearance()) 
+    Zorb(int power = 0, int team_id = -1, const std::string& name = zorb::RandomName(), ZorbAppearance _appearance = ZorbAppearance()) 
     : power(power), 
     team_id(team_id), 
     name(name), 

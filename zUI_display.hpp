@@ -85,11 +85,11 @@ void UI::screenInfo(std::vector<Zorb>& zorbs) const {
             //define a vector of zorbs to display called sampleZorbs1, make them green
             std::vector<Zorb> sZorbs = std::vector<Zorb>(0);
             for(int i = 0; i < 4; i++)
-                sZorbs.push_back(Zorb(0, 1, RandomZorbName(), ZorbAppearance(GetRandomAppearance(), ANSI_GREEN)));
+                sZorbs.push_back(Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ANSI_GREEN)));
 
             std::vector<Zorb> eZorbs = std::vector<Zorb>(0);
             for(int i = 0; i < 4; i++)
-                eZorbs.push_back(Zorb(0, 2, RandomZorbName(), ZorbAppearance(GetRandomAppearance(), ANSI_MAGENTA)));
+                eZorbs.push_back(Zorb(0, 2, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ANSI_MAGENTA)));
 
             std::cout << "Player Zorbs" << std::endl;
             DisplayZorbs(sZorbs);

@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
+#include <array>
 
 // Define ANSI color escape codes as macros
 static std::string ANSI_RESET = "\x1B[0m";
@@ -101,91 +102,87 @@ enum class GameState {
     End = -1
 };
 
-//make a list of names that we can access later
-const std::vector<std::string> zorbNames = {
-    "Barg",
-    "Blarg",
-    "Borp",
-    "Bugg",
-    "Gleep",
-    "Gleepy",
-    "Glip",
-    "Glarp",
-    "Greep",
-    "Groopy",
-    "Lap",
-    "Leep",
-    "Lip",
-    "Map",
-    "Mip",
-    "Neep",
-    "Nip",
-    "Nipp",
-    "Norp",
-    "Peeg",
-    "Porg",
-    "Plip",
-    "Waby",
-    "Weep",
-    "Wree",
-    "Zaby",
-    "Zap",
-    "Zip",
-    "Zep",
-    "Zug",
-    "Zorp",
-    "Flap",
-    "Quip",
-    "Snarp",
-    "Snip",
-    "Twip",
-    "Vorp",
-    "Whap",
-    "Yip",
-    "Beepy",
-    "Quor",
-    "Qazy",
-    "Qee-Qee",
-    "Beeb",
-    "Gegy",
-    "Glorb",
-    "Norb",
-    "Zleep",
-    "Zeegul",
-    "Googl",
-    "Yabl",
-    "Cthulhu",
-    "Breemy",
-    "Byny",
-    "Glorp",
-    "Lorg",
-    "Loop",
-    "Beerny",
-    "Zlorg",
-    "Zlarp",
-    "Zim",
-    "Zorby",
-    "Floob",
-    "Zulone",
-    "Gorpt",
-    "Zop",
-    "Gnap",
-    "Flubb",
-    "Bleeble",
-    "Vlup",
-    "Skeep",
-    "Schrelb",
-    "Blek",
-    "Schloo",
-    "Thlok"
-};
 
-//randomly select 2 names from zorb name list and concatenate them into a singular string
-std::string RandomZorbName() {
-    std::string name = zorbNames[rand() % zorbNames.size()] + " " + zorbNames[rand() % zorbNames.size()];
-    return name;
+namespace zorb {
+    constexpr std::array<std::string_view, 75> NAMES = {
+        "Beepy",
+        "Beerny",
+        "Beeb",
+        "Barg",
+        "Bleeble",
+        "Blarg",
+        "Borp",
+        "Breemy",
+        "Bugg",
+        "Byny",
+        "Cthulhu",
+        "Floob",
+        "Flap",
+        "Flubb",
+        "Gegy",
+        "Gleep",
+        "Gleepy",
+        "Gloop",
+        "Glorb",
+        "Glorp",
+        "Googl",
+        "Gnap",
+        "Greep",
+        "Groopy",
+        "Lap",
+        "Leep",
+        "Lip",
+        "Lorg",
+        "Loop",
+        "Map",
+        "Mip",
+        "Neep",
+        "Nip",
+        "Nepp",
+        "Norb",
+        "Peeg",
+        "Plip",
+        "Porg",
+        "Qazy",
+        "Qee-Qee",
+        "Quip",
+        "Quor",
+        "Schloo",
+        "Schrelb",
+        "Skeep",
+        "Snarp",
+        "Snip",
+        "Thlok",
+        "Twip",
+        "Vlup",
+        "Vorp",
+        "Waby",
+        "Weep",
+        "Wree",
+        "Yabl",
+        "Yip",
+        "Zaby",
+        "Zap",
+        "Zep",
+        "Zim",
+        "Zleep",
+        "Zlarp",
+        "Zlorg",
+        "Zorby",
+        "Zop",
+        "Zug",
+        "Zulone",
+        "Zorp",
+        "Zip",
+        "Zeegul"
+    };
+
+    std::string RandomName() {
+        std::string name = static_cast<std::string>(NAMES[rand() % NAMES.size()]) + " " + static_cast<std::string>(NAMES[rand() % NAMES.size()]);
+        return name;
+    }
 }
-//endregion
+
 
 //region ASCII ART DEFINITIONS
 namespace z_art {
