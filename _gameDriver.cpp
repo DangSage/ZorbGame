@@ -1,4 +1,4 @@
-#include "zUtility.hpp" // Include zUtility.hpp for z_debug namespace
+// Creator: Ethan Dang
 #include "gameManager.hpp"
 
 int main() {
