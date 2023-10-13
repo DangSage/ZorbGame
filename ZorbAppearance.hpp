@@ -34,9 +34,9 @@ void initAppearanceMaps() {
         */
         for (auto& line : appearance["appearance"]) {
             if (static_cast<std::string>(line).length() != ZORBWIDTH) { //exception handling for invalid appearance width
-                std::cout << ANSI_YELLOW << "EXCEPTION: appearance width != to ZORBWIDTH, initalization error." << std::endl
+                std::cout << ansi::YELLOW << "EXCEPTION: appearance width != to ZORBWIDTH, initalization error." << std::endl
                 << "\tLine: " << lineCount << " of enum " << appearance["enum"] << std::endl
-                << "\tAppearance width: " << static_cast<std::string>(line).length() << ANSI_RESET << std::endl;
+                << "\tAppearance width: " << static_cast<std::string>(line).length() << ansi::RESET << std::endl;
                 exit(0);
             }
             appearanceString += line;
@@ -107,7 +107,7 @@ std::string ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLO
             _appearance += COLOR;
             _appearance += line;
             if(COLOR != "")
-                _appearance += ANSI_RESET;
+                _appearance += ansi::RESET;
             _appearance += "\n";
         }
         return _appearance;

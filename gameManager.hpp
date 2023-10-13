@@ -42,7 +42,7 @@ private:
 void GameManager::startGame() {
     // Initialize game objects
     
-    m_zorbs.push_back(Zorb(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ANSI_GREEN))); // initialize first zorb
+    m_zorbs.push_back(Zorb(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN))); // initialize first zorb
 
     // Game loop
     while (true) {

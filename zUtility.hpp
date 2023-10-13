@@ -35,7 +35,8 @@ namespace z_debug {
     }
     
     std::string PrintError(const std::string& error) {
-        return ANSI_RED + error + ANSI_RESET;
+        std::cout << ansi::RED << error << ansi::RESET << std::endl;
+        return ansi::RED + error + ansi::RESET;
     }
 
     // Function to get the length of a string without counting escape codes
@@ -102,13 +103,13 @@ namespace z_debug {
         if (!color.empty()) {
             std::cout << color;
         }
-        std::cout << text << ANSI_RESET;
+        std::cout << text << ansi::RESET;
     }
 
     // Function to return a string with colors and color reset codes
     std::string FormattedText(const std::string& text, const std::string& color = "") {
         if (!color.empty())
-            return color + text + ANSI_RESET;   // Wrap the text with the specified color codes
+            return color + text + ansi::RESET;   // Wrap the text with the specified color codes
         else
         {
             OutputDebugString("Log: No color specified at call of FormattedText()\n\tYou may want to pass text element instead.\n");
@@ -118,11 +119,11 @@ namespace z_debug {
 
     // Returns the static number of objects in memory
     void CountGameObjectsInMemory() {
-        std::cout << ANSI_YELLOW << std::endl
+        std::cout << ansi::YELLOW << std::endl
         << zorbCount << " Zorb Object(s) in Memory" << std::endl
         << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl
         //reset color and end of zorb objects
-        << ANSI_RESET << std::endl;
+        << ansi::RESET << std::endl;
     }
 
     // Clears the input buffer to prevent any UI errors and returns the first discarded character
@@ -133,11 +134,6 @@ namespace z_debug {
         return discardedChar;
     }
 
-    // GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
-    std::string GetRandomColor() {
-        const std::string ANSI_COLOR_CODES[] = {ANSI_RED, ANSI_GREEN, ANSI_YELLOW, ANSI_BLUE, ANSI_MAGENTA, ANSI_CYAN, ANSI_WHITE};
-        return ANSI_COLOR_CODES[RandomValue<int>(0, ANSI_COLOR_CODES->size())];
-    }
 } // namespace z_debug
 
 // Function template to validate user input
@@ -162,7 +158,7 @@ T validatedInput(std::initializer_list<T> validInputs) {
         //remove the previous output from console output
         std::cout << "\033[F";
         std::cout << "\033[K";
-        std::cout << ANSI_RED << "Invalid input. Please try again: " << ANSI_RESET;
+        std::cout << ansi::RED << "Invalid input. Please try again: " << ansi::RESET;
         std::cin.clear();
         std::cin >> input;
         std::transform(input.begin(), input.end(), input.begin(), ::toupper);
@@ -180,5 +176,10 @@ T validatedInput(std::initializer_list<T> validInputs) {
 
 }
 
+// GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
+std::string ansi::GetRandomColor() {
+    const std::string COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
+    return COLOR_CODES[z_debug::RandomValue<int>(0, COLOR_CODES->size())];
+}
 
 #endif // Z_UTILITY_HPP

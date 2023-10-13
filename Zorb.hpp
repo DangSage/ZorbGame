@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
 
     std::string nameText = zorb.GetName();
-    std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ANSI_RESET);
+    std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ansi::RESET);
 
     for (size_t i = 0; i < appearanceLines.size(); ++i) {
         charLines.push_back(z_debug::SpaceToPrint(margin) + appearanceLines[i]);
@@ -99,7 +99,7 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
 }
 
 namespace z_debug {
-    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string color = ANSI_YELLOW) {
+    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string color = ansi::YELLOW) {
         if(appearanceMap.size() < 1) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;
