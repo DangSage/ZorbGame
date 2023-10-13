@@ -14,10 +14,10 @@ namespace z_debug {
                     << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
         };
         std::cout << "Debug ANSI Colors:\n";
-        columnDisplay(FormattedText(" White: Text", ANSI_WHITE), FormattedText("Black: Text", ANSI_BLACK));
-        columnDisplay(FormattedText(" Red: Text", ANSI_RED), FormattedText("Green: Text", ANSI_GREEN));
-        columnDisplay(FormattedText(" Yellow: Text", ANSI_YELLOW), FormattedText("Blue: Text", ANSI_BLUE));
-        columnDisplay(FormattedText(" Magenta: Text", ANSI_MAGENTA), FormattedText("Cyan: Text", ANSI_CYAN));
+        columnDisplay(FormattedText(" White: Text", ansi::WHITE), FormattedText("Black: Text", ansi::BLACK));
+        columnDisplay(FormattedText(" Red: Text", ansi::RED), FormattedText("Green: Text", ansi::GREEN));
+        columnDisplay(FormattedText(" Yellow: Text", ansi::YELLOW), FormattedText("Blue: Text", ansi::BLUE));
+        columnDisplay(FormattedText(" Magenta: Text", ansi::MAGENTA), FormattedText("Cyan: Text", ansi::CYAN));
     }
 }
 
@@ -109,7 +109,7 @@ int UI::_countTextLines(const std::string& text) {
 void UI::_createHorizontalLine(char borderChar) {
     for (int i = 0; i < DISPLAYWIDTH; ++i) {
         if(i==0 || i==(DISPLAYWIDTH-1))
-            std::cout << ANSI_RESET << '#';
+            std::cout << ansi::RESET << '#';
         else
             std::cout << borderChar;
     }
@@ -144,7 +144,7 @@ void _createStyledTextBox(const std::string& text) {
     
     if(_DEBUGMODE) {
         // Print debug text at the top of the box, make sure to do formatting regarding GetLengthWithoutEscapeCodes
-        const std::string debugText = (z_debug::FormattedText("[ DEBUG MODE ]", ANSI_RED));
+        const std::string debugText = (z_debug::FormattedText("[ DEBUG MODE ]", ansi::RED));
         std::cout << "| " << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') 
         << debugText << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') << " |\n";
     }
@@ -198,14 +198,14 @@ void _createDivider(char borderChar) {
 //region Zorb display functions
 void UI::SetDisplayFormat(DisplayFormat format) {
     if (currentFormat == format) {
-        std::cout << z_debug::FormattedText("Display format is already set to " + GetDisplayFormatAsString(), ANSI_YELLOW) << std::endl;
+        std::cout << z_debug::FormattedText("Display format is already set to " + GetDisplayFormatAsString(), ansi::YELLOW) << std::endl;
         z_debug::clearInputBuffer();
         return; // no need to change the format if it's already set
     }
 
     currentFormat = format;
     _clearScreen();
-    _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW));
+    _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW));
 
     // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
     std::vector<Zorb> sample = {

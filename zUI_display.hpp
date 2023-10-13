@@ -25,7 +25,7 @@ void UI::screenMainMenu() const {
     // Display the title text
     _createHorizontalLine('-');
     std::cout << titleText << std::endl;
-    z_debug::PrintZorbAppearances(4, false, ANSI_CYAN);
+    z_debug::PrintZorbAppearances(4, false, ansi::CYAN);
     _createHorizontalLine('-');
     // Display menu options
     std::cout << menuText;
@@ -46,13 +46,13 @@ void UI::screenDebugOptions() const {
 
     std::cout << z_art::optionsScreen << std::endl;
     _createHorizontalLine('-');
-    columnDisplay(("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ANSI_YELLOW) + '\t'), 
+    columnDisplay(("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW) + '\t'), 
         "Other Options: ");
     std::cout << std::endl;
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
-    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == true ? "Light" : "Dark"), ANSI_BLUE));
-    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_debug::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ANSI_RED));
+    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == true ? "Light" : "Dark"), ansi::BLUE));
+    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_debug::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ansi::RED));
 
     std::cout << std::right << std::setw(0) << std::endl
               << "Q. Quit back to Title Screen" << std::endl;
@@ -79,17 +79,17 @@ void UI::screenInfo(std::vector<Zorb>& zorbs) const {
         else if (iteration==1)
             std::cout << zorbs.at(0) << std::endl;
         else if (iteration==2)
-            z_debug::PrintZorbAppearances(8, false, ANSI_GREEN);
+            z_debug::PrintZorbAppearances(8, false, ansi::GREEN);
         else if (iteration==3){
             std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
             //define a vector of zorbs to display called sampleZorbs1, make them green
             std::vector<Zorb> sZorbs = std::vector<Zorb>(0);
             for(int i = 0; i < 4; i++)
-                sZorbs.push_back(Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ANSI_GREEN)));
+                sZorbs.push_back(Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)));
 
             std::vector<Zorb> eZorbs = std::vector<Zorb>(0);
             for(int i = 0; i < 4; i++)
-                eZorbs.push_back(Zorb(0, 2, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ANSI_MAGENTA)));
+                eZorbs.push_back(Zorb(0, 2, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)));
 
             std::cout << "Player Zorbs" << std::endl;
             DisplayZorbs(sZorbs);

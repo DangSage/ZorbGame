@@ -7,27 +7,32 @@
 
 #include <iostream> // Include necessary standard library headers
 #include <iomanip>
+#include <array>
 #include <vector>
 #include <string>
 #include <cstdlib>
-#include <array>
-
-// Define ANSI color escape codes as macros
-static std::string ANSI_RESET = "\x1B[0m";
-#define ANSI_BLACK "\x1B[30m"
-#define ANSI_RED "\x1B[31m"
-#define ANSI_GREEN "\x1B[32m"
-#define ANSI_YELLOW "\x1B[33m"
-#define ANSI_BLUE "\x1B[34m"
-#define ANSI_MAGENTA "\x1B[35m"
-#define ANSI_CYAN "\x1B[36m"
-#define ANSI_WHITE "\x1B[37m"
 
 // define size of display limit
 constexpr int CONSOLESIZE = 85;
 constexpr int ZORBWIDTH = 7;
 bool _LIGHTTHEME = false; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
+
+// Define ANSI color escape codes as macros
+namespace ansi {
+    static std::string RESET = "\x1B[0m";
+    constexpr char BLACK[] = "\x1B[30m";
+    constexpr char RED[] = "\x1B[31m";
+    constexpr char GREEN[] = "\x1B[32m";
+    constexpr char YELLOW[] = "\x1B[33m";
+    constexpr char BLUE[] = "\x1B[34m";
+    constexpr char MAGENTA[] = "\x1B[35m";
+    constexpr char CYAN[] = "\x1B[36m";
+    constexpr char WHITE[] = "\x1B[37m";
+
+    // Randomly pick a color from the list of ANSI color codes. This function is defined in zUtility.hpp
+    std::string GetRandomColor();
+}
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
@@ -60,14 +65,15 @@ void ChangeFont(int spacing) {
 void ChangeConsoleTheme() {
     if (!_LIGHTTHEME) {
         system("color F0");
-        ANSI_RESET = "\x1B[30m";    //set ANSI_RESET to black on white
+        ansi::RESET = "\x1B[30m";    //set ansi::RESET to black on white
     } else {
         system("color 07");
-        ANSI_RESET = "\x1B[37m";    //set ANSI_RESET to white on black
+        ansi::RESET = "\x1B[37m";    //set ansi::RESET to white on black
     }
     _LIGHTTHEME = !_LIGHTTHEME; //toggle the theme
 }
 
+//function that changes the debug mode
 void ChangeDebugMode() {
     _DEBUGMODE = !_DEBUGMODE;
 }
@@ -90,8 +96,7 @@ void ForceTerminal() {
     ChangeConsoleTheme();
 }
 
-
-//region INGAME DEFINITIONS
+//enum for game states to be used in the game driver
 enum class GameState {
     MainMenu,
     OptionsMenu,
@@ -102,11 +107,10 @@ enum class GameState {
     End = -1
 };
 
-
+//namespace for zorb utility functions, NOT to be confused with the Zorb class
 namespace zorb {
-    constexpr std::array<std::string_view, 75> NAMES = {
+    const std::array<std::string, 75> NAMES = {
         "Beepy",
-        "Beerny",
         "Beeb",
         "Barg",
         "Bleeble",
@@ -178,11 +182,11 @@ namespace zorb {
     };
 
     std::string RandomName() {
-        std::string name = static_cast<std::string>(NAMES[rand() % NAMES.size()]) + " " + static_cast<std::string>(NAMES[rand() % NAMES.size()]);
+        std::string name = NAMES[rand() % NAMES.size()] + " " + NAMES[rand() % NAMES.size()];
         return name;
     }
-}
 
+} // namespace zorb
 
 //region ASCII ART DEFINITIONS
 namespace z_art {
