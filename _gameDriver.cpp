@@ -1,9 +1,10 @@
 // Creator: Ethan Dang
 #include "gameManager.hpp"
 
-int main() {
+int main_() {
     UI _uiM;
     GameManager _gameManager(_uiM);
+    
     _gameManager.startGame();
     return 0;
 }
