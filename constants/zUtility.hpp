@@ -7,6 +7,16 @@
 #include <random>
 #include <stdexcept>
 
+void _pauseSystem() {
+    // Code for pausing the system (platform-dependent)
+    #ifdef _WIN32
+    system("pause"); // Windows
+    #else
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+    #endif
+}
+
 namespace z_debug {
     // Function template to generate a random value within a specified range
     template <typename T>
@@ -113,15 +123,6 @@ namespace z_debug {
         }
     }
 
-    // Returns the static number of objects in memory
-    void CountGameObjectsInMemory() {
-        std::cout << ansi::YELLOW << std::endl
-        << zorb::zorbCount << " Zorb Object(s) in Memory" << std::endl
-        << zorb::appearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl
-        //reset color and end of zorb objects
-        << ansi::RESET << std::endl;
-    }
-
     // Clears the input buffer to prevent any UI errors and returns the first discarded character
     char clearInputBuffer() {
         std::cin.clear(); // clear any error flags
@@ -172,10 +173,26 @@ T validatedInput(std::initializer_list<T> validInputs) {
 
 }
 
+// Function template to choose one random element defined in a list of parameters in this function
+// parameters should be able to take (int i, int j, int k, int l, int m) or (std::string a, std::string b, std::string c, std::string d, std::string e)
+template <typename T>
+T randomChoice(std::initializer_list<T> choices) {
+    //use previously defined function to get random value
+    int randomIndex = z_debug::RandomValue<int>(0, choices.size()-1);
+    //define iterator to the random element
+    auto it = choices.begin();
+    //advance iterator to the random element
+    std::advance(it, randomIndex);
+
+    //return random element
+    return *it;
+}
+
 // GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
 std::string ansi::GetRandomColor() {
     const std::string COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
     return COLOR_CODES[z_debug::RandomValue<int>(0, COLOR_CODES->size())];
 }
+
 
 #endif // Z_UTILITY_HPP

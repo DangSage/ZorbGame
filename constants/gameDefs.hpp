@@ -1,9 +1,10 @@
 #ifndef GAME_DEFS_HPP
 #define GAME_DEFS_HPP
-
 #ifdef _WIN32
     #include <Windows.h>
 #endif
+
+#define IDI_MYICON 101
 
 #include <iostream> // Include necessary standard library headers
 #include <iomanip>
@@ -13,7 +14,7 @@
 #include <cstdlib>
 
 // define size of display limit
-constexpr int CONSOLESIZE = 90;
+constexpr int CONSOLESIZE = 100;
 constexpr int ZORBWIDTH = 7;
 bool _LIGHTTHEME = false; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
@@ -68,7 +69,7 @@ void ChangeFont(int spacing) {
 
 //set the background & text color of the console (F = black, T = white)
 void ChangeConsoleTheme() {
-    if (!_LIGHTTHEME) {
+    if (_LIGHTTHEME) {
         system("color F0");
         ansi::RESET = "\x1B[30m";    //set ansi::RESET to black on white
     } else {
@@ -86,12 +87,33 @@ void ChangeDebugMode() {
 //function that forces the terminal to have borders and a title
 void ForceTerminalBorder() {    //make the text and console thinner like the terminal console in VSC
     #ifdef _WIN32
-        HWND console = GetConsoleWindow();
-        RECT r;
-        GetWindowRect(console, &r); //stores the console's current dimensions
-        MoveWindow(console, r.left, r.top, CONSOLESIZE*15, CONSOLESIZE*15, TRUE);
-        SetConsoleTitle("Zorb Zenith"); //set the title of the console
-        ChangeFont(14);
+        HWND hwndTerminal = GetConsoleWindow();
+        RECT rect;
+        GetWindowRect(hwndTerminal, &rect);
+
+        int width = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+
+        int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+        int borderSize = 10; // set the size of the border
+        int consoleWidth = screenWidth - borderSize * 2;
+        int consoleHeight = screenHeight - borderSize * 2;
+
+        // calculate the new width and height to maintain 1:1 ratio
+        if (consoleWidth > consoleHeight) {
+            consoleWidth = consoleHeight;
+        } else {
+            consoleHeight = consoleWidth;
+        }
+
+        int x = (screenWidth - consoleWidth) / 2;
+        int y = (screenHeight - consoleHeight) / 2;
+
+        MoveWindow(hwndTerminal, x, y, consoleWidth, consoleHeight, TRUE);
+        SetConsoleTitle("Zorb Zenith");
+        ChangeFont(13);
     #endif
 }
 
@@ -185,11 +207,6 @@ namespace zorb {
         "Zip",
         "Zeegul"
     };
-
-    std::string RandomName() {
-        std::string name = NAMES[rand() % NAMES.size()] + " " + NAMES[rand() % NAMES.size()];
-        return name;
-    }
 
 } // namespace zorb
 

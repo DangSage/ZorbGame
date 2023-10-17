@@ -48,10 +48,18 @@ public:
 
     void screenMainMenu() const;                            // title screen display
     void screenDebugOptions() const;                        // setting screen display
-    void screenInfo(std::vector<Zorb>& zorbs) const;  // info screen display
+    void screenInfo() const;                                // info screen display
     void screenGameOver() const;                            // gameover screen display
     void screenDebugColors() const;                         // debug color screen display
     void screenDebugZorbs() const;                          // debug zorb screen display
+
+    void screenRecruitment(const Zorb& zorb) const; // recruitment screen display
+    //screen for when a zorb is defeated
+    void screenDefeated(const Zorb& zorb, const std::string& causeOfDeath, const std::string& killerName, const std::string& killerAppearance);
+    //screen for when a zorb is victorious
+    void screenVictorious(const Zorb& zorb, const std::string& causeOfDeath, const std::string& victimName, const std::string& victimAppearance);
+    //main battle screen that takes 2 arrays of zorbs as parameters
+    void screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name);
 
     // wipes output stream in the console
     friend void _clearScreen(); 
@@ -86,15 +94,6 @@ void _clearScreen() {
         system("cls"); // Windows
     #else
         system("clear"); // Linux and macOS
-    #endif
-}
-void _pauseSystem() {
-    // Code for pausing the system (platform-dependent)
-    #ifdef _WIN32
-    system("pause"); // Windows
-    #else
-        std::cout << "Press Enter to continue...";
-        std::cin.get();
     #endif
 }
 int UI::_countTextLines(const std::string& text) {

@@ -8,7 +8,7 @@
         " > ^ < "
         ],
         "name": "normal",
-        "enum": "APPEARANCE_DEFAULT"
+        "enum": "A_DEFAULT"
     },
     {
         "appearance": [
@@ -19,7 +19,7 @@
         " > ^ < "
         ],
         "name": "aggreso",
-        "enum": "APPEARANCE_ANGRY"
+        "enum": "A_ANGRY"
     },    
     {
         "appearance": [
@@ -30,7 +30,7 @@
         " > ^ < "
         ],
         "name": "happier",
-        "enum": "APPEARANCE_HAPPY"
+        "enum": "A_HAPPY"
     },
     {
         "appearance": [
@@ -41,18 +41,7 @@
         " > ~ < "
         ],
         "name": "baffled",
-        "enum": "APPEARANCE_CONFUSED"
-    },
-    {
-        "appearance": [
-        "       ",
-        "   o   ",
-        "./[|]\\.",
-        "} o.o {",
-        " > ^ < "
-        ],
-        "name": "mainey",
-        "enum": "APPEARANCE_MAINECOON"
+        "enum": "A_CONFUSED"
     },
     {
         "appearance": [
@@ -63,7 +52,7 @@
         " > u < "
         ],
         "name": "winky",
-        "enum": "APPEARANCE_WINK"
+        "enum": "A_WINK"
     },
     {
         "appearance": [
@@ -74,7 +63,7 @@
         "Zzz^ < "
         ],
         "name": "sleepy",
-        "enum": "APPEARANCE_SLEEPY"
+        "enum": "A_SLEEPY"
     },
     {
         "appearance": [
@@ -85,7 +74,7 @@
         " > v < "
         ],
         "name": "blusher",
-        "enum": "APPEARANCE_BLUSHED"
+        "enum": "A_BLUSHED"
     },
     {
         "appearance": [
@@ -96,29 +85,7 @@
         "n> u <n"
         ],
         "name": "greedle",
-        "enum": "APPEARANCE_MONEY"
-    },
-    {
-        "appearance": [
-        "       ",
-        "   o   ",
-        ".-,|,-.",
-        "( o.o )",
-        " > ^ < "
-        ],
-        "name": "foldear",
-        "enum": "APPEARANCE_SCOTFOLD"
-    },
-    {
-        "appearance": [
-        "       ",
-        "   o   ",
-        ",^-|-^,",
-        "( o.o )",
-        " > v < "
-        ],
-        "name": "tinyear",
-        "enum": "APPEARANCE_SCOTFOLD"
+        "enum": "A_MONEY"
     },
     {
         "appearance": [
@@ -129,62 +96,7 @@
         " > - < "
         ],
         "name": "zappity",
-        "enum": "APPEARANCE_CAFFEINE"
-    },
-    {
-        "appearance": [
-        "       ",
-        " ,-*-, ",
-        "'_---_'",
-        "( v.v )",
-        "u> ^ <n"
-        ],
-        "name": "monkely",
-        "enum": "APPEARANCE_MONK"
-    },
-    {
-        "appearance": [
-        "       ",
-        "  _*_  ",
-        "./|-|\\.",
-        "( d.b )",
-        " > v <y"
-        ],
-        "name": "devious",
-        "enum": "APPEARANCE_DEVIL"
-    },
-    {
-        "appearance": [
-        "       ",
-        "   V   ",
-        "./\\|/\\.",
-        "|\\\\|//)",
-        "T> u < "
-        ],
-        "name": "knighty",
-        "enum": "APPEARANCE_KNIGHT"
-    },
-    {
-        "appearance": [
-        "       ",
-        "  ,/^\\_",
-        "_/___{_",
-        "( o.o T",
-        " > W <|"
-        ],
-        "name": "magical",
-        "enum": "APPEARANCE_WIZARD"
-    },
-    {
-        "appearance": [
-        "       ",
-        "  ___  ",
-        "_[|=|]_",
-        "( ^.^ )",
-        "c> ^ <P"
-        ],
-        "name": "builder",
-        "enum": "APPEARANCE_CONSTRUCTION"
+        "enum": "A_CAFFEINE"
     },
     {
         "appearance": [
@@ -195,7 +107,95 @@
         " > b < "
         ],
         "name": "sneaker",
-        "enum": "APPEARANCE_NINJA"
+        "enum": "A_NINJA"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./[|]\\.",
+        "} o.o {",
+        " > ^ < "
+        ],
+        "name": "mainey",
+        "enum": "A_MAINECOON"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        ".-,|,-.",
+        "( o.o )",
+        " > ^ < "
+        ],
+        "name": "foldear",
+        "enum": "A_SCOTFOLD"
+    },    
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        ",^-|-^,",
+        "( o.o )",
+        " > v < "
+        ],
+        "name": "tinyear",
+        "enum": "A_TINYEAR"
+    },
+    {
+        "appearance": [
+        "       ",
+        " ,-*-, ",
+        "'_---_'",
+        "( v.v )",
+        "u> ^ <n"
+        ],
+        "name": "monkely",
+        "enum": "A_MONK"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  _*_  ",
+        "./|-|\\.",
+        "( d.b )",
+        " > v <y"
+        ],
+        "name": "devious",
+        "enum": "A_DEVIL"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   V   ",
+        "./\\|/\\.",
+        "|\\\\|//)",
+        "T> u < "
+        ],
+        "name": "knighty",
+        "enum": "A_KNIGHT"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  ,/^\\_",
+        "_/___{_",
+        "( o.o T",
+        " > W <|"
+        ],
+        "name": "magical",
+        "enum": "A_WIZARD"
+    },
+    {
+        "appearance": [
+        "       ",
+        "  ___  ",
+        "_[|=|]_",
+        "( ^.^ )",
+        "c> ^ <P"
+        ],
+        "name": "builder",
+        "enum": "A_CONSTRUCTION"
     },
     {
         "appearance": [
@@ -206,7 +206,7 @@
         " > = < "
         ],
         "name": "clowner",
-        "enum": "APPEARANCE_CLOWN"
+        "enum": "A_CLOWN"
     },
     {
         "appearance": [
@@ -217,7 +217,7 @@
         " }'m'{ "
         ],
         "name": "skeleto",
-        "enum": "APPEARANCE_SKEL"
+        "enum": "A_SKEL"
     },
     {
         "appearance": [
@@ -228,7 +228,7 @@
         " >_C#< "
         ],
         "name": "zombite",
-        "enum": "APPEARANCE_ZOMBIE"
+        "enum": "A_ZOMBIE"
     },
     {
         "appearance": [
@@ -239,7 +239,7 @@
         "^>' '<^"
         ],
         "name": "vampire",
-        "enum": "APPEARANCE_VAMP"
+        "enum": "A_VAMP"
     },
     {
         "appearance": [
@@ -250,7 +250,7 @@
         " > - < "
         ],
         "name": "human??",
-        "enum": "APPEARANCE_HUMAN"
+        "enum": "A_HUMAN"
     },
     {
         "appearance": [
@@ -261,7 +261,7 @@
         " >{^}< "
         ],
         "name": "grandpa",
-        "enum": "APPEARANCE_OLD"
+        "enum": "A_OLD"
     },
     {
         "appearance": [
@@ -272,7 +272,7 @@
         "'> w <'"
         ],
         "name": "dawggie",
-        "enum": "APPEARANCE_DOGGY"
+        "enum": "A_DOGGY"
     },
     {
         "appearance": [
@@ -283,7 +283,7 @@
         "t> - < "
         ],
         "name": "impiest",
-        "enum": "APPEARANCE_IMP"
+        "enum": "A_IMP"
     },
     {
         "appearance": [
@@ -294,7 +294,7 @@
         " > ^ < "
         ],
         "name": "bearboy",
-        "enum": "APPEARANCE_DOGGY"
+        "enum": "A_DOGGY"
     },
     {
         "appearance": [
@@ -305,6 +305,6 @@
         " > H < "
         ],
         "name": "robotic",
-        "enum": "APPEARANCE_ROBOT"
+        "enum": "A_ROBOT"
     }
 ]

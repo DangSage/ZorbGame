@@ -6,19 +6,31 @@
 #include <memory>
 
 class Zorb {
+private:
+    int power;
+    int team_id;
+    std::string name;
+    ZorbAppearance appearance;
+    static int count; // Static variable to keep track of the number of Zorbs in memory
 public:
     Zorb(int power = 0, int team_id = -1, const std::string& name = zorb::RandomName(), ZorbAppearance _appearance = ZorbAppearance()) 
     : power(power), 
     team_id(team_id), 
     name(name), 
-    appearance(_appearance) {}
+    appearance(_appearance) {
+        count++; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+    }
 
     // Copy constructor
     Zorb(const Zorb& other)
         : power(other.power),
         team_id(other.team_id),
         name(other.name),
-        appearance(other.appearance) {}
+        appearance(other.appearance) { 
+            count++;
+            if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " copied [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+        }
 
     // Move constructor
     Zorb(Zorb&& other) noexcept
@@ -28,14 +40,17 @@ public:
         appearance(std::move(other.appearance)) {}
 
     // Default destructor
-    ~Zorb() {}
+    ~Zorb() { 
+        count--; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " destroyed [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+    }
 
     // Accessor functions
     int GetPower() const { return power; }
     int GetTeamId() const { return team_id; }
+    static int GetCount() { return count; }
     std::string GetName() const { return name; }
     std::string GetAppearance() const { return appearance.GetAppearance(); }
-    ZorbAppearance ReturnAppearanceObject() const { return appearance; }
 
     // Mutator Functions
     void SetPower(int _power) { this->power = _power; }
@@ -45,41 +60,36 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Zorb& zorb); // Overload the insertion operator to print a Zorb
     friend bool operator<(const Zorb& left, const Zorb& right); // Overload the < operator to compare Zorbs
     friend Zorb operator+(const Zorb& zorb1, const Zorb& zorb2); // Overload the + operator to combine two Zorbs
-
-private:
-    int power;
-    int team_id;
-    std::string name;
-    ZorbAppearance appearance;
 };
+
+int Zorb::count = 0; // Initialize the static variable
 
 // Overload the insertion operator
 std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     // Display the Zorb as ASCII art
-    std::vector<std::string> charLines;
-    std::vector<std::vector<std::string>> rowBuffers;
-
-    // Calculate margin
-    size_t margin = (CONSOLESIZE % ZORBWIDTH) + ZORBWIDTH / 2;
-
     std::string appearanceText = zorb.GetAppearance();
+    std::string infoText;
+    
+    if(_DEBUGMODE)
+        infoText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ansi::YELLOW);
+    else
+        infoText = z_debug::FormattedText((std::to_string(zorb.GetPower()) + " power"), ansi::YELLOW);
+
     std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
 
-    std::string nameText = zorb.GetName();
-    std::string powerText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ansi::RESET);
-
-    for (size_t i = 0; i < appearanceLines.size(); ++i) {
-        charLines.push_back(z_debug::SpaceToPrint(margin) + appearanceLines[i]);
+    // Calculate margin
+    size_t longestLineLength = 0;
+    for (const auto& line : appearanceLines) {
+        longestLineLength = std::max(longestLineLength, line.length());
     }
-    charLines.push_back(z_debug::SpaceToPrint(margin) + nameText);
-    charLines.push_back(z_debug::SpaceToPrint(margin) + powerText);
+    size_t margin = (CONSOLESIZE - longestLineLength) / 2;
 
-    rowBuffers.push_back(charLines);
-    for (const auto& rowBuffer : rowBuffers) {
-        for (const std::string& charLine : rowBuffer) {
-            os << charLine << std::endl;
-        }
+    for (const auto& line : appearanceLines) {
+        os << z_debug::SpaceToPrint(margin+ZORBWIDTH) << line << std::endl;
     }
+
+    os << z_debug::CenterAlignStrings(zorb.GetName(), CONSOLESIZE+(ZORBWIDTH/2))
+    << z_debug::CenterAlignString(infoText, CONSOLESIZE-(ZORBWIDTH/2)) << std::endl;
     return os;
 }
 

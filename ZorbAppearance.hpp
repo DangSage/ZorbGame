@@ -20,25 +20,34 @@ private:
     std::string color;
     std::string currentAppearance;
     appearanceEnum currentEnum;
+    static int count; // Declare a static variable to keep track of the number of ZorbAppearance objects
 public:
     ZorbAppearance(appearanceEnum _enum = GetRandomAppearance(), std::string _color = "") 
-    : color(_color), currentEnum(_enum), currentAppearance(SetAppearance(_enum, _color)) {}
-    
-    ZorbAppearance(const ZorbAppearance* other) {
-        // Copy the values from the other object
-        this->color = other->color;
-        this->currentAppearance = other->currentAppearance;
-        this->currentAppearance = other->currentAppearance;
+    : color(_color), currentEnum(_enum), currentAppearance(SetAppearance(_enum, _color)) {
+        count++; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(_enum)) 
+        << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
     }
+    
+    // Copy constructor
+    ZorbAppearance(const ZorbAppearance& other)
+    : currentAppearance(other.currentAppearance), color(other.color), currentEnum(other.currentEnum) {}
 
-    ~ZorbAppearance() {} //destructor
+    ~ZorbAppearance() { 
+        count--; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(currentEnum)) 
+        << " destroyed [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+    } //destructor
 
     std::string SetColor(std::string _color) { color = _color; currentAppearance = SetAppearance(currentEnum, color); return currentAppearance; }
     std::string SetAppearance(appearanceEnum _enum, std::string COLOR = "");   //setting appearance
 
     std::string GetAppearance() const;
     std::string GetColor() const { return color; }
+    static int GetCount() { return count; }
 };
+
+int ZorbAppearance::count = 0; // Initialize the static variable
 
 //region ZorbAppearance Functions
 std::string ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string COLOR)

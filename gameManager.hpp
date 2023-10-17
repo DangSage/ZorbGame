@@ -36,11 +36,19 @@ private:
     //endregion
 };
 
+namespace z_debug {
+    // Returns the static number of objects in memory
+    void CountGameObjectsInMemory() {
+        std::cout << ansi::YELLOW << std::endl
+        << Zorb::GetCount() << " Zorb Object(s) in Memory" << std::endl
+        // << " ZorbAppearance Object(s) in Memory" << std::endl
+        //reset color and end of zorb objects
+        << ansi::RESET << std::endl;
+    }
+}
+
 //region GameManager Functions
 void GameManager::startGame() {
-    // Initialize game objects
-    m_zorbs.push_back(Zorb(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN))); // initialize first zorb
-
     // Game loop
     while (true) {
         switch (m_gameState) {
@@ -55,7 +63,7 @@ void GameManager::startGame() {
             case GameState::Game:
                 break;
             case GameState::InfoMenu:
-                m_ui.screenInfo(m_zorbs);
+                m_ui.screenInfo();
                 m_gameState = GameState::MainMenu;
                 break;
             case GameState::GameOver:

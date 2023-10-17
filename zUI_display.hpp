@@ -51,7 +51,7 @@ void UI::screenDebugOptions() const {
     std::cout << std::endl;
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
-    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == true ? "Light" : "Dark"), ansi::BLUE));
+    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == false ? "Light" : "Dark"), ansi::BLUE));
     columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_debug::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ansi::RED));
 
     std::cout << std::right << std::setw(0) << std::endl
@@ -59,7 +59,21 @@ void UI::screenDebugOptions() const {
     _createHorizontalLine('-');
     std::cout << "Enter your choice: ";
 }
-void UI::screenInfo(std::vector<Zorb>& zorbs) const {
+void UI::screenDebugColors() const {
+    _clearScreen();
+    _createStyledTextBox("DEBUG MENU: These are all the possible colors for the console defined in this game!");
+    z_debug::DisplayDebugColors();
+    _createHorizontalLine('-');
+    _pauseSystem();
+}
+void UI::screenDebugZorbs() const {
+    _clearScreen();
+    _createStyledTextBox("DEBUG MENU: These are all the possible Zorb appearances defined in this game!");
+    z_debug::PrintZorbAppearances(appearanceMap.size(), true);
+    _createHorizontalLine('-');
+    _pauseSystem();
+}
+void UI::screenInfo() const {
     int iteration = 0;
     const std::vector<std::string> introductionText = {
         "In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...",
@@ -76,25 +90,17 @@ void UI::screenInfo(std::vector<Zorb>& zorbs) const {
         _clearScreen();
         if (iteration==0)
             std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
-        else if (iteration==1)
-            std::cout << zorbs.at(0) << std::endl;
+        else if (iteration==1){
+            Zorb neepnarp(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN));
+            std::cout << neepnarp << std::endl;
+        }
         else if (iteration==2)
             z_debug::PrintZorbAppearances(8, false, ansi::GREEN);
         else if (iteration==3){
             std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
-            std::vector<Zorb> sZorbs = {
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN))
-            };
-            std::vector<Zorb> eZorbs = {
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
-                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA))
-            };
-            
+            std::vector<Zorb> sZorbs, eZorbs;
+            sZorbs.emplace_back(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN));
+            eZorbs.emplace_back(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA));       
 
             std::cout << "Player Zorbs" << std::endl;
             DisplayZorbs(sZorbs);
@@ -114,6 +120,10 @@ void UI::screenInfo(std::vector<Zorb>& zorbs) const {
     std::cout << "CONTINUE TO THE MAIN MENU: ";
     _pauseSystem();
 }
+
+//end region
+
+//region game Display Functions
 void UI::screenGameOver() const {
     _clearScreen();
     _createStyledTextBox("GAME OVER! R.I.P. To your last Zorb :(");
@@ -124,28 +134,35 @@ void UI::screenGameOver() const {
     ./\|/\.
     ( x.x )
      > n < )";
-    
-    deadZorb = z_debug::CenterAlignStrings(deadZorb);
 
-    std::cout << std::right << std::setw(0) << std::endl
+    std::cout << std::right << std::setw(0) << z_debug::CenterAlignStrings(deadZorb) << std::endl
     << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
     std::cout << "your choice: ";
 }
-void UI::screenDebugColors() const {
+void UI::screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name) {
     _clearScreen();
-    _createStyledTextBox("DEBUG MENU: These are all the possible colors for the console defined in this game!");
-    z_debug::DisplayDebugColors();
-    _createHorizontalLine('-');
-    _pauseSystem();
-}
-void UI::screenDebugZorbs() const {
-    _clearScreen();
-    _createStyledTextBox("DEBUG MENU: These are all the possible Zorb appearances defined in this game!");
-    z_debug::PrintZorbAppearances(appearanceMap.size(), true);
-    _createHorizontalLine('-');
-    _pauseSystem();
-}
+    _createStyledTextBox("BATTLE TIME!\n" + team1Name + " vs. " + team2Name + "\n" 
+    + std::string(team1Name.length() + team2Name.length() + 5, '-') + "\n"
+    + std::to_string(team1.size()) + " vs. " + std::to_string(team2.size()));
 
-//end region
+    // Display the Zorbs in the battle with the team names
+    // make sure the first team is displayed from the left and the 2nd team from the right
+    std::cout << std::endl << team1Name << std::endl << std::string(team1Name.length(), '-') << std::endl;
+    DisplayZorbs(team1);
+
+    std::cout << std::endl << std::right << std::setw(DISPLAYWIDTH) << team2Name << std::endl <<
+    std::setw(DISPLAYWIDTH)  << std::string(team2Name.length(), '-') << std::endl;
+    DisplayZorbs(team2);
+    _createHorizontalLine('-');
+
+}
+// Recruitment screen where a zorb approaches the player and asks to join their team
+void UI::screenRecruitment(const Zorb& zorb) const {
+    _clearScreen();
+    _createStyledTextBox("A Zorb approaches you and asks to join your team!");
+    std::cout << zorb << std::endl;
+    _createHorizontalLine('-');
+    std::cout << "Do you accept? (Y/N): ";
+}
 #endif // ZUI_DISPLAY_HPP
