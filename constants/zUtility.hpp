@@ -8,10 +8,6 @@
 #include <stdexcept>
 
 namespace z_debug {
-    // Track the counts of Zorb and ZorbAppearance objects
-    static int zorbCount;
-    static int zorbAppearanceCount;
-
     // Function template to generate a random value within a specified range
     template <typename T>
     T RandomValue(const T min, const T max) {
@@ -120,8 +116,8 @@ namespace z_debug {
     // Returns the static number of objects in memory
     void CountGameObjectsInMemory() {
         std::cout << ansi::YELLOW << std::endl
-        << zorbCount << " Zorb Object(s) in Memory" << std::endl
-        << zorbAppearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl
+        << zorb::zorbCount << " Zorb Object(s) in Memory" << std::endl
+        << zorb::appearanceCount << " ZorbAppearance Object(s) in Memory" << std::endl
         //reset color and end of zorb objects
         << ansi::RESET << std::endl;
     }

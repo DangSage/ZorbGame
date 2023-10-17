@@ -3,6 +3,7 @@
 
 #include "pch.hpp"
 #include "ZorbAppearance.hpp" // Include ZorbAppearance.hpp for Zorb class usage
+#include <memory>
 
 class Zorb {
 public:
@@ -10,8 +11,8 @@ public:
     : power(power), 
     team_id(team_id), 
     name(name), 
-    appearance(std::move(_appearance)) {}
-    
+    appearance(_appearance) {}
+
     // Copy constructor
     Zorb(const Zorb& other)
         : power(other.power),

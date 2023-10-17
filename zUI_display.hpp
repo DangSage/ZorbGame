@@ -82,21 +82,24 @@ void UI::screenInfo(std::vector<Zorb>& zorbs) const {
             z_debug::PrintZorbAppearances(8, false, ansi::GREEN);
         else if (iteration==3){
             std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
-            //define a vector of zorbs to display called sampleZorbs1, make them green
-            std::vector<Zorb> sZorbs = std::vector<Zorb>(0);
-            for(int i = 0; i < 4; i++)
-                sZorbs.push_back(Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)));
-
-            std::vector<Zorb> eZorbs = std::vector<Zorb>(0);
-            for(int i = 0; i < 4; i++)
-                eZorbs.push_back(Zorb(0, 2, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)));
+            std::vector<Zorb> sZorbs = {
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN))
+            };
+            std::vector<Zorb> eZorbs = {
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA)),
+                Zorb(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA))
+            };
+            
 
             std::cout << "Player Zorbs" << std::endl;
             DisplayZorbs(sZorbs);
             std::cout << "Enemy Zorbs" << std::endl;
             DisplayZorbs(eZorbs);
-            sZorbs.clear();
-            eZorbs.clear();
         }
 
         iteration++;
