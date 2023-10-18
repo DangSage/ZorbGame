@@ -102,6 +102,39 @@
         "appearance": [
         "       ",
         "   o   ",
+        ".^.|.^.",
+        "( -.- )",
+        "n> T <n"
+        ],
+        "name": "drooler",
+        "enum": "A_DROOLING"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( U.U )",
+        " > w < "
+        ],
+        "name": "uwu-ing",
+        "enum": "A_UWU"
+    },
+    {
+        "appearance": [
+        "       ",
+        "       ",
+        "./\\i/\\.",
+        "( o.o )",
+        " > ^ < "
+        ],
+        "name": "tinyblor",
+        "enum": "A_TINYBLORB"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
         "./[|]\\.",
         "} o.o {",
         " > ^ < "
@@ -124,7 +157,7 @@
         "appearance": [
         "       ",
         "   o   ",
-        ",^-|-^,",
+        ".^,|,^.",
         "( o.o )",
         " > v < "
         ],
@@ -199,6 +232,17 @@
     },
     {
         "appearance": [
+        ".^,i,^.",
+        "( o.o )",
+        " > v < ",
+        "||   ||",
+        "`| n |`"
+        ],
+        "name": "stilton",
+        "enum": "A_TALL"
+    },
+    {
+        "appearance": [
         "       ",
         "   .   ",
         "./\\|/\\.",
@@ -206,7 +250,7 @@
         " }'m'{ "
         ],
         "name": "skeleto",
-        "enum": "A_SKEL"
+        "enum": "A_SKELETON"
     },
     {
         "appearance": [
@@ -255,10 +299,21 @@
     {
         "appearance": [
         "       ",
+        "       ",
+        "./\\_/\\.",
+        "( o.o )",
+        " > ^ < "
+        ],
+        "name": "a cat",
+        "enum": "A_NORMALCAT"
+    },
+    {
+        "appearance": [
+        "       ",
         "   o   ",
         ",^\\|/^,",
         "/ o_o \\",
-        "'> w <'"
+        " > w < "
         ],
         "name": "dawggie",
         "enum": "A_DOGGY"
@@ -295,5 +350,27 @@
         ],
         "name": "robotic",
         "enum": "A_ROBOT"
+    },
+    {
+        "appearance": [
+        "       ",
+        "./\\i/\\.",
+        "{',|,`}",
+        "(-o!o-)",
+        " > ^ < "
+        ],
+        "name": "brainer",
+        "enum": "A_BIGBRAIN"
+    },
+    {
+        "appearance": [
+        "       ",
+        " ,_._, ",
+        "[( T )]",
+        "( 0^0 )",
+        " >uuu< "        
+        ],
+        "name": "cthulhu",
+        "enum": "A_SQUID"
     }
 ]
