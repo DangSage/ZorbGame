@@ -8,16 +8,53 @@
 using json = nlohmann::json;
 
 //region appearance enums and maps
-enum class appearanceEnum : int {}; //dynamic enum for appearance
-std::map<appearanceEnum, std::string> appearanceMap; //map of appearance enums to appearance strings
-std::map<appearanceEnum, std::string> appearanceNames; //map of appearance enums to names
+enum class appearanceEnum : int {
+    A_DEFAULT = 0,
+}; //dynamic enum for appearance
+//map of appearance enums to appearance strings
+std::map<appearanceEnum, std::string> appearanceMap = {
+{
+appearanceEnum::A_DEFAULT, 
+R"(       
+   o   
+./\|/\.
+( o.o )
+ > ^ < )"}
+};
+//map of appearance enums to names
+std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::A_DEFAULT, "normal"}}; 
 
 //initialize appearance maps
 void initAppearanceMaps() {
     std::ifstream file("appearances.json");
+    if(!file) {
+        std::cout << "ERROR: initAppearanceMaps() - appearances.json not found" << std::endl
+        << "DEFAULT appearance will be used. Press any key to continue" << std::endl;
+        std::cin.get();
+
+        //write default appearance to a new appearances.json file
+        json j = {
+            {
+                {"appearance", {
+                    "       ",
+                    "   o   ",
+                    "./\\|/\\.",
+                    "( o.o )",
+                    " > ^ < "
+                }},
+                {"enum", "A_EXAMPLE"},
+                {"name", "example"}
+            }
+        };
+        std::ofstream outfile("appearances.json");
+        outfile << std::setw(4) << j << std::endl;
+        outfile.close();
+        return;
+    }
+
     json j;
     file >> j;
-    int appNum = 0;
+    int appNum = 1;
     // Loop through the JSON array and add each appearance to the appearance map
     for (auto& appearance : j) {
         std::string appearanceString;
@@ -28,7 +65,6 @@ void initAppearanceMaps() {
             "./\\|/\\.",
             "( o.o )",
             " > ^ < "
-        ]
         */
         for (auto& line : appearance["appearance"]) {
             if (static_cast<std::string>(line).length() != ZORBWIDTH) { //exception handling for invalid appearance width
@@ -52,7 +88,9 @@ void initAppearanceMaps() {
             std::cout << "DEBUG: initAppearanceMaps() - appearanceMap size: " << appearanceMap.size() << std::endl;
             std::cout << "DEBUG: initAppearanceMaps() - appearanceNames size: " << appearanceNames.size() << std::endl;
     }
+    file.close();
 }
+//endregion appearance enums and maps
 
 //region ASCII ART DEFINITIONS
 namespace z_art {
