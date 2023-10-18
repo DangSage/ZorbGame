@@ -154,6 +154,7 @@ namespace z_debug {
             if ((charLines.back().length() + GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) > CONSOLESIZE-margin) {
                 rowBuffers.push_back(charLines);
                 charLines.clear();
+                _enumNUM--;
             } else {
                 for (size_t i = 0; i < appearanceLines.size(); ++i) {
                     charLines[i] += z_debug::SpaceToPrint(margin);

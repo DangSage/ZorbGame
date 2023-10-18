@@ -295,7 +295,8 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const{
     // Calculate margin
     size_t margin = (CONSOLESIZE%ZORBWIDTH) + ZORBWIDTH/2;
 
-    for (const Zorb& zorb : zorbs) {
+    for (auto it = zorbs.begin(); it != zorbs.end(); ++it) {
+        const Zorb& zorb = *it;
         std::string appearanceText = zorb.GetAppearance();
         std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
         
@@ -322,6 +323,8 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const{
         if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) >= CONSOLESIZE) {
             rowBuffers.push_back(charLines);
             charLines.clear();
+            //go back by one iteration so that the current zorb is added to the new rowBuffer
+            --it;
         } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
         {
             for (size_t i = 0; i < appearanceLines.size(); ++i) {
