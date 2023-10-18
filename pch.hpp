@@ -10,9 +10,9 @@ Some of those constant functions and variables include the following:
 - Game Art
 */
 
-#include "constants/gameDefs.hpp" // Include gameDefs.hpp for game definitions
-#include "constants/zUtility.hpp" // Include gameDefs.hpp for game definitions
-#include "constants/zArt.hpp" // Include gameDefs.hpp for game definitions
+#include "bin/gameDefs.hpp" // Include gameDefs.hpp for game definitions
+#include "bin/zUtility.hpp" // Include gameDefs.hpp for game definitions
+#include "bin/zArt.hpp" // Include gameDefs.hpp for game definitions
 
 namespace zorb {
     std::string RandomName() {
