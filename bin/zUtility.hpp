@@ -21,19 +21,22 @@ namespace z_debug {
     // Function template to generate a random value within a specified range
     template <typename T>
     T RandomValue(const T min, const T max) {
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        
-        if constexpr (std::is_integral_v<T>) {
-            std::uniform_int_distribution<T> distribution(min, max);
-            return distribution(gen);
-        } else if constexpr (std::is_floating_point_v<T>) {
-            std::uniform_real_distribution<T> distribution(min, max);
-            return distribution(gen);
-        } else {
-            // Handle other types (e.g., custom types) here or throw an error
-            throw std::invalid_argument("Unsupported data type");
+        // Check if the type T is a numeric type
+        if (!std::is_arithmetic<T>::value) {
+            throw std::invalid_argument("RandomValue() requires a numeric type");
         }
+        // Check if the min value is greater than the max value
+        if (min > max) {
+            throw std::invalid_argument("RandomValue() requires min <= max");
+        }
+        // Create a random device
+        std::random_device rd;
+        // Create a Mersenne Twister pseudo-random generator
+        std::mt19937 gen(rd());
+        // Create a uniform distribution of values within the specified range
+        std::uniform_int_distribution<T> dist(min, max);
+        // Return a random value within the specified range
+        return dist(gen);
     }
 
     inline std::string SpaceToPrint(size_t spaces) {
@@ -45,26 +48,46 @@ namespace z_debug {
         return ansi::RED + error + ansi::RESET;
     }
 
-    // Function to get the length of a string without counting escape codes
-    inline size_t GetLengthWithoutEscapeCodes(const std::string& input) {
+    // Helper function to get the length of a string with or without counting escape codes, don't count if the escape code is ansi::RESET
+    inline size_t GetLength(const std::string& input, bool countEscapeCodes) {
         size_t length = 0;
         bool inEscape = false;
 
-        for (char c : input) {
-            if (c == '\033') { // Check for escape code
-                inEscape = true;
-                continue;
+        // if countEscapeCodes, use regex to find all escape codes, then count the number of matches, if the escape code = ansi::RESET, don't count it
+        // else, count the number of characters in the string without counting escape codes
+        if (countEscapeCodes) {
+            std::regex escapeCodeRegex("\x1B\\[[0-9;]*m");
+            std::sregex_iterator it(input.begin(), input.end(), escapeCodeRegex);
+            std::sregex_iterator end;
+            while (it != end) {
+                std::smatch match = *it;
+                    //add the length of the escape code to the total length
+                    length += match.str().length();
+                    //if the escape code is ansi::RESET, subtract the length of the escape code from the total length
+                ++it;
             }
-            
-            if (inEscape) {
-                if (c >= 'A' && c <= 'Z') {
+        } else {
+            for (char c : input) {
+                if (c == '\x1B') {
+                    inEscape = true;
+                } else if (inEscape && c == 'm') {
                     inEscape = false;
+                } else if (!inEscape) {
+                    length++;
                 }
-                continue;
             }
-            length++;
         }
         return length;
+    }
+
+    // Function to get the length of a string without counting escape codes
+    inline size_t GetLengthWithoutEscapeCodes(const std::string& input) {
+        return GetLength(input, false);
+    }
+
+    // Function to get the length of a string's escape codes only
+    inline size_t GetLengthOfEscapeCodes(const std::string& input) {
+        return GetLength(input, true);
     }
 
     // Function to split a multi-line string into individual lines
