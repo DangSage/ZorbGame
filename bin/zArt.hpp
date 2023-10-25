@@ -169,6 +169,10 @@ _/\____/\_             ___.      __________  O            .__   __   .__
  \/    ( ^.^ )    \/ 
        b> ^ <d       
 )";
+
+    std::string const sample = R"(
+sample
+)";
 }
 
 //endregion

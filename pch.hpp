@@ -16,7 +16,7 @@ Some of those constant functions and variables include the following:
 
 namespace zorb {
     std::string RandomName() {
-        std::string name = NAMES[z_debug::RandomValue(static_cast<size_t>(1), NAMES.size()-1)] + " " + NAMES[z_debug::RandomValue(static_cast<size_t>(0), NAMES.size()-1)];
+        std::string name = NAMES[z_debug::RandomValue(static_cast<size_t>(1), NAMES.size()-1)] + " " + NAMES[z_debug::RandomValue(static_cast<size_t>(1), NAMES.size()-1)];
         return name;
     }
 } // namespace zorb

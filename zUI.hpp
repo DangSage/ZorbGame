@@ -34,17 +34,14 @@ public:
     UI(DisplayFormat defaultFormat = ASCII_ART) : currentFormat(defaultFormat) {}
 
     // display driver for vector of zorbs
-    void DisplayZorbs(const std::vector<Zorb>& zorbs) const;
+    void DisplayZorbs(const std::vector<Zorb>& zorbs, char displaySide = 'L') const;
     // display driver for zorb objects
-    void DisplayZorb(const Zorb& zorb) const;
+    void DisplayZorb(const Zorb& zorb, char displaySide = 'L') const;
     // accessor for DisplayFormat (string)
     std::string GetDisplayFormatAsString() const;   
 
     // mutator for DisplayFormat
     void SetDisplayFormat(DisplayFormat format);
-
-    // Constants
-    static const int DISPLAYWIDTH = CONSOLESIZE;
 
     void screenMainMenu() const;                            // title screen display
     void screenDebugOptions() const;                        // setting screen display
@@ -73,10 +70,10 @@ private:
     DisplayFormat currentFormat; // Member variable to store the current display format
 
     // Functions for displaying Zorbs in different formats
-    void ZorbDisplayTable(const std::vector<Zorb>& zorbs) const;
-    void ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const;
-    void ZorbDisplaySimple(const std::vector<Zorb>& zorbs) const;
-    void ZorbDisplayCompact(const std::vector<Zorb>& zorbs) const;
+    void ZorbDisplayTable(const std::vector<Zorb>& zorbs, char displaySide) const;
+    void ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) const;
+    void ZorbDisplaySimple(const std::vector<Zorb>& zorbs, char displaySide) const;
+    void ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) const;
 
     static void _createHorizontalLine(char borderChar);
     static int _countTextLines(const std::string& text);
@@ -106,8 +103,8 @@ int UI::_countTextLines(const std::string& text) {
     return lineCount;
 }
 void UI::_createHorizontalLine(char borderChar) {
-    for (int i = 0; i < DISPLAYWIDTH; ++i) {
-        if(i==0 || i==(DISPLAYWIDTH-1))
+    for (int i = 0; i < CONSOLESIZE; ++i) {
+        if(i==0 || i==(CONSOLESIZE-1))
             std::cout << ansi::RESET << '#';
         else
             std::cout << borderChar;
@@ -125,8 +122,8 @@ void _createStyledTextBox(const std::string& text) {
     // Ensure a minimum box height
     boxHeight = std::max(boxHeight, 3);
 
-    // Calculate the remaining available DISPLAYWIDTH after considering margins
-    const int availableWidth = UI::DISPLAYWIDTH - 2 * margin;
+    // Calculate the remaining available CONSOLESIZE after considering margins
+    const int availableWidth = CONSOLESIZE - (2 * margin);
 
     // Top border
     UI::_createHorizontalLine('~');
@@ -134,59 +131,61 @@ void _createStyledTextBox(const std::string& text) {
     // Calculate the vertical padding
     int topPadding = (boxHeight - UI::_countTextLines(text) - topMargin - bottomMargin) / 2;
     int bottomPadding = boxHeight - UI::_countTextLines(text) - topMargin - bottomMargin - topPadding;
-    int rightPadding;
+    int hPadding;
 
     // Print top margin
     for (int i = 0; i < topMargin + topPadding; ++i) {
-        std::cout << "| " << std::setw(UI::DISPLAYWIDTH - 1) << " |\n";
-    }
-    
-    if(_DEBUGMODE) {
-        // Print debug text at the top of the box, make sure to do formatting regarding GetLengthWithoutEscapeCodes
-        const std::string debugText = (z_debug::FormattedText("[ DEBUG MODE ]", ansi::RED));
-        std::cout << "| " << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') 
-        << debugText << std::string((UI::DISPLAYWIDTH - 6 - z_debug::GetLengthWithoutEscapeCodes(debugText)) / 2, ' ') << " |\n";
+        std::cout << "| " << std::setw(CONSOLESIZE - 1) << " |\n";
     }
 
     std::istringstream iss(text);
     std::string line;
     std::string part;
 
-    while (std::getline(iss, line)) {
-        // Split long lines into multiple lines to fit within the box DISPLAYWIDTH
-        while (z_debug::GetLengthWithoutEscapeCodes(line) > availableWidth) {
-            size_t lastSpace = line.rfind(' ', availableWidth);
-            if (lastSpace == std::string::npos || lastSpace == 0) {
-                // No space found within the available DISPLAYWIDTH, split at the exact character
-                part = line.substr(0, availableWidth);
-                line = line.substr(availableWidth);
-            } else {
-                // Split at the last space within the available DISPLAYWIDTH
-                part = line.substr(0, lastSpace);
-                line = line.substr(lastSpace + 1); // Skip the space
+    while (std::getline(iss, line)) {     
+        // Split the line into parts that are less than or equal the available width
+        std::vector<std::string> parts;
+        std::istringstream iss_line(line);
+        std::string part_line;
+
+        // account for newline characters in the text and split the line into parts
+        while (std::getline(iss_line, part_line, '\n')) {
+            std::istringstream iss_part(part_line);
+            std::string part_part;
+            while (std::getline(iss_part, part_part, ' ')) {
+                if (z_debug::GetLengthWithoutEscapeCodes(part + part_part) >= availableWidth) {
+                    parts.push_back(part);
+                    part = "";
+                }
+                part += part_part + ' ';
             }
-            rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
-            std::cout << "| " << std::string(rightPadding / 2, ' ');
-            std::cout << part;
-            std::cout << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
         }
 
-        // Calculate the remaining space on the right for the remaining part of the line
-        rightPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(line);
+        // Push the remaining part into the parts vector
+        if (!part.empty()) {
+            parts.push_back(part);
+        }
 
-        // Print the remaining part of the line or the short line, centered horizontally
-        std::cout << "| " << std::string(rightPadding / 2, ' ') << line << std::string(rightPadding - rightPadding / 2, ' ') << std::setw(UI::DISPLAYWIDTH - 4 - availableWidth) << " |\n";
+        // Print each part on a new line with right border and padding, centered horizontally without breaking words
+        for (const std::string& part : parts) {
+            // Calculate the remaining space on the right for the remaining part of the line
+            hPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
+
+            // Print the part with padding and centered horizontally
+            std::cout << "| " << std::string(hPadding / 2, ' ') << part << std::string(hPadding - hPadding / 2, ' ') << std::setw(CONSOLESIZE - availableWidth - 1) << " |\n";
+        }
+        part = "";
     }
 
     // Print bottom padding
     for (int i = 0; i < bottomMargin + bottomPadding; ++i) {
-        std::cout << "| " << std::setw(UI::DISPLAYWIDTH - 1) << " |\n";
+        std::cout << "| " << std::setw(CONSOLESIZE - 1) << " |\n";
     }
     // Bottom border
     UI::_createHorizontalLine('~');
 }
 void _createDivider(char borderChar) {
-    for (int i = 0; i < (UI::DISPLAYWIDTH/2); ++i)
+    for (int i = 0; i < (CONSOLESIZE/2); ++i)
             std::cout << borderChar;
     std::cout << std::endl;
 }
@@ -220,37 +219,37 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     //clear the vector sample with the deconstructor
     sample.clear();
 }
-void UI::DisplayZorbs(const std::vector<Zorb>& zorbs) const{
+void UI::DisplayZorbs(const std::vector<Zorb>& zorbs, char displaySide) const{
     switch (currentFormat) {
         case TABLE:
-            ZorbDisplayTable(zorbs);
+            ZorbDisplayTable(zorbs, displaySide);
             break;
         case ASCII_ART:
-            ZorbDisplayAscii(zorbs);
+            ZorbDisplayAscii(zorbs, displaySide);
             break;
         case SIMPLE:
-            ZorbDisplaySimple(zorbs);
+            ZorbDisplaySimple(zorbs, displaySide);
             break;
         case COMPACT:
-            ZorbDisplayCompact(zorbs);
+            ZorbDisplayCompact(zorbs, displaySide);
             break;
         default:
             std::cout << "Invalid display format\n";
     }
 }
-void UI::DisplayZorb(const Zorb& zorb) const{
+void UI::DisplayZorb(const Zorb& zorb, char displaySide) const{
     switch (currentFormat) {
         case TABLE:
-            ZorbDisplayTable({zorb});
+            ZorbDisplayTable({zorb}, displaySide);
             break;
         case ASCII_ART:
-            ZorbDisplayAscii({zorb});
+            ZorbDisplayAscii({zorb}, displaySide);
             break;
         case SIMPLE:
-            ZorbDisplaySimple({zorb});
+            ZorbDisplaySimple({zorb}, displaySide);
             break;
         case COMPACT:
-            ZorbDisplayCompact({zorb});
+            ZorbDisplayCompact({zorb}, displaySide);
             break;
         default:
             std::cout << "Invalid display format\n";
@@ -271,7 +270,7 @@ std::string UI::GetDisplayFormatAsString() const {
     }
 }
 
-void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) const{
+void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs, char displaySide) const{
     _createDivider('-');
     std::cout << std::left << std::setw(20) << "Name" 
     << std::setw(10) << "Team" 
@@ -287,7 +286,7 @@ void UI::ZorbDisplayTable(const std::vector<Zorb>& zorbs) const{
     _createDivider('-');
     std::cout << std::right << std::setw(0);
 }
-void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const{
+void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) const{
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;
@@ -338,17 +337,25 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs) const{
 
     rowBuffers.push_back(charLines);
     for (const auto& rowBuffer : rowBuffers) {
-        for (const std::string& charLine : rowBuffer) {
-            std::cout << charLine << std::endl;
+        for (const std::string& displayLine : rowBuffer) {
+            if(displaySide == 'R') {
+                int escapeCodeLength = z_debug::GetLengthOfEscapeCodes(displayLine);
+                if(escapeCodeLength == 0)
+                    std::cout << std::right << std::setw(CONSOLESIZE-margin) << displayLine << std::endl;
+                else
+                    std::cout << std::right << std::setw(CONSOLESIZE+escapeCodeLength-margin) << displayLine << std::endl;
+            }
+            else
+                std::cout << std::left << std::setw(0) << displayLine << std::endl;
         }
     }
 }
-void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs) const{
+void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs, char displaySide) const{
     for (const Zorb& zorb : zorbs) {
         std::cout << zorb.GetName() << ": T" << zorb.GetTeamId() << ", " << zorb.GetPower() << " Power\n";
     }
 }
-void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs) const{
+void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) const{
     // Display the Zorbs as ASCII art as they do in the same way as the ASCII art in the z_debug function PrintAllZorbAppearances()
     std::vector<std::string> charLines;
     std::vector<std::vector<std::string>> rowBuffers;

@@ -1,7 +1,7 @@
 // Creator: Ethan Dang
 #include "gameManager.hpp"
 
-int main_() {
+int _main() {
     UI _uiM;
     GameManager _gameManager(_uiM);
     

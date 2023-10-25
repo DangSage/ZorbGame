@@ -17,7 +17,7 @@ public:
 
 protected:
     // Add a GameplayManager object to the GameManager that is a child object
-    GameplayManager m_gameplayManager = GameplayManager(*this);
+    GameplayManager m_gameplayManager;
     GameState m_gameState = GameState::InfoMenu;
     std::vector<Zorb> m_zorbs;  // All zorbs
     UI& m_ui;   // UI object

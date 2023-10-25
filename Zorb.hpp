@@ -167,7 +167,7 @@ namespace z_debug {
         rowBuffers.push_back(charLines);
         for (const auto& rowBuffer : rowBuffers) {
             for (const std::string& charLine : rowBuffer) {
-                std::cout << charLine << std::endl;
+                std::cout << std::right << std::setw(margin) << charLine << std::endl;
             }
         }
     }

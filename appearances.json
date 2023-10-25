@@ -24,6 +24,17 @@
     {
         "appearance": [
         "       ",
+        "   o   ",
+        "./\\|/\\.",
+        "( o.b )",
+        " > ` < "
+        ],
+        "name": "skeptic",
+        "enum": "A_SKEPTICAL"
+    },
+    {
+        "appearance": [
+        "       ",
         "   ?   ",
         "./\\|/\\.",
         "( 9.6 )",
@@ -48,11 +59,33 @@
         "       ",
         "   o   ",
         "./\\|/\\.",
+        "(-o:o-)",
+        " > ^ < "
+        ],
+        "name": "smarty!",
+        "enum": "A_SMART"
+    },
+    {
+        "appearance": [
+        "       ",
+        "   o   ",
+        "./\\|/\\.",
         "( =,= )",
         "Zzz^ < "
         ],
         "name": "sleepy",
         "enum": "A_SLEEPY"
+    },
+    {
+        "appearance": [
+        "   _   ",
+        "  / \\  ",
+        "./_d_\\.",
+        "( e.e )",
+        " > T < "
+        ],
+        "name": "dumbdum",
+        "enum": "A_DUNCECAP"
     },
     {
         "appearance": [
@@ -304,7 +337,7 @@
         "( o.o )",
         " > ^ < "
         ],
-        "name": "a cat",
+        "name": "nor/mal",
         "enum": "A_NORMALCAT"
     },
     {
@@ -366,7 +399,7 @@
         "appearance": [
         "       ",
         " ,_._, ",
-        "[( T )]",
+        "{( T )}",
         "( 0^0 )",
         " >uuu< "        
         ],

@@ -36,7 +36,7 @@ void UI::screenDebugOptions() const {
     _clearScreen();
     _createStyledTextBox("DEBUG MENU: Change game settings here!");
 
-    int columnWidth = DISPLAYWIDTH / 2;
+    int columnWidth = CONSOLESIZE / 2;
     auto columnDisplay = [&](const std::string& option, const std::string& option2) {
         int optionLength = z_debug::GetLengthWithoutEscapeCodes(option);
         int option2Length = z_debug::GetLengthWithoutEscapeCodes(option2);
@@ -99,13 +99,17 @@ void UI::screenInfo() const {
         else if (iteration==3){
             std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
             std::vector<Zorb> sZorbs, eZorbs;
-            sZorbs.emplace_back(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN));
-            eZorbs.emplace_back(0, 1, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA));       
+            sZorbs.emplace_back(1, 0, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN));
+            eZorbs.emplace_back(1, 0, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA));       
 
-            std::cout << "Player Zorbs" << std::endl;
+            // Display the Zorbs in the battle with the team names
+            // make sure the first team is displayed from the left and the 2nd team from the right
+            std::cout << std::endl << "Player Team" << std::endl << "---------" << std::endl;
             DisplayZorbs(sZorbs);
-            std::cout << "Enemy Zorbs" << std::endl;
-            DisplayZorbs(eZorbs);
+
+            std::cout << std::endl << std::right << std::setw(CONSOLESIZE) << "Enemy Team" << std::endl <<
+            std::setw(CONSOLESIZE)  << "---------" << std::endl;
+            DisplayZorbs(eZorbs, 'R');
         }
 
         iteration++;
@@ -151,9 +155,9 @@ void UI::screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& t
     std::cout << std::endl << team1Name << std::endl << std::string(team1Name.length(), '-') << std::endl;
     DisplayZorbs(team1);
 
-    std::cout << std::endl << std::right << std::setw(DISPLAYWIDTH) << team2Name << std::endl <<
-    std::setw(DISPLAYWIDTH)  << std::string(team2Name.length(), '-') << std::endl;
-    DisplayZorbs(team2);
+    std::cout << std::endl << std::right << std::setw(CONSOLESIZE) << team2Name << std::endl <<
+    std::setw(CONSOLESIZE)  << std::string(team2Name.length(), '-') << std::endl;
+    DisplayZorbs(team2, 'R');
     _createHorizontalLine('-');
 
 }
