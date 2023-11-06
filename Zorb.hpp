@@ -13,11 +13,18 @@ private:
     ZorbAppearance appearance;
     static int count; // Static variable to keep track of the number of Zorbs in memory
 public:
-    Zorb(int power = 0, int team_id = -1, const std::string& name = zorb::RandomName(), ZorbAppearance _appearance = ZorbAppearance()) 
+    Zorb(ZorbAppearance _appearance, int power = 0, int team_id = -1, const std::string& name = zorb::RandomName()) 
     : power(power), 
     team_id(team_id), 
     name(name), 
     appearance(_appearance) {
+        count++; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+    }
+
+    // Empty zorb constructor (used for dodging, and imploded zorbs)
+    Zorb(int team_id) 
+    : team_id(team_id), name("~dodged"), appearance(0), power(-1){
         count++; 
         if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
     }
@@ -32,13 +39,6 @@ public:
             if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " copied [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
         }
 
-    // Move constructor
-    Zorb(Zorb&& other) noexcept
-        : power(std::exchange(other.power, 0)),
-        team_id(std::exchange(other.team_id, -1)),
-        name(std::move(other.name)),
-        appearance(std::move(other.appearance)) {}
-
     // Default destructor
     ~Zorb() { 
         count--; 
@@ -47,7 +47,7 @@ public:
 
     // Accessor functions
     int GetPower() const { return power; }
-    int GetTeamId() const { return team_id; }
+    const int GetTeamId() const { return team_id; }
     static int GetCount() { return count; }
     std::string GetName() const { return name; }
     std::string GetAppearance() const { return appearance.GetAppearance(); }
@@ -55,11 +55,19 @@ public:
     // Mutator Functions
     void SetPower(int _power) { this->power = _power; }
     void SetName(std::string _name) { this->name = _name; }
-    void SetAppearance(appearanceEnum _enum, std::string _color = "") { appearance.SetAppearance(_enum, _color); }
+    void SetAppearance(appearanceEnum _enum, std::string_view _color = "") { appearance.SetAppearance(_enum, _color); }
 
     friend std::ostream& operator<<(std::ostream& os, const Zorb& zorb); // Overload the insertion operator to print a Zorb
     friend bool operator<(const Zorb& left, const Zorb& right); // Overload the < operator to compare Zorbs
     friend Zorb operator+(const Zorb& zorb1, const Zorb& zorb2); // Overload the + operator to combine two Zorbs
+    
+    //define operator== to check Zorb objects to shared pointers of Zorb objects
+    friend bool operator==(const Zorb& lhs, const std::shared_ptr<Zorb>& rhs) {
+        return lhs.power == rhs->power && lhs.team_id == rhs->team_id && lhs.name == rhs->name && lhs.appearance == rhs->appearance;
+    }
+    friend bool operator==(const Zorb& lhs, const Zorb& rhs) {
+        return lhs.team_id == rhs.team_id && lhs.name == rhs.name && lhs.appearance == rhs.appearance;
+    }
 };
 
 int Zorb::count = 0; // Initialize the static variable
@@ -70,10 +78,7 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     std::string appearanceText = zorb.GetAppearance();
     std::string infoText;
     
-    if(_DEBUGMODE)
-        infoText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ansi::YELLOW);
-    else
-        infoText = z_debug::FormattedText((std::to_string(zorb.GetPower()) + " power"), ansi::YELLOW);
+    infoText = z_debug::FormattedText((std::to_string(zorb.GetPower()) + " power"), ansi::YELLOW);
 
     std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
 
@@ -100,17 +105,31 @@ bool operator<(const Zorb& left, const Zorb& right) {
 
 // Overload the + operator
 Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
+    // Combine the power of the two Zorbs, the weaker Zorb is destroyed and the stronger Zorb is returned with the combined power and same team id
     int combined_power = zorb1.power + zorb2.power;
-    int new_team_id = (zorb1.power >= zorb2.power) ? zorb1.team_id : zorb2.team_id;
-    std::string new_name = (zorb1.power >= zorb2.power) ? zorb1.name : zorb2.name;
-    ZorbAppearance new_appearance = (zorb1.power >= zorb2.power) ? zorb1.appearance : zorb2.appearance;
-    
-    Zorb new_zorb(combined_power, new_team_id, new_name, new_appearance);
-    return new_zorb;
+    if(zorb1.power > zorb2.power) {
+        return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+    }
+    else if(zorb1.power < zorb2.power) {
+        return Zorb(zorb2.appearance, combined_power, zorb2.team_id, zorb2.name);
+    }
+    else {
+        // If the Zorbs have the same power, the team id is turned to negative and the Zorb implodes
+        if(z_debug::RandomValue(1,2) == 1) {
+            ZorbAppearance new_appearance = ZorbAppearance(static_cast<appearanceEnum>(0), ansi::RED);
+            if(_DEBUGMODE) {
+                std::cout << "DEBUG: operator+() - Zorbs have the same power, both Zorbs will implode" << std::endl;
+                z_debug::clearInputBuffer();
+            }
+            return Zorb(new_appearance, -1, -1, "Imploded Zorb");
+        } else {
+            return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+        }        
+    }
 }
 
 namespace z_debug {
-    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string color = ansi::YELLOW) {
+    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string_view color = ansi::YELLOW) {
         if(appearanceMap.size() < 1) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;

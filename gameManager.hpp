@@ -1,33 +1,27 @@
 #include "Zorb.hpp"
-#include "zUI.hpp"
 #include "gameplayManager.hpp"
 
 std::string url = "https://github.com/DangSage/ZorbGame";
 std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
 
+static int m_playerScore = 0;  // Player's score
+
 class GameManager {
 public:
-    GameManager(UI& ui) : m_ui(ui) { 
+    GameManager(UI& ui) : m_ui(ui) {
         ForceTerminal();
         initAppearanceMaps();
     } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
+    ~GameManager() {} //default destructor
 
-    void startGame();
+    void gameLoop();
     void endGame();
 
+    void setGameState(GameState gameState) { m_gameState = gameState; }
 protected:
-    // Add a GameplayManager object to the GameManager that is a child object
-    GameplayManager m_gameplayManager;
     GameState m_gameState = GameState::InfoMenu;
-    std::vector<Zorb> m_zorbs;  // All zorbs
     UI& m_ui;   // UI object
     
-
-    //region Zorb Management
-    int m_playerScore = 0;
-    int m_enemyScore = 0;
-    //endregion
-
 private:
     //region Input Handling
     void handleMainMenuInput();
@@ -48,10 +42,14 @@ namespace z_debug {
 }
 
 //region GameManager Functions
-void GameManager::startGame() {
+void GameManager::gameLoop() {
     // Game loop
     while (true) {
         switch (m_gameState) {
+            case GameState::InfoMenu:
+                m_ui.screenInfo();
+                m_gameState = GameState::MainMenu;
+                break;
             case GameState::MainMenu:
                 m_ui.screenMainMenu();
                 handleMainMenuInput();
@@ -60,19 +58,15 @@ void GameManager::startGame() {
                 m_ui.screenDebugOptions();
                 handleOptionsMenuInput();
                 break;
-            case GameState::Game:
-                break;
-            case GameState::InfoMenu:
-                m_ui.screenInfo();
-                m_gameState = GameState::MainMenu;
-                break;
-            case GameState::GameOver:
-                m_ui.screenGameOver();
-                handleGameOverInput();
-                break;
             default:
-                z_debug::PrintError("GameManager::startGame() - Invalid GameState");
+                z_debug::PrintError("GameManager::gameLoop() - Invalid GameState");
                 break;
+        }
+        if(m_gameState == GameState::Game) {
+            GameplayManager* m_gameplayManager = new GameplayManager(m_ui);
+            m_gameplayManager->gameplayLoop();
+            delete m_gameplayManager;
+            m_gameState = GameState::MainMenu;
         }
         if(m_gameState == GameState::End)
             break;
@@ -87,18 +81,18 @@ void GameManager::endGame() {
     // Clean up game objects
     z_debug::CountGameObjectsInMemory();
     _pauseSystem();
-    m_zorbs.clear();
 }
 //endregion
 
 //region Input Handling
 void GameManager::handleMainMenuInput() {
-    switch (validatedInput({'0','1','2','3','Q'})) {
+    char input[] = {'0','1','2','3','Q'};
+    switch (validatedInput<char>(input)) {
         case '0':
             system(command.c_str());
             break;
         case '1':
-            //m_gameState = GameState::Game;
+            m_gameState = GameState::Game;
             break;
         case '2':
             m_gameState = GameState::InfoMenu;
@@ -117,7 +111,8 @@ void GameManager::handleMainMenuInput() {
     }
 }
 void GameManager::handleOptionsMenuInput() {
-    switch (validatedInput({'1','2','3','4','A','B','C','D','Q'})) {
+    char input[] = {'1','2','3','4','A','B','C','D','Q'};
+    switch (validatedInput<char>(input)) {
         case '1':
             m_ui.SetDisplayFormat(SIMPLE);
             break;
@@ -152,7 +147,8 @@ void GameManager::handleOptionsMenuInput() {
 }
 void GameManager::handleGameOverInput() {
     endGame();
-    switch (validatedInput({'1','Q'})) {
+    char input[] = {'1','Q'};
+    switch (validatedInput<char>(input)) {
         case '1':
             m_gameState = GameState::MainMenu;
             break;

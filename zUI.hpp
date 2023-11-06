@@ -46,26 +46,19 @@ public:
     void screenMainMenu() const;                            // title screen display
     void screenDebugOptions() const;                        // setting screen display
     void screenInfo() const;                                // info screen display
-    void screenGameOver() const;                            // gameover screen display
+    void screenGameOver(std::vector<std::string>& names) const; // gameover screen display
     void screenDebugColors() const;                         // debug color screen display
     void screenDebugZorbs() const;                          // debug zorb screen display
 
-    void screenRecruitment(const Zorb& zorb) const; // recruitment screen display
-    //screen for when a zorb is defeated
-    void screenDefeated(const Zorb& zorb, const std::string& causeOfDeath, const std::string& killerName, const std::string& killerAppearance);
-    //screen for when a zorb is victorious
-    void screenVictorious(const Zorb& zorb, const std::string& causeOfDeath, const std::string& victimName, const std::string& victimAppearance);
-    //main battle screen that takes 2 arrays of zorbs as parameters
-    void screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name);
+    void screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const; // recruitment screen display
+    void screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& attack) const; //screen for battle outcomes
+    void screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name); //main battle screen that takes 2 arrays of zorbs as parameters
+    void screenBarber(const std::vector<Zorb>& pZorbs) const; // barber shop screen display
 
-    // wipes output stream in the console
-    friend void _clearScreen(); 
-    // pauses output stream in console until user input
-    friend void _pauseSystem();
-    // stylized text box sent to output stream
-    friend void _createStyledTextBox(const std::string& text);
-    // puts out a line halfway across display to output stream
-    friend void _createDivider(char borderChar);
+    friend void _clearScreen();     // wipes output stream in the console
+    friend void _pauseSystem();    // pauses output stream in console until user input    
+    friend void _createStyledTextBox(const std::string& text); // stylized text box sent to output stream
+    friend void _createDivider(char borderChar); // puts out a line halfway across display to output stream
 private:
     DisplayFormat currentFormat; // Member variable to store the current display format
 
@@ -207,8 +200,8 @@ void UI::SetDisplayFormat(DisplayFormat format) {
 
     // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
     std::vector<Zorb> sample = {
-        Zorb(0, 1, "Zorb 1", ZorbAppearance()),
-        Zorb(0, 2, "Zorb 2", ZorbAppearance())
+        Zorb(ZorbAppearance(), 0, 1, "Zorb 1"),
+        Zorb(ZorbAppearance(), 0, 2, "Zorb 2")
     };
 
     DisplayZorbs(sample);
@@ -220,6 +213,15 @@ void UI::SetDisplayFormat(DisplayFormat format) {
     sample.clear();
 }
 void UI::DisplayZorbs(const std::vector<Zorb>& zorbs, char displaySide) const{
+    if(zorbs.size() < 1) {
+        std::cout << "No Zorbs in memory" << std::endl;
+        return;
+    }
+    else if(zorbs.size() == 1) {
+        DisplayZorb(zorbs.at(0), displaySide);
+        return;
+    }
+    
     switch (currentFormat) {
         case TABLE:
             ZorbDisplayTable(zorbs, displaySide);
@@ -300,7 +302,10 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
         std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
         
         std::string nameText = zorb.GetName();
-        std::string powerText = z_debug::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p';
+        std::string powerText;
+        
+        zorb.GetPower() > 0 ? powerText = z_debug::FormattedText(std::to_string((&zorb - &zorbs[0])+1) + ", " + std::to_string(zorb.GetPower()) + 'p') 
+        : powerText = " [X,X] ";
 
         if (charLines.size() < appearanceLines.size()+1) {
             charLines.resize(appearanceLines.size()+2);
@@ -351,8 +356,24 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
     }
 }
 void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs, char displaySide) const{
+    // Display the zorbs as a simple with the index of the zorb, name, and power on each line
     for (const Zorb& zorb : zorbs) {
-        std::cout << zorb.GetName() << ": T" << zorb.GetTeamId() << ", " << zorb.GetPower() << " Power\n";
+        std::ostringstream oss;
+        if(displaySide == 'R') {
+            oss << zorb.GetName() << ": " << (zorb.GetPower() > 0 ? std::to_string(zorb.GetPower()) + " power" : "X")
+                << std::setw(3) << std::right << (zorb.GetPower() > 0 ? " [" + std::to_string((&zorb - &zorbs[0])+1) + "]" : " [X]");
+
+            int escapeCodeLength = z_debug::GetLengthOfEscapeCodes(oss.str());
+            if(escapeCodeLength == 0)
+                std::cout << std::right << std::setw(CONSOLESIZE) << oss.str() << std::endl;
+            else
+                std::cout << std::right << std::setw(CONSOLESIZE+escapeCodeLength) << oss.str() << std::endl;
+        }
+        else {
+            oss << std::setw(3) << std::right << (zorb.GetPower() > 0 ? '[' + std::to_string((&zorb - &zorbs[0])+1) + "] " : "[X] ")
+                << zorb.GetName() << ": " << (zorb.GetPower() > 0 ? std::to_string(zorb.GetPower()) + " power" : "X");
+            std::cout << std::left << std::setw(0) << oss.str() << std::endl;
+        }
     }
 }
 void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) const{

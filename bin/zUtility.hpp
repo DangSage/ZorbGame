@@ -7,6 +7,11 @@
 #include <random>
 #include <stdexcept>
 
+// Create a random device
+std::random_device rd;
+// Create a Mersenne Twister pseudo-random generator
+std::mt19937 gen(rd());
+
 void _pauseSystem() {
     // Code for pausing the system (platform-dependent)
     #ifdef _WIN32
@@ -18,6 +23,11 @@ void _pauseSystem() {
 }
 
 namespace z_debug {
+    void _tag(const std::string& a) {
+        std::cout << std::endl << "\t[" << a << "] ";
+        _pauseSystem();
+    }
+
     // Function template to generate a random value within a specified range
     template <typename T>
     T RandomValue(const T min, const T max) {
@@ -29,10 +39,6 @@ namespace z_debug {
         if (min > max) {
             throw std::invalid_argument("RandomValue() requires min <= max");
         }
-        // Create a random device
-        std::random_device rd;
-        // Create a Mersenne Twister pseudo-random generator
-        std::mt19937 gen(rd());
         // Create a uniform distribution of values within the specified range
         std::uniform_int_distribution<T> dist(min, max);
         // Return a random value within the specified range
@@ -43,9 +49,8 @@ namespace z_debug {
         return std::string(spaces, ' ');
     }
     
-    std::string PrintError(const std::string& error) {
-        std::cout << ansi::RED << error << ansi::RESET << std::endl;
-        return ansi::RED + error + ansi::RESET;
+    void PrintError(const std::string& error) {
+        throw std::runtime_error(error);
     }
 
     // Helper function to get the length of a string with or without counting escape codes, don't count if the escape code is ansi::RESET
@@ -104,7 +109,7 @@ namespace z_debug {
     }
 
     // Function to center-align a SINGLE-line string within a given width
-    std::string CenterAlignString(const std::string& input, int width) {
+    std::string CenterAlignString(const std::string& input, int width = CONSOLESIZE) {
         std::string output;
         std::vector<std::string> lines = SplitMultilineString(input);
 
@@ -128,7 +133,7 @@ namespace z_debug {
     }
 
     // Function to print a string with color and reset color codes
-    void PrintFormattedText(const std::string& text, const std::string& color = "") {
+    void PrintFormattedText(const std::string& text, const std::string_view& color = "") {
         if (!color.empty()) {
             std::cout << color;
         }
@@ -136,9 +141,9 @@ namespace z_debug {
     }
 
     // Function to return a string with colors and color reset codes
-    std::string FormattedText(const std::string& text, const std::string& color = "") {
+    std::string FormattedText(const std::string& text, const std::string_view& color = "") {
         if (!color.empty())
-            return color + text + ansi::RESET;   // Wrap the text with the specified color codes
+            return std::string(color) + text + ansi::RESET;   // Wrap the text with the specified color codes
         else
         {
             OutputDebugString("Log: No color specified at call of FormattedText()\n\tYou may want to pass text element instead.\n");
@@ -156,44 +161,39 @@ namespace z_debug {
 
 } // namespace z_debug
 
-// Function template to validate user input
-template <typename T>
-T validatedInput(std::initializer_list<T> validInputs) {
-    std::string validInputsStr;
-    size_t numInputs = validInputs.size();
-    // define maxInputLength as the length of the longest input
-    size_t maxInputLength = 0;
-    for (auto it = validInputs.begin(); it != validInputs.end(); ++it) {
-        if (strlen(it) > maxInputLength) {
-            maxInputLength = strlen(it);
-        }
-        validInputsStr += *it;
-    }
-
-    std::string input;
-    std::cin >> input;
-    std::transform(input.begin(), input.end(), input.begin(), ::toupper);
-    //validate input
-    while (input.size() > maxInputLength || validInputsStr.find(input) == std::string::npos) {
-        //remove the previous output from console output
-        std::cout << "\033[F";
-        std::cout << "\033[K";
-        std::cout << ansi::RED << "Invalid input. Please try again: " << ansi::RESET;
-        std::cin.clear();
+// Function template to validate user input, it can define any type of array of typename T as a parameter
+template<typename T, typename Container>
+T validatedInput(Container& validInputs) {
+    // Using the container validInputs, we can check if the user input is valid
+    // If the user input is not valid, we will ask the user to input again
+    T input;
+    bool valid = false;
+    while (!valid) {
         std::cin >> input;
-        std::transform(input.begin(), input.end(), input.begin(), ::toupper);
-    }
-    if (_DEBUGMODE) {
-        std::cout << "DEBUG: validatedInput() - input: " << input << std::endl;
-        z_debug::clearInputBuffer();
-    }
-    //return validated input
-    return static_cast<T>(input.front());
+        
+        // if the input is a char, convert it to uppercase
+        if (std::is_same<T, char>::value) {
+            input = std::toupper(input);
+            // limit the input to the first character
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
 
-    //example usage:
-    //char validInputs[] = {'a', 'b', 'c'};
-    //char input = validatedInput<char>(validInputs);
+        // Check if the input is valid
+        for (const auto& validInput : validInputs) {
+            if (input == validInput) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid) {
+            // print valid inputs
+            std::cout << DLINE;
+            // ask the user to try again in red text
+            z_debug::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
+        }
+    }
 
+    return input;
 }
 
 // Function template to choose one random element defined in a list of parameters in this function
@@ -211,10 +211,29 @@ T randomChoice(std::initializer_list<T> choices) {
     return *it;
 }
 
-// GetRandomColor() returns a random ANSI color code that we defined already in the gameDefs.hpp header file
-std::string ansi::GetRandomColor() {
-    const std::string COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
+// GetRandomColor() returns a string_view defined already in the gameDefs.hpp header file
+std::string_view ansi::GetRandomColor() {
+    constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
     return COLOR_CODES[z_debug::RandomValue<int>(0, COLOR_CODES->size())];
+}
+
+template<typename T>
+std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) { 
+    // Dereference the shared pointers and return a vector of objects
+    // Should only be used for displaying objects
+    std::vector<T> castObjs;
+    for(auto& obj : _objs) {
+        castObjs.emplace_back(*obj);
+    }
+    return castObjs;
+}
+
+// create another SharedCast function that takes a single shared_ptr
+template<typename T>
+T SharedCast(std::shared_ptr<T> _obj) { 
+    // Dereference the shared pointer and return an object
+    // Should only be used for displaying objects
+    return *_obj;
 }
 
 
