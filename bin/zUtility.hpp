@@ -212,7 +212,7 @@ T validatedInput(Container& validInputs) {
             // print valid inputs
             std::cout << ansi::DLINE;
             // ask the user to try again in red text
-            z_debug::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
+            z_util::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
         }
     }
 

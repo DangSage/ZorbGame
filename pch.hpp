@@ -16,8 +16,8 @@ Some of those constant functions and variables include the following:
 
 namespace zorb {
     std::string RandomName() {
-        std::string name1 = NAMES[z_debug::RandomValue(static_cast<size_t>(0), NAMES.size()-1)];
-        std::string name2 = NAMES[z_debug::RandomValue(static_cast<size_t>(0), NAMES.size()-1)];
+        std::string name1 = NAMES[z_util::random::value(static_cast<size_t>(0), NAMES.size()-1)];
+        std::string name2 = NAMES[z_util::random::value(static_cast<size_t>(0), NAMES.size()-1)];
 
         //return name1 + " " + name2 if name 2 exists, otherwise just return name1 without the space
         return name2.size() > 0 ? name1 + " " + name2 : name1;

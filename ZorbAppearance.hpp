@@ -8,7 +8,7 @@
 
 appearanceEnum GetRandomAppearance() {
     //randomly pick an appearance from the map and return the enum
-    int randomAppearance = z_debug::RandomValue<int>(0, appearanceMap.size()-1);
+    int randomAppearance = z_util::random::value<int>(0, appearanceMap.size()-1);
     if(_DEBUGMODE)
         std::cout << "DEBUG: GetRandomAppearance() - rolled: " << randomAppearance << ": " << appearanceNames.at(static_cast<appearanceEnum>(randomAppearance)) << std::endl;
     return static_cast<appearanceEnum>(randomAppearance);
@@ -26,13 +26,13 @@ public:
     : color(_color), currentEnum(_enum), currentAppearance(SetAppearance(_enum, _color)) {
         count++; 
         if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(_enum)) 
-        << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+        << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
     }
 
     ZorbAppearance(int a)   // dodging constructor (used for dodging, no enum or color)
     : color(""), currentEnum(), currentAppearance(dodgedZorb) {
         if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(currentEnum)) 
-        << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();}
+        << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();}
     }
     
     // Copy constructor
@@ -42,7 +42,7 @@ public:
     ~ZorbAppearance() { 
         count--; 
         if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(currentEnum)) 
-        << " destroyed [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+        << " destroyed [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
     } //destructor
 
     std::string SetColor(std::string _color) { color = _color; currentAppearance = SetAppearance(currentEnum, color); return currentAppearance; }
@@ -107,12 +107,12 @@ ZorbAppearance GenRandomAppearance(const Container& colors) {
     // You can use the function 'GetRandomColor' from gameDefs.hpp to get a random color
 
     //randomly pick an appearance from the map and return the enum
-    int randomAppearance = z_debug::RandomValue<int>(0, appearanceMap.size()-1);
+    int randomAppearance = z_util::random::value<int>(0, appearanceMap.size()-1);
     if(_DEBUGMODE)
         std::cout << "DEBUG: GetRandomAppearance() - rolled: " << randomAppearance << ": " << appearanceNames.at(static_cast<appearanceEnum>(randomAppearance)) << std::endl;
 
     //randomly pick a color from the container and return the string_view
-    int randomColor = z_debug::RandomValue<int>(0, colors.size()-1);
+    int randomColor = z_util::random::value<int>(0, colors.size()-1);
     if(_DEBUGMODE)
         std::cout << "DEBUG: GetRandomColor() - rolled: " << randomColor << ": " << colors.at(randomColor) << std::endl;
 

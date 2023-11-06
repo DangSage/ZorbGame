@@ -8,16 +8,16 @@ namespace z_debug {
     void DisplayDebugColors() {
         int columnWidth = CONSOLESIZE / 2;
         auto columnDisplay = [&](const std::string& option, const std::string& option2) {
-            int optionLength = z_debug::GetLengthWithoutEscapeCodes(option);
-            int option2Length = z_debug::GetLengthWithoutEscapeCodes(option2);
+            int optionLength = z_util::GetLengthWithoutEscapeCodes(option);
+            int option2Length = z_util::GetLengthWithoutEscapeCodes(option2);
             std::cout << std::left << std::setw(columnWidth) << option
                     << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
         };
         std::cout << "Debug ANSI Colors:\n";
-        columnDisplay(FormattedText(" White: Text", ansi::WHITE), FormattedText("Black: Text", ansi::BLACK));
-        columnDisplay(FormattedText(" Red: Text", ansi::RED), FormattedText("Green: Text", ansi::GREEN));
-        columnDisplay(FormattedText(" Yellow: Text", ansi::YELLOW), FormattedText("Blue: Text", ansi::BLUE));
-        columnDisplay(FormattedText(" Magenta: Text", ansi::MAGENTA), FormattedText("Cyan: Text", ansi::CYAN));
+        columnDisplay(z_util::FormattedText(" White: Text", ansi::WHITE), z_util::FormattedText("Black: Text", ansi::BLACK));
+        columnDisplay(z_util::FormattedText(" Red: Text", ansi::RED), z_util::FormattedText("Green: Text", ansi::GREEN));
+        columnDisplay(z_util::FormattedText(" Yellow: Text", ansi::YELLOW), z_util::FormattedText("Blue: Text", ansi::BLUE));
+        columnDisplay(z_util::FormattedText(" Magenta: Text", ansi::MAGENTA), z_util::FormattedText("Cyan: Text", ansi::CYAN));
     }
 }
 
@@ -146,7 +146,7 @@ void _createStyledTextBox(const std::string& text) {
             std::istringstream iss_part(part_line);
             std::string part_part;
             while (std::getline(iss_part, part_part, ' ')) {
-                if (z_debug::GetLengthWithoutEscapeCodes(part + part_part) >= availableWidth) {
+                if (z_util::GetLengthWithoutEscapeCodes(part + part_part) >= availableWidth) {
                     parts.push_back(part);
                     part = "";
                 }
@@ -162,7 +162,7 @@ void _createStyledTextBox(const std::string& text) {
         // Print each part on a new line with right border and padding, centered horizontally without breaking words
         for (const std::string& part : parts) {
             // Calculate the remaining space on the right for the remaining part of the line
-            hPadding = availableWidth - z_debug::GetLengthWithoutEscapeCodes(part);
+            hPadding = availableWidth - z_util::GetLengthWithoutEscapeCodes(part);
 
             // Print the part with padding and centered horizontally
             std::cout << "| " << std::string(hPadding / 2, ' ') << part << std::string(hPadding - hPadding / 2, ' ') << std::setw(CONSOLESIZE - availableWidth - 1) << " |\n";
@@ -189,14 +189,14 @@ void _createDivider(char borderChar) {
 //region Zorb display functions
 void UI::SetDisplayFormat(DisplayFormat format) {
     if (currentFormat == format) {
-        std::cout << z_debug::FormattedText("Display format is already set to " + GetDisplayFormatAsString(), ansi::YELLOW) << std::endl;
-        z_debug::clearInputBuffer();
+        std::cout << z_util::FormattedText("Display format is already set to " + GetDisplayFormatAsString(), ansi::YELLOW) << std::endl;
+        z_util::clearInputBuffer();
         return; // no need to change the format if it's already set
     }
 
     currentFormat = format;
     _clearScreen();
-    _createStyledTextBox("Display format changed to " + z_debug::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW));
+    _createStyledTextBox("Display format changed to " + z_util::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW));
 
     // initialize a vector of 2 zorbs that are initialized as Zorb 1 and Zorb 2 with DEFAULT appearance
     std::vector<Zorb> sample = {
@@ -299,12 +299,12 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
     for (auto it = zorbs.begin(); it != zorbs.end(); ++it) {
         const Zorb& zorb = *it;
         std::string appearanceText = zorb.GetAppearance();
-        std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
+        std::vector<std::string> appearanceLines = z_util::SplitMultilineString(appearanceText);
         
         std::string nameText = zorb.GetName();
         std::string powerText;
         
-        zorb.GetPower() > 0 ? powerText = z_debug::FormattedText(std::to_string((&zorb - &zorbs[0])+1) + ", " + std::to_string(zorb.GetPower()) + 'p') 
+        zorb.GetPower() > 0 ? powerText = z_util::FormattedText(std::to_string((&zorb - &zorbs[0])+1) + ", " + std::to_string(zorb.GetPower()) + 'p') 
         : powerText = " [X,X] ";
 
         if (charLines.size() < appearanceLines.size()+1) {
@@ -324,7 +324,7 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
         powerText.resize(ZORBWIDTH, ' ');
         
         // check if Zorb will fit on the current line in the console window
-        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) >= CONSOLESIZE) {
+        if ((charLines.back().length() + z_util::GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) >= CONSOLESIZE) {
             rowBuffers.push_back(charLines);
             charLines.clear();
             //go back by one iteration so that the current zorb is added to the new rowBuffer
@@ -332,11 +332,11 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
         } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
         {
             for (size_t i = 0; i < appearanceLines.size(); ++i) {
-                charLines[i] += z_debug::SpaceToPrint(margin);
+                charLines[i] += z_util::SpaceToPrint(margin);
                 charLines[i] += appearanceLines[i];
             }
-            charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
-            charLines[appearanceLines.size()+1] += z_debug::SpaceToPrint(margin) + powerText;
+            charLines[appearanceLines.size()] += z_util::SpaceToPrint(margin) + nameText;
+            charLines[appearanceLines.size()+1] += z_util::SpaceToPrint(margin) + powerText;
         }
     }
 
@@ -344,7 +344,7 @@ void UI::ZorbDisplayAscii(const std::vector<Zorb>& zorbs, char displaySide) cons
     for (const auto& rowBuffer : rowBuffers) {
         for (const std::string& displayLine : rowBuffer) {
             if(displaySide == 'R') {
-                int escapeCodeLength = z_debug::GetLengthOfEscapeCodes(displayLine);
+                int escapeCodeLength = z_util::GetLengthOfEscapeCodes(displayLine);
                 if(escapeCodeLength == 0)
                     std::cout << std::right << std::setw(CONSOLESIZE-margin) << displayLine << std::endl;
                 else
@@ -363,7 +363,7 @@ void UI::ZorbDisplaySimple(const std::vector<Zorb>& zorbs, char displaySide) con
             oss << zorb.GetName() << ": " << (zorb.GetPower() > 0 ? std::to_string(zorb.GetPower()) + " power" : "X")
                 << std::setw(3) << std::right << (zorb.GetPower() > 0 ? " [" + std::to_string((&zorb - &zorbs[0])+1) + "]" : " [X]");
 
-            int escapeCodeLength = z_debug::GetLengthOfEscapeCodes(oss.str());
+            int escapeCodeLength = z_util::GetLengthOfEscapeCodes(oss.str());
             if(escapeCodeLength == 0)
                 std::cout << std::right << std::setw(CONSOLESIZE) << oss.str() << std::endl;
             else
@@ -386,12 +386,12 @@ void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) co
 
     for (const Zorb& zorb : zorbs) {
         std::string appearanceText = zorb.GetAppearance();
-        std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
+        std::vector<std::string> appearanceLines = z_util::SplitMultilineString(appearanceText);
         //resize the appearanceLines vector so that it is the 3rd and 4th lines of the zorb
         appearanceLines.erase(appearanceLines.begin(), appearanceLines.begin()+2);
 
         std::string nameText = zorb.GetName();
-        std::string powerText = z_debug::CenterAlignString((z_debug::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p'), ZORBWIDTH);
+        std::string powerText = z_util::CenterAlignString((z_util::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p'), ZORBWIDTH);
 
         if (charLines.size() < appearanceLines.size()) {
             charLines.resize(appearanceLines.size()+1);
@@ -410,17 +410,17 @@ void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) co
         powerText.resize(ZORBWIDTH, ' ');
         
         // check if Zorb will fit on the current line in the console window
-        if ((charLines.back().length() + z_debug::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
+        if ((charLines.back().length() + z_util::GetLengthWithoutEscapeCodes(appearanceLines[0]) + ZORBWIDTH) >= CONSOLESIZE) {
             rowBuffers.push_back(charLines);
             charLines.clear();
         } else    // If not, add the current charLines vector to the rowBuffer & clear the charLines vector
         {
-            charLines.at(0) += z_debug::SpaceToPrint(margin) + nameText;
+            charLines.at(0) += z_util::SpaceToPrint(margin) + nameText;
             for (size_t i = 1; i < appearanceLines.size(); ++i) {
-                charLines[i] += z_debug::SpaceToPrint(margin);
+                charLines[i] += z_util::SpaceToPrint(margin);
                 charLines[i] += appearanceLines[i];
             }
-            charLines.at(appearanceLines.size()) += z_debug::SpaceToPrint(margin) + powerText;
+            charLines.at(appearanceLines.size()) += z_util::SpaceToPrint(margin) + powerText;
         }
     }
 
