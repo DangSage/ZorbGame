@@ -13,13 +13,20 @@ private:
     ZorbAppearance appearance;
     static int count; // Static variable to keep track of the number of Zorbs in memory
 public:
-    Zorb(int power = 0, int team_id = -1, const std::string& name = zorb::RandomName(), ZorbAppearance _appearance = ZorbAppearance()) 
+    Zorb(ZorbAppearance _appearance, int power = 0, int team_id = -1, const std::string& name = zorb::RandomName()) 
     : power(power), 
     team_id(team_id), 
     name(name), 
     appearance(_appearance) {
         count++; 
-        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
+    }
+
+    // Empty zorb constructor (used for dodging, and imploded zorbs)
+    Zorb(int team_id) 
+    : team_id(team_id), name("~dodged"), appearance(0), power(-1){
+        count++; 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
     }
 
     // Copy constructor
@@ -29,25 +36,18 @@ public:
         name(other.name),
         appearance(other.appearance) { 
             count++;
-            if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " copied [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+            if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " copied [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
         }
-
-    // Move constructor
-    Zorb(Zorb&& other) noexcept
-        : power(std::exchange(other.power, 0)),
-        team_id(std::exchange(other.team_id, -1)),
-        name(std::move(other.name)),
-        appearance(std::move(other.appearance)) {}
 
     // Default destructor
     ~Zorb() { 
         count--; 
-        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " destroyed [" << count << ']' << std::endl; z_debug::clearInputBuffer();} 
+        if(_DEBUGMODE) { std::cout << "DEBUG: Zorb() - " << name << " destroyed [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
     }
 
     // Accessor functions
     int GetPower() const { return power; }
-    int GetTeamId() const { return team_id; }
+    const int GetTeamId() const { return team_id; }
     static int GetCount() { return count; }
     std::string GetName() const { return name; }
     std::string GetAppearance() const { return appearance.GetAppearance(); }
@@ -55,11 +55,19 @@ public:
     // Mutator Functions
     void SetPower(int _power) { this->power = _power; }
     void SetName(std::string _name) { this->name = _name; }
-    void SetAppearance(appearanceEnum _enum, std::string _color = "") { appearance.SetAppearance(_enum, _color); }
+    void SetAppearance(appearanceEnum _enum, std::string_view _color = "") { appearance.SetAppearance(_enum, _color); }
 
     friend std::ostream& operator<<(std::ostream& os, const Zorb& zorb); // Overload the insertion operator to print a Zorb
     friend bool operator<(const Zorb& left, const Zorb& right); // Overload the < operator to compare Zorbs
     friend Zorb operator+(const Zorb& zorb1, const Zorb& zorb2); // Overload the + operator to combine two Zorbs
+    
+    //define operator== to check Zorb objects to shared pointers of Zorb objects
+    friend bool operator==(const Zorb& lhs, const std::shared_ptr<Zorb>& rhs) {
+        return lhs.power == rhs->power && lhs.team_id == rhs->team_id && lhs.name == rhs->name && lhs.appearance == rhs->appearance;
+    }
+    friend bool operator==(const Zorb& lhs, const Zorb& rhs) {
+        return lhs.team_id == rhs.team_id && lhs.name == rhs.name && lhs.appearance == rhs.appearance;
+    }
 };
 
 int Zorb::count = 0; // Initialize the static variable
@@ -70,12 +78,9 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     std::string appearanceText = zorb.GetAppearance();
     std::string infoText;
     
-    if(_DEBUGMODE)
-        infoText = z_debug::FormattedText(std::to_string(zorb.GetTeamId()) + ", " + std::to_string(zorb.GetPower()) + 'p', ansi::YELLOW);
-    else
-        infoText = z_debug::FormattedText((std::to_string(zorb.GetPower()) + " power"), ansi::YELLOW);
+    infoText = z_util::FormattedText((std::to_string(zorb.GetPower()) + " power"), ansi::YELLOW);
 
-    std::vector<std::string> appearanceLines = z_debug::SplitMultilineString(appearanceText);
+    std::vector<std::string> appearanceLines = z_util::SplitMultilineString(appearanceText);
 
     // Calculate margin
     size_t longestLineLength = 0;
@@ -85,11 +90,11 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     size_t margin = (CONSOLESIZE - longestLineLength) / 2;
 
     for (const auto& line : appearanceLines) {
-        os << z_debug::SpaceToPrint(margin+ZORBWIDTH) << line << std::endl;
+        os << z_util::SpaceToPrint(margin+ZORBWIDTH) << line << std::endl;
     }
 
-    os << z_debug::CenterAlignStrings(zorb.GetName(), CONSOLESIZE+(ZORBWIDTH/2))
-    << z_debug::CenterAlignString(infoText, CONSOLESIZE-(ZORBWIDTH/2)) << std::endl;
+    os << z_util::CenterAlignStrings(zorb.GetName(), CONSOLESIZE+(ZORBWIDTH/2))
+    << z_util::CenterAlignString(infoText, CONSOLESIZE-(ZORBWIDTH/2)) << std::endl;
     return os;
 }
 
@@ -100,17 +105,31 @@ bool operator<(const Zorb& left, const Zorb& right) {
 
 // Overload the + operator
 Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
+    // Combine the power of the two Zorbs, the weaker Zorb is destroyed and the stronger Zorb is returned with the combined power and same team id
     int combined_power = zorb1.power + zorb2.power;
-    int new_team_id = (zorb1.power >= zorb2.power) ? zorb1.team_id : zorb2.team_id;
-    std::string new_name = (zorb1.power >= zorb2.power) ? zorb1.name : zorb2.name;
-    ZorbAppearance new_appearance = (zorb1.power >= zorb2.power) ? zorb1.appearance : zorb2.appearance;
-    
-    Zorb new_zorb(combined_power, new_team_id, new_name, new_appearance);
-    return new_zorb;
+    if(zorb1.power > zorb2.power) {
+        return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+    }
+    else if(zorb1.power < zorb2.power) {
+        return Zorb(zorb2.appearance, combined_power, zorb2.team_id, zorb2.name);
+    }
+    else {
+        // If the Zorbs have the same power, the team id is turned to negative and the Zorb implodes
+        if(z_util::random::value(1,2) == 1) {
+            ZorbAppearance new_appearance = ZorbAppearance(static_cast<appearanceEnum>(0), ansi::RED);
+            if(_DEBUGMODE) {
+                std::cout << "DEBUG: operator+() - Zorbs have the same power, both Zorbs will implode" << std::endl;
+                z_util::clearInputBuffer();
+            }
+            return Zorb(new_appearance, -1, -1, "Imploded Zorb");
+        } else {
+            return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+        }        
+    }
 }
 
 namespace z_debug {
-    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string color = ansi::YELLOW) {
+    void PrintZorbAppearances(int a = appearanceMap.size(), bool printNames = false, std::string_view color = ansi::YELLOW) {
         if(appearanceMap.size() < 1) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;
@@ -130,7 +149,7 @@ namespace z_debug {
             //define debug appearance object that is the current appearance
             ZorbAppearance debugAppearance(static_cast<appearanceEnum>(_enumNUM), color);
             std::string appearanceText = debugAppearance.GetAppearance();
-            std::vector<std::string> appearanceLines = SplitMultilineString(appearanceText);
+            std::vector<std::string> appearanceLines = z_util::SplitMultilineString(appearanceText);
 
             std::string nameText = appearanceNames.at(static_cast<appearanceEnum>(_enumNUM));
 
@@ -151,17 +170,17 @@ namespace z_debug {
                 nameText.resize(ZORBWIDTH, ' ');
             }
 
-            if ((charLines.back().length() + GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) > CONSOLESIZE-margin) {
+            if ((charLines.back().length() + z_util::GetLengthWithoutEscapeCodes(appearanceLines.back()) + ZORBWIDTH) > CONSOLESIZE-margin) {
                 rowBuffers.push_back(charLines);
                 charLines.clear();
                 _enumNUM--;
             } else {
                 for (size_t i = 0; i < appearanceLines.size(); ++i) {
-                    charLines[i] += z_debug::SpaceToPrint(margin);
+                    charLines[i] += z_util::SpaceToPrint(margin);
                     charLines[i] += appearanceLines[i];
                 }
                 if(printNames)
-                    charLines[appearanceLines.size()] += z_debug::SpaceToPrint(margin) + nameText;
+                    charLines[appearanceLines.size()] += z_util::SpaceToPrint(margin) + nameText;
             }
         }
         rowBuffers.push_back(charLines);

@@ -12,7 +12,7 @@ void UI::screenMainMenu() const {
     _createStyledTextBox("This is a game made by Dang. Report any bugs to the repo:\n[0] https://github.com/DangSage/ZorbGame");
     // Define the title text
     std::string titleText = z_art::gameTitle;
-    titleText = z_debug::CenterAlignStrings(titleText);
+    titleText = z_util::CenterAlignStrings(titleText);
 
     // Define menu options
     std::string menuText =
@@ -38,21 +38,21 @@ void UI::screenDebugOptions() const {
 
     int columnWidth = CONSOLESIZE / 2;
     auto columnDisplay = [&](const std::string& option, const std::string& option2) {
-        int optionLength = z_debug::GetLengthWithoutEscapeCodes(option);
-        int option2Length = z_debug::GetLengthWithoutEscapeCodes(option2);
+        int optionLength = z_util::GetLengthWithoutEscapeCodes(option);
+        int option2Length = z_util::GetLengthWithoutEscapeCodes(option2);
         std::cout << std::left << std::setw(columnWidth) << option
                   << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
 
     std::cout << z_art::optionsScreen << std::endl;
     _createHorizontalLine('-');
-    columnDisplay(("Battle Display Type: " + z_debug::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW) + '\t'), 
+    columnDisplay(("Battle Display Type: " + z_util::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW) + '\t'), 
         "Other Options: ");
     std::cout << std::endl;
     columnDisplay(" 1. Display Zorbs (Simple Text)", " A. Show all colors");
     columnDisplay(" 2. Display Zorbs (ASCII Art)", " B. Show all Zorbs");
-    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_debug::FormattedText((_LIGHTTHEME == false ? "Light" : "Dark"), ansi::BLUE));
-    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_debug::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ansi::RED));
+    columnDisplay(" 3. Display Zorbs (Table Format)", " C. Toggle Theme: " + z_util::FormattedText((_LIGHTTHEME == false ? "Light" : "Dark"), ansi::BLUE));
+    columnDisplay(" 4. Display Zorbs (Compact Art)", " D. Toggle Debug Mode: " + z_util::FormattedText((_DEBUGMODE == true ? "On" : "Off"), ansi::RED));
 
     std::cout << std::right << std::setw(0) << std::endl
               << "Q. Quit back to Title Screen" << std::endl;
@@ -83,24 +83,26 @@ void UI::screenInfo() const {
     };
     
     _createStyledTextBox("Press any character to skip, other press enter to continue.");
-    if (z_debug::clearInputBuffer() != '\n')
+    if (z_util::clearInputBuffer() != '\n')
         return;
     
     for (const auto& text : introductionText) {
         _clearScreen();
         if (iteration==0)
-            std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
+            std::cout << std::endl << z_util::CenterAlignStrings(z_art::introSpace) << std::endl;
         else if (iteration==1){
-            Zorb neepnarp(0, 1, "Neep Narp", ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN));
+            Zorb neepnarp(ZorbAppearance(static_cast<appearanceEnum>(0),ansi::GREEN), 0, 1, "Neep Narp");
             std::cout << neepnarp << std::endl;
         }
-        else if (iteration==2)
+        else if (iteration==2) {
+            std::cout << std::endl << std::endl;
             z_debug::PrintZorbAppearances(8, false, ansi::GREEN);
+        }
         else if (iteration==3){
-            std::cout << z_debug::CenterAlignStrings(z_art::planetZorb);
+            std::cout << std::endl << z_util::CenterAlignStrings(z_art::planetZorb);
             std::vector<Zorb> sZorbs, eZorbs;
-            sZorbs.emplace_back(1, 0, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::GREEN));
-            eZorbs.emplace_back(1, 0, zorb::RandomName(), ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA));       
+            sZorbs.emplace_back(ZorbAppearance(GetRandomAppearance(), ansi::GREEN), 1, 0, zorb::RandomName());
+            eZorbs.emplace_back(ZorbAppearance(GetRandomAppearance(), ansi::MAGENTA), 1, 0, zorb::RandomName());       
 
             // Display the Zorbs in the battle with the team names
             // make sure the first team is displayed from the left and the 2nd team from the right
@@ -118,7 +120,7 @@ void UI::screenInfo() const {
         _pauseSystem();
     }
     _clearScreen();
-    std::cout << z_debug::CenterAlignStrings(z_art::introSpace) << std::endl;
+    std::cout << z_util::CenterAlignStrings(z_art::introSpace) << std::endl;
     _createStyledTextBox("The galaxy is waiting for you, commander. Are you ready to lead the Zorbs to victory?");
     _createHorizontalLine('-');
     std::cout << "CONTINUE TO THE MAIN MENU: ";
@@ -128,7 +130,7 @@ void UI::screenInfo() const {
 //end region
 
 //region game Display Functions
-void UI::screenGameOver() const {
+void UI::screenGameOver(std::vector<std::string>& names) const {
     _clearScreen();
     _createStyledTextBox("GAME OVER! R.I.P. To your last Zorb :(");
 
@@ -139,34 +141,137 @@ void UI::screenGameOver() const {
     ( x.x )
      > n < )";
 
-    std::cout << std::right << std::setw(0) << z_debug::CenterAlignStrings(deadZorb) << std::endl
-    << "Q. Quit back to Title Screen" << std::endl;
+    std::cout << z_util::CenterAlignStrings(deadZorb) << std::endl;
+    // Create control header text that contains stats about your current team
+    // including the number of wins, and average power
+    std::string controlHeaderText;
+
+    // display the number of wins and the amount of zorbs that died
+    controlHeaderText += "Wins: " + std::to_string(winCounter) + " | ";
+    controlHeaderText += "Zorbs met: " + std::to_string(names.size()) + "\n";
+
+    std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW)) << std::endl;
+
+    // Display the names of the Zorbs that were recruited
+    std::cout << z_util::CenterAlignString("Zorbs recruited on this Journey:") << std::endl;
+    for (const auto& name : names) {
+        std::string formattedName = z_util::FormattedText(name, ansi::GREEN);
+        std::cout << z_util::CenterAlignString(formattedName) << std::endl;
+    }
+    std::cout << "\nQ. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
-    std::cout << "your choice: ";
+    std::cout << "Enter your choice: ";
 }
 void UI::screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name) {
     _clearScreen();
-    _createStyledTextBox("BATTLE TIME!\n" + team1Name + " vs. " + team2Name + "\n" 
+    // Create header text for the battle
+    std::string headerText = "BATTLE TIME!\n" + team1Name + " vs. " + team2Name + "\n"
     + std::string(team1Name.length() + team2Name.length() + 5, '-') + "\n"
-    + std::to_string(team1.size()) + " vs. " + std::to_string(team2.size()));
+    + std::to_string(team1.size()) + " vs. " + std::to_string(team2.size());
 
+    // Create control header text for the battle
+    std::string controlHeaderText = "Turn: " + std::to_string(turnCounter) + " | " + "Casualties: " + std::to_string(casualtyCounter) + " | " + "Wins: " + std::to_string(winCounter) + "\n";
+
+    _createStyledTextBox(headerText);
     // Display the Zorbs in the battle with the team names
-    // make sure the first team is displayed from the left and the 2nd team from the right
     std::cout << std::endl << team1Name << std::endl << std::string(team1Name.length(), '-') << std::endl;
-    DisplayZorbs(team1);
+    DisplayZorbs(team1, 'L');
 
     std::cout << std::endl << std::right << std::setw(CONSOLESIZE) << team2Name << std::endl <<
     std::setw(CONSOLESIZE)  << std::string(team2Name.length(), '-') << std::endl;
     DisplayZorbs(team2, 'R');
     _createHorizontalLine('-');
-
+    
+    std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
+    std::cout << "1. Attack" << std::endl
+    << "2. Dodge" << std::endl
+    << "3. Runaway\n" << std::endl
+    << "Q. Quit back to Title Screen" << std::endl;
+    _createHorizontalLine('-');
+    std::cout << "Enter your choice: ";
 }
-// Recruitment screen where a zorb approaches the player and asks to join their team
-void UI::screenRecruitment(const Zorb& zorb) const {
+void UI::screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const {
     _clearScreen();
     _createStyledTextBox("A Zorb approaches you and asks to join your team!");
-    std::cout << zorb << std::endl;
+    std::cout << std::endl << zorb << std::endl << std::endl;
+
+    //display the players zorbs
+    std::cout << "Your Zorbs:" << std::endl;
+    DisplayZorbs(playerZorbs, 'L');
     _createHorizontalLine('-');
-    std::cout << "Do you accept? (Y/N): ";
+    // Create control header text that contains stats about your current team
+    // including the number of Zorbs, the number of wins, and average power
+    std::string controlHeaderText;
+    double medianPower;
+    // Get median power of the player's Zorbs altogether
+    if (playerZorbs.size() % 2 == 0) {
+        medianPower = (playerZorbs[playerZorbs.size() / 2.0].GetPower() + playerZorbs[playerZorbs.size() / 2.0 - 1].GetPower()) / 2.0;
+    } else {
+        medianPower = playerZorbs[playerZorbs.size() / 2].GetPower();
+    }
+
+    controlHeaderText += "Zorbs: " + std::to_string(playerZorbs.size()) + " | ";
+    controlHeaderText += "Wins: " + std::to_string(winCounter) + " | ";
+    //fix the precision of the median power to 2 decimal places
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2) << medianPower;
+    controlHeaderText += "Team Power: " + stream.str() + "\n";
+
+    std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
+    std::cout << "Y. Recruit" << std::endl
+    << "N. Reject\n" << std::endl
+    << "Q. Quit back to Title Screen" << std::endl;
+    _createHorizontalLine('-');
+}
+void UI::screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& attack) const {
+    _clearScreen();
+    std::string headerText = attack;
+
+    if(winZorb.GetName() == "Imploded Zorb") {
+        headerText += "\nBoth zorbs ";
+        headerText += z_util::random::choice({"fought", "battled", "clashed", "duked it out", "went head to head"});
+        headerText +=" and ";
+        headerText += z_util::random::choice({"imploded!", "exploded!", "self-destructed!", "self-destructed!", "self-destructed!"});
+
+        _createStyledTextBox(headerText);
+        std::cout << z_util::CenterAlignStrings(z_util::FormattedText(z_art::implode, ansi::RED)) << std::endl;
+    } else {
+        headerText += " \n"
+        + lossZorb.GetName()+" was "+z_util::random::choice({"SLAIN", "put into a deep rest", "destroyed", "put to sleep", "ANNIHILATED"})
+        + " by the attack! (sweet dreams!)";
+
+        _createStyledTextBox(headerText);
+        lossZorb.SetAppearance(static_cast<appearanceEnum>(0), ansi::RED);
+        std::cout << winZorb << std::endl << lossZorb << std::endl;
+    }
+
+    std::cout << std::endl << std::endl;
+
+    _createHorizontalLine('-');
+    std::string controlHeaderText = "Turn: " + std::to_string(turnCounter) + " | " + "Casualties: " + std::to_string(casualtyCounter) + "\n";
+    std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
+
+    _pauseSystem();
+}
+void UI::screenBarber(const std::vector<Zorb>& pZorbs) const {
+    _clearScreen();
+    std::string titleText = "You are approached by a pecular rat who offers to change your Zorbs' appearances!\n \n";
+    titleText+= zorb::BARBERNAME + ": \"You seem to need a haircut!!\"\n";
+    titleText+= "You: \"What?\"\n";
+
+    // Create control header text for zorb selection
+    std::string controlHeaderText = "Pick a zorb [" + std::to_string(1) + "-" + std::to_string(pZorbs.size()) + "]";
+
+    _createStyledTextBox(titleText);
+    std::cout << z_util::CenterAlignStrings(z_art::barber);
+    std::cout << "Your Zorbs:" << std::endl;
+    DisplayZorbs(pZorbs, 'L');
+
+    _createHorizontalLine('-');
+    std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
+    std::cout << "Y. 'You're right'" << std::endl
+    << "N. 'No thanks..'\n" << std::endl
+    << "Q. Quit back to Title Screen" << std::endl;
+    _createHorizontalLine('-');
 }
 #endif // ZUI_DISPLAY_HPP

@@ -31,7 +31,7 @@
                     "/Program Files (x86)/Windows Kits/10/Include",
                     "${workspaceFolder}"
                 ],
-                "limitSymbolsToIncludedHeaders": true
+                "limitSymbolsToIncludedHeaders": false
             }
         }
     ],

@@ -11,6 +11,7 @@ using json = nlohmann::json;
 enum class appearanceEnum : int {
     A_DEFAULT = 0,
 }; //dynamic enum for appearance
+
 //map of appearance enums to appearance strings
 std::map<appearanceEnum, std::string> appearanceMap = {
 {
@@ -21,8 +22,18 @@ R"(
 ( o.o )
  > ^ < )"}
 };
+
+//define constexpr string for dodged zorb
+constexpr char dodgedZorb[] = R"(
+   o   
+~/\~/\~
+(     )
+~>   <~)";
+
 //map of appearance enums to names
 std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::A_DEFAULT, "normal"}}; 
+//map of weights (double) to appearance enums
+std::map<appearanceEnum, double> appearanceWeights = {{appearanceEnum::A_DEFAULT, 5.0}};
 
 //initialize appearance maps
 void initAppearanceMaps() {
@@ -59,6 +70,9 @@ void initAppearanceMaps() {
     for (auto& appearance : j) {
         std::string appearanceString;
         int lineCount = 0;
+        //if the appearance does not have a weight, set it to 3
+        if(appearance.find("weight") == appearance.end())
+            appearance["weight"] = 3;
         /* Example JSON entry:
             "       ",
             "   o   ",
@@ -79,6 +93,7 @@ void initAppearanceMaps() {
         }
         appearanceMap[static_cast<appearanceEnum>(appNum)] = appearanceString;
         appearanceNames[static_cast<appearanceEnum>(appNum)] = appearance["name"];
+        appearanceWeights[static_cast<appearanceEnum>(appNum)] = appearance["weight"];
         appNum++;
         if(_DEBUGMODE)
             std::cout << "appearance " << appNum << '-' << appearance["name"] << std::endl;
@@ -89,6 +104,8 @@ void initAppearanceMaps() {
             std::cout << "DEBUG: initAppearanceMaps() - appearanceNames size: " << appearanceNames.size() << std::endl;
     }
     file.close();
+
+    zorb::BARBERNAME = z_util::random::choice({"Jean-Baptiste", "Rupert", "Gribert", "Rogier", "Emmanuel"});
 }
 //endregion appearance enums and maps
 
@@ -169,11 +186,61 @@ _/\____/\_             ___.      __________  O            .__   __   .__
  \/    ( ^.^ )    \/ 
        b> ^ <d       
 )";
+    std::string const barber = R"(
+   _.---------._            
+  (  "SQUEEK?"  )           
+   )           (            
+   `'-,   ,---'`            
+       \/              .___.
+   (,\.-./,)           |  ||
+    (_o.o_)/         <_l__<|
+    b> 3 <%            _I_  
+)";
 
     std::string const sample = R"(
 sample
 )";
+    
+    std::string const implode = R"(
+                             ____                       
+                     __,-~~/~    `---.                  
+                   _/_,---(      ,    )                 
+               __ /        <    /   )  \___             
+- ------===;;;'====------------------===;;;===----- -  -
+                  \/  ~"~"~"~"~"~\~"~)~"/               
+                  (_ (   \  (     >    \)               
+                   \_( _ <         >_>'                 
+                      ~ `-i' ::>|--"                    
+                          I;|.|.|                       
+                         <|i::|i|`.                     
+                        (` ^'"`-' ")                    
+)";
 }
+
+//define vector of string arrays for the barber, these string arrays will be a hair style for zorbs that takes up 3 lines
+std::vector<std::array<std::string, 3>> barberHair = {
+    {
+        "       ",
+        "    o  ",
+        "./\\|/\\.",
+    },
+    {
+        "       ",
+        "   o   ",
+        ".]\\|/[.",
+    },
+    {
+        "       ",
+        "   o   ",
+        ".-,|,-.",
+    },
+    {
+        "       ",
+        "   o   ",
+        ".^,|,^.",
+    }
+};
+
 
 //endregion
 
