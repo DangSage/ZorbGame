@@ -1,35 +1,32 @@
 {
     "tasks": [
         {
-            "label": "Copy Icon",
+            "label": "Compile Resources",
             "type": "shell",
-            "command": "cp",
+            "command": "windres",
             "args": [
-                "${workspaceFolder}/bin/zIcon.ico"
-            ]
+                "${workspaceFolder}\\bin\\resources.rc",
+                "-O",
+                "coff",
+                "-o",
+                "${workspaceFolder}\\bin\\resources.res"
+            ],
+            "problemMatcher": []
         },
         {
-            "type": "cppbuild",
-            "label": "C/C++: g++.exe build active file",
-            "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "label": "Build ZorbZenith",
+            "type": "shell",
+            "command": "g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${workspaceFolder}\\*.cpp",
+                "${workspaceFolder}\\bin\\resources.res",
                 "-o",
                 "${workspaceFolder}\\ZorbZenith.exe"
             ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "My DEFAULT Task."
+            "problemMatcher": [],
+            "dependsOn": ["Compile Resources"]
         }
     ],
     "version": "2.0.0"
