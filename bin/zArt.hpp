@@ -104,7 +104,7 @@ void initAppearanceMaps() {
     }
     file.close();
 
-    zorb::BARBERNAME = randomChoice({"Jean-Baptiste", "Rupert", "Gribert", "Rogier", "Emmanuel"});
+    zorb::BARBERNAME = z_util::random::choice({"Jean-Baptiste", "Rupert", "Gribert", "Rogier", "Emmanuel"});
 }
 //endregion appearance enums and maps
 

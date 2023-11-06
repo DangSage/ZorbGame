@@ -27,32 +27,17 @@ namespace z_debug {
         std::cout << std::endl << "\t[" << a << "] ";
         _pauseSystem();
     }
-
-    // Function template to generate a random value within a specified range
-    template <typename T>
-    T RandomValue(const T min, const T max) {
-        // Check if the type T is a numeric type
-        if (!std::is_arithmetic<T>::value) {
-            throw std::invalid_argument("RandomValue() requires a numeric type");
-        }
-        // Check if the min value is greater than the max value
-        if (min > max) {
-            throw std::invalid_argument("RandomValue() requires min <= max");
-        }
-        // Create a uniform distribution of values within the specified range
-        std::uniform_int_distribution<T> dist(min, max);
-        // Return a random value within the specified range
-        return dist(gen);
-    }
-
-    inline std::string SpaceToPrint(size_t spaces) {
-        return std::string(spaces, ' ');
-    }
     
     void PrintError(const std::string& error) {
         throw std::runtime_error(error);
     }
 
+} // namespace z_debug
+
+namespace z_util {
+    inline std::string SpaceToPrint(size_t spaces) {
+        return std::string(spaces, ' ');
+    }
     // Helper function to get the length of a string with or without counting escape codes, don't count if the escape code is ansi::RESET
     inline size_t GetLength(const std::string& input, bool countEscapeCodes) {
         size_t length = 0;
@@ -159,7 +144,45 @@ namespace z_debug {
         return discardedChar;
     }
 
-} // namespace z_debug
+    namespace random {
+        // Function template to generate a random value within a specified range
+        template <typename T>
+        T value(const T min, const T max) {
+            // Check if the type T is a numeric type
+            if (!std::is_arithmetic<T>::value) {
+                throw std::invalid_argument("RandomValue() requires a numeric type");
+            }
+            // Check if the min value is greater than the max value
+            if (min > max) {
+                throw std::invalid_argument("RandomValue() requires min <= max");
+            }
+            // Create a uniform distribution of values within the specified range
+            std::uniform_int_distribution<T> dist(min, max);
+            // Return a random value within the specified range
+            return dist(gen);
+        }
+        
+        // Function template to pick a random element from a container
+        template <typename T>
+        T choice(std::initializer_list<T> choices) {
+            //use previously defined function to get random value
+            int randomIndex = z_util::random::value<int>(0, choices.size()-1);
+            //define iterator to the random element
+            auto it = choices.begin();
+            //advance iterator to the random element
+            std::advance(it, randomIndex);
+
+            //return random element
+            return *it;
+        }
+
+        // pick a random color from the color codes
+        std::string_view getColor() {
+            constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
+            return COLOR_CODES[z_util::random::value<int>(0, COLOR_CODES->size())];
+        }
+    }
+}
 
 // Function template to validate user input, it can define any type of array of typename T as a parameter
 template<typename T, typename Container>
@@ -187,34 +210,13 @@ T validatedInput(Container& validInputs) {
         }
         if (!valid) {
             // print valid inputs
-            std::cout << DLINE;
+            std::cout << ansi::DLINE;
             // ask the user to try again in red text
             z_debug::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
         }
     }
 
     return input;
-}
-
-// Function template to choose one random element defined in a list of parameters in this function
-// parameters should be able to take (int i, int j, int k, int l, int m) or (std::string a, std::string b, std::string c, std::string d, std::string e)
-template <typename T>
-T randomChoice(std::initializer_list<T> choices) {
-    //use previously defined function to get random value
-    int randomIndex = z_debug::RandomValue<int>(0, choices.size()-1);
-    //define iterator to the random element
-    auto it = choices.begin();
-    //advance iterator to the random element
-    std::advance(it, randomIndex);
-
-    //return random element
-    return *it;
-}
-
-// GetRandomColor() returns a string_view defined already in the gameDefs.hpp header file
-std::string_view ansi::GetRandomColor() {
-    constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
-    return COLOR_CODES[z_debug::RandomValue<int>(0, COLOR_CODES->size())];
 }
 
 template<typename T>
@@ -228,7 +230,7 @@ std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) {
     return castObjs;
 }
 
-// create another SharedCast function that takes a single shared_ptr
+// overload for single object
 template<typename T>
 T SharedCast(std::shared_ptr<T> _obj) { 
     // Dereference the shared pointer and return an object

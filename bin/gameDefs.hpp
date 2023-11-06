@@ -14,13 +14,17 @@
 #include <cstdlib>
 #include <initializer_list>
 
+// make magic numbers for team identification
+constexpr int PLAYERTEAM = 1;
+constexpr int ENEMYTEAM = 2;
+
 // define size of display limit
 constexpr int CONSOLESIZE = 100;
 constexpr int ZORBWIDTH = 7;
 bool _LIGHTTHEME = false; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
 
-// Define ANSI color escape codes as macros
+// Define escape codes as macros, including color and output manipulation
 namespace ansi {
     static std::string RESET = "\x1B[0m";
     constexpr std::string_view BLACK = "\x1B[30m";
@@ -32,8 +36,8 @@ namespace ansi {
     constexpr std::string_view CYAN = "\x1B[36m";
     constexpr std::string_view WHITE = "\x1B[37m";
 
-    // Randomly pick a color from the list of ANSI color codes. This function is defined in zUtility.hpp
-    std::string_view GetRandomColor();
+    constexpr std::string_view DLINE = "\033[1A\033[2K"; // ANSI escape code to delete the last line from the console
+    constexpr std::string_view UPLINE = "\033[1A"; // ANSI escape code to move the cursor up one line
 }
 
 // Define which ANSI color code to use for the Zorb's color (color groups)
@@ -43,8 +47,6 @@ constexpr std::array<std::string_view, 2> CG_ENEMY = { ansi::MAGENTA, ansi::RED 
 static int turnCounter = 1; //turn counter for the battle segment
 static int winCounter = 0; //win counter for the game
 static int casualtyCounter = 0; //casualties counter for the game
-
-constexpr char DLINE[] = "\033[1A\033[2K"; // ANSI escape code to delete the last line from the console
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
