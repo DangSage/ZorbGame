@@ -7,13 +7,6 @@
 
 using json = nlohmann::json;
 
-//define constexpr string for dodged zorb
-constexpr char dodgedZorb[] = R"(
-   o   
-~/\~/\~
-(     )
-~>   <~)";
-
 //region appearance enums and maps
 enum class appearanceEnum : int {
     A_DEFAULT = 0,
@@ -29,6 +22,14 @@ R"(
 ( o.o )
  > ^ < )"}
 };
+
+//define constexpr string for dodged zorb
+constexpr char dodgedZorb[] = R"(
+   o   
+~/\~/\~
+(     )
+~>   <~)";
+
 //map of appearance enums to names
 std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::A_DEFAULT, "normal"}}; 
 //map of weights (double) to appearance enums
