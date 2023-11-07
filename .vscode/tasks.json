@@ -24,7 +24,8 @@
                 "-I${workspaceFolder}\\include",
                 "${workspaceFolder}\\bin\\resources.res",
                 "${workspaceFolder}\\bin\\*.cpp",
-                "${workspaceFolder}\\*.cpp",
+                "${workspaceFolder}\\src\\*.cpp",
+                "${workspaceFolder}\\driver.cpp",
                 "-o",
                 "${workspaceFolder}\\ZorbZenith.exe"
             ],
