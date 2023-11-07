@@ -20,9 +20,9 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "-I${workspaceFolder}/include", // Add this line
+                "-I${workspaceFolder}\\bin",
+                "-I${workspaceFolder}\\include",
                 "${workspaceFolder}\\driver.cpp",
-                "${workspaceFolder}\\src\\*.cpp",
                 "${workspaceFolder}\\bin\\resources.res",
                 "-o",
                 "${workspaceFolder}\\ZorbZenith.exe"

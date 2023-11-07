@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Zorb.hpp"
 #include "zUI.hpp"
 
 //make magic numbers for exit command 'Q'
