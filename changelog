@@ -1,0 +1,8 @@
+In this edition of the build it currently uses a JSON parser (nlohmann)
+in the library and uses some basic windows API tools to manipulate colors and the window itself
+
+This particular version is building with mingw64 as a toolchain for g++ to compile.
+
+Location Changes:
+- 2023/11/7 headers in /include
+- 2023/11/7 source files in /src

@@ -20,6 +20,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-I${workspaceFolder}\\libs",
                 "-I${workspaceFolder}\\bin",
                 "-I${workspaceFolder}\\include",
                 "${workspaceFolder}\\bin\\resources.res",
