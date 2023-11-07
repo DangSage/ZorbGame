@@ -20,8 +20,8 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "-I${workspaceFolder}\\include",
                 "-I${workspaceFolder}\\bin",
+                "-I${workspaceFolder}\\include",
                 "${workspaceFolder}\\bin\\resources.res",
                 "${workspaceFolder}\\bin\\*.cpp",
                 "${workspaceFolder}\\*.cpp",
