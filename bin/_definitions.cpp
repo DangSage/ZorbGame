@@ -1,4 +1,4 @@
-#include "_gameDefs.hpp"
+#include "zDefs.hpp"
 
 bool _LIGHTTHEME = false; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode

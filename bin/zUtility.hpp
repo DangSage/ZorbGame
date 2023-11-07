@@ -1,7 +1,7 @@
 #ifndef Z_UTILITY_HPP
 #define Z_UTILITY_HPP
 
-#include "_gameDefs.hpp"
+#include "zDefs.hpp"
 #include <utility>
 #include <regex>
 #include <random>

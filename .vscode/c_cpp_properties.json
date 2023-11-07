@@ -17,8 +17,8 @@
             "name": "Windows",
             "includePath": [
                 "/Program Files (x86)/Windows Kits/10/Include",
-                "${workspaceFolder}\\include",
                 "${workspaceFolder}\\bin",
+                "${workspaceFolder}\\include",
                 "${workspaceFolder}/**"
             ],
             "defines": [],
@@ -30,8 +30,8 @@
             "browse": {
                 "path": [
                     "/Program Files (x86)/Windows Kits/10/Include",
-                    "${workspaceFolder}\\include",
                     "${workspaceFolder}\\bin",
+                    "${workspaceFolder}\\include",
                     "${workspaceFolder}/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true

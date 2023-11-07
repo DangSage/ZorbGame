@@ -1,4 +1,4 @@
-#include "_zArt.hpp"
+#include "zArt.hpp"
 
 //map of appearance enums to appearance strings
 std::map<appearanceEnum, std::string> appearanceMap = {

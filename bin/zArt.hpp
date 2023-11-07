@@ -1,8 +1,8 @@
 #ifndef Z_ART_HPP
 #define Z_ART_HPP
 
-#include "_gameDefs.hpp"
-#include "_zUtility.hpp"
+#include "zDefs.hpp"
+#include "zUtility.hpp"
 #include <fstream>
 #include "json.hpp"
 
