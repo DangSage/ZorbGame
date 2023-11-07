@@ -1,8 +1,5 @@
-// Creator: Ethan Dang
-/*
-This is a test driver for the game. It is used to test game features and debug the game.
-*/
-#include "gameManager.hpp"
+
+#include "include/gameManager.hpp"
 
 int main() {
     UI _uiM;

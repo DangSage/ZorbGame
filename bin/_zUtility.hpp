@@ -1,36 +1,23 @@
 #ifndef Z_UTILITY_HPP
 #define Z_UTILITY_HPP
 
-#include "gameDefs.hpp"
+#include "_gameDefs.hpp"
 #include <utility>
 #include <regex>
 #include <random>
 #include <stdexcept>
 
 // Create a random device
-std::random_device rd;
+extern std::random_device rd;
 // Create a Mersenne Twister pseudo-random generator
-std::mt19937 gen(rd());
+extern std::mt19937 gen;
 
-void _pauseSystem() {
-    // Code for pausing the system (platform-dependent)
-    #ifdef _WIN32
-    system("pause"); // Windows
-    #else
-        std::cout << "Press Enter to continue...";
-        std::cin.get();
-    #endif
-}
+void _pauseSystem();
 
 namespace z_debug {
-    void _tag(const std::string& a) {
-        std::cout << std::endl << "\t[" << a << "] ";
-        _pauseSystem();
-    }
+    void _tag(const std::string& a);
     
-    void PrintError(const std::string& error) {
-        throw std::runtime_error(error);
-    }
+    void PrintError(const std::string& error);
 
 } // namespace z_debug
 
@@ -81,68 +68,22 @@ namespace z_util {
     }
 
     // Function to split a multi-line string into individual lines
-    std::vector<std::string> SplitMultilineString(const std::string& multilineString) {
-        std::vector<std::string> lines;
-        std::istringstream iss(multilineString);
-        std::string line;
-
-        while (std::getline(iss, line)) {
-            lines.push_back(line);
-        }
-
-        return lines;
-    }
+    std::vector<std::string> SplitMultilineString(const std::string& multilineString);
 
     // Function to center-align a SINGLE-line string within a given width
-    std::string CenterAlignString(const std::string& input, int width = CONSOLESIZE) {
-        std::string output;
-        std::vector<std::string> lines = SplitMultilineString(input);
-
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line;
-        }
-        return output;
-    }
+    std::string CenterAlignString(const std::string& input, int width = CONSOLESIZE);
 
      // Function to center-align a MULTI-line string within a given width
-    std::string CenterAlignStrings(const std::string& input, int width = CONSOLESIZE) {
-        std::string output;
-        std::vector<std::string> lines = SplitMultilineString(input);
-
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line + "\n";
-        }
-        return output;
-    }
+    std::string CenterAlignStrings(const std::string& input, int width = CONSOLESIZE);
 
     // Function to print a string with color and reset color codes
-    void PrintFormattedText(const std::string& text, const std::string_view& color = "") {
-        if (!color.empty()) {
-            std::cout << color;
-        }
-        std::cout << text << ansi::RESET;
-    }
+    void PrintFormattedText(const std::string& text, const std::string_view& color = "");
 
     // Function to return a string with colors and color reset codes
-    std::string FormattedText(const std::string& text, const std::string_view& color = "") {
-        if (!color.empty())
-            return std::string(color) + text + ansi::RESET;   // Wrap the text with the specified color codes
-        else
-        {
-            OutputDebugString("Log: No color specified at call of FormattedText()\n\tYou may want to pass text element instead.\n");
-            return text; // Return the text as is if no color is specified
-        }
-    }
+    std::string FormattedText(const std::string& text, const std::string_view& color = "");
 
     // Clears the input buffer to prevent any UI errors and returns the first discarded character
-    char clearInputBuffer() {
-        std::cin.clear(); // clear any error flags
-        char discardedChar = std::cin.get(); // read and return the first discarded character
-        std::cin.ignore(1, '\n'); // read and discard remaining characters until newline
-        return discardedChar;
-    }
+    char clearInputBuffer();
 
     namespace random {
         // Function template to generate a random value within a specified range
@@ -177,10 +118,7 @@ namespace z_util {
         }
 
         // pick a random color from the color codes
-        std::string_view getColor() {
-            constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};
-            return COLOR_CODES[z_util::random::value<int>(0, COLOR_CODES->size())];
-        }
+        std::string_view getColor();
     }
 }
 
@@ -237,6 +175,11 @@ T SharedCast(std::shared_ptr<T> _obj) {
     // Should only be used for displaying objects
     return *_obj;
 }
+
+namespace zorb {
+    std::string RandomName();
+} // namespace zorb
+
 
 
 #endif // Z_UTILITY_HPP

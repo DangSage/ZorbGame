@@ -16,19 +16,24 @@
         {
             "label": "Build ZorbZenith",
             "type": "shell",
-            "command": "g++",
+            "command": "/msys64/mingw64/bin/g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "-I${workspaceFolder}/include", // Add this line
-                "${workspaceFolder}\\driver.cpp",
-                "${workspaceFolder}\\src\\*.cpp",
+                "-I${workspaceFolder}\\include",
+                "-I${workspaceFolder}\\bin",
                 "${workspaceFolder}\\bin\\resources.res",
+                "${workspaceFolder}\\bin\\*.cpp",
+                "${workspaceFolder}\\*.cpp",
                 "-o",
                 "${workspaceFolder}\\ZorbZenith.exe"
             ],
             "problemMatcher": [],
-            "dependsOn": ["Compile Resources"]
+            "dependsOn": ["Compile Resources"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ],
     "version": "2.0.0"

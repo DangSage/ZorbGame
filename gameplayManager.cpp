@@ -1,122 +1,4 @@
-#pragma once
-
-#include "Zorb.hpp"
-#include "zUI.hpp"
-
-//make magic numbers for exit command 'Q'
-#define EXITCOMMAND 'Q'
-
-/*GameplayManager class will handle all of the actual in-game logic while simultaneously accessing the logic
-of the main GameManager. This will include battle behaviour between zorbs as well as recruitment of zorbs
-and encounters within the gameplay of Zorb Zenith.*/
-
-//forward declaration of the Battle class
-class Battle;
-
-//region Gameplay Generation Functions
-
-//endregion
-
-enum class GameplayState {
-    Intro,
-    Game,
-    Battle,
-    Barber,
-    Recruit,
-    InfoMenu,
-    Death,
-    ExitGame = -1
-};
-
-class GameplayManager {
-public:
-    GameplayManager(UI& ui): m_ui(ui) {} //default constructor
-    ~GameplayManager() {
-        //clear and destroy all shared pointers, then clear the vector
-        m_playerParty.clear();
-        m_enemyParty.clear();
-        m_zorbs.clear();
-        m_winCount = nullptr;
-
-    }
-
-    //region Gameplay Functions
-    void gameplayLoop();
-    void updateZorbs();
-    //endregion
-
-    void EraseZorb(std::shared_ptr<Zorb> zorb) { // Erase a zorb from the zorb vector
-        m_zorbs.erase(std::find(m_zorbs.begin(), m_zorbs.end(), zorb));
-
-        // Check if the zorb is a in the player party or enemy party
-        if (zorb->GetTeamId() == PLAYERTEAM)
-            m_playerParty.erase(std::find(m_playerParty.begin(), m_playerParty.end(), zorb));
-        else if (zorb->GetTeamId() == ENEMYTEAM)
-            m_enemyParty.erase(std::find(m_enemyParty.begin(), m_enemyParty.end(), zorb));
-    }
-private:
-    //region Gameplay Variables
-    friend class Battle;
-    UI& m_ui;
-    Battle* battle = nullptr;
-    std::vector<std::shared_ptr<Zorb>> m_zorbs;         // All zorbs in the game
-    std::vector<std::shared_ptr<Zorb>> m_playerParty;   //shared pointer vector of zorbs that are in the player's party
-    std::vector<std::shared_ptr<Zorb>> m_enemyParty;    //shared pointer of zorbs that are in the enemy's party
-    GameplayState m_gpState = GameplayState::Intro;
-    //endregion
-
-    int* m_winCount = &winCounter;
-    //create list of strings of all the names of the zorbs
-    std::vector<std::string> zorbNameRecord;
-
-    //region State Handling Functions
-    void handleIntroState();
-    void handleBarberState();
-    void handleRecruitState();
-    void handleBattleState();
-    void handleInfoMenuState();
-    void handleDeathState();
-    void handleExitGameState();
-    //endregion
-
-    //region input handling functions
-    void handleBattleInput();
-    void handleBarberInput();
-    void handleRecruitInput(Zorb& recruit);
-    void handleGameOverInput();
-    //endregion
-
-    Zorb GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, std::array<std::string_view, 2> colorvar);
-};
-
-class Battle {
-public:
-    Battle(GameplayManager& manager) : _gpM(manager),
-    b_zorbs(_gpM.m_zorbs), b_enemies(_gpM.m_enemyParty), b_players(_gpM.m_playerParty), leaveBattle(false)
-    {}
-    ~Battle() {
-        casualties = 0;
-        turnCount = 1;
-    }
-    void Update();
-    void End();
-    
-    bool leaveBattle;
-
-    void handleEnemyTurn();
-    void generateEnemyParty();
-    std::shared_ptr<Zorb> attackLogic(std::shared_ptr<Zorb> attacker, std::shared_ptr<Zorb> defender); //attack logic function
-private:
-    GameplayManager& _gpM;
-    GameplayState& gameplayState = _gpM.m_gpState;
-    int& turnCount = turnCounter;
-    int& casualties = casualtyCounter;
-
-    // references to the vectors in the GameplayManager class
-    std::vector<std::shared_ptr<Zorb>>& b_zorbs;
-    std::vector<std::shared_ptr<Zorb>>& b_enemies;
-    std::vector<std::shared_ptr<Zorb>>& b_players;    
-};
+#include "gameplayManager.hpp"
 
 //region GameplayManager Functions
 void GameplayManager::gameplayLoop() {
@@ -177,8 +59,17 @@ void GameplayManager::updateZorbs() {
         }
     }
 }
-
 //endregion
+
+void GameplayManager::EraseZorb(std::shared_ptr<Zorb> zorb) { // Erase a zorb from the zorb vector
+    m_zorbs.erase(std::find(m_zorbs.begin(), m_zorbs.end(), zorb));
+
+    // Check if the zorb is a in the player party or enemy party
+    if (zorb->GetTeamId() == PLAYERTEAM)
+        m_playerParty.erase(std::find(m_playerParty.begin(), m_playerParty.end(), zorb));
+    else if (zorb->GetTeamId() == ENEMYTEAM)
+        m_enemyParty.erase(std::find(m_enemyParty.begin(), m_enemyParty.end(), zorb));
+}
 
 //region Battle Functions
 void Battle::Update() {
