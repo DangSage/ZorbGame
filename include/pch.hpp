@@ -10,5 +10,5 @@ Some of those constant functions and variables include the following:
 */
 
 //#include _gameDefs.hpp // Include gameDefs.hpp for game definitions
-#include "_zUtility.hpp"
-#include "_zArt.hpp"
+#include "zUtility.hpp"
+#include "zArt.hpp"
