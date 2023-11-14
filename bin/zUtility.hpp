@@ -2,6 +2,7 @@
 #define Z_UTILITY_HPP
 
 #include "zDefs.hpp"
+#include "zExceptions.hpp"
 #include <utility>
 #include <regex>
 #include <random>
@@ -17,8 +18,7 @@ void _pauseSystem();
 namespace z_debug {
     void _tag(const std::string& a);
     
-    void PrintError(const std::string& error);
-
+    void PrintError(zException& error);
 } // namespace z_debug
 
 namespace z_util {
@@ -84,9 +84,9 @@ namespace z_util {
 
     // Clears the input buffer to prevent any UI errors and returns the first discarded character
     char clearInputBuffer();
-
+    
     namespace random {
-        // Function template to generate a random value within a specified range
+        // Function template to return a random value within a specified range
         template <typename T>
         T value(const T min, const T max) {
             // Check if the type T is a numeric type
@@ -102,6 +102,9 @@ namespace z_util {
             // Return a random value within the specified range
             return dist(gen);
         }
+
+        // value() function template overload for coinflip (1 or 2)
+        int value();
         
         // Function template to pick a random element from a container
         template <typename T>
@@ -129,9 +132,17 @@ T validatedInput(Container& validInputs) {
     // If the user input is not valid, we will ask the user to input again
     T input;
     bool valid = false;
+    bool failed = false;
     while (!valid) {
+        // get the line of input after the prompt and store it in input
         std::cin >> input;
-        
+        if (std::cin.fail()) {
+            std::cin.clear(); // Clear the error state
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the rest of the line
+            std::cout << ansi::DLINE;
+            z_util::PrintFormattedText("Invalid input type, please try again: ", ansi::RED);
+            continue; // Skip the rest of the loop and try again
+        }
         // if the input is a char, convert it to uppercase
         if (std::is_same<T, char>::value) {
             input = std::toupper(input);
@@ -166,14 +177,6 @@ std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) {
         castObjs.emplace_back(*obj);
     }
     return castObjs;
-}
-
-// overload for single object
-template<typename T>
-T SharedCast(std::shared_ptr<T> _obj) { 
-    // Dereference the shared pointer and return an object
-    // Should only be used for displaying objects
-    return *_obj;
 }
 
 namespace zorb {

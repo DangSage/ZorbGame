@@ -1,4 +1,9 @@
+#include "pch.hpp"
 #include "gameplayManager.hpp"
+#include "zUI.hpp"
+#include "Zorb.hpp"
+
+std::string journeyName; // The name of the save and the player team
 
 //region GameplayManager Functions
 void GameplayManager::gameplayLoop() {
@@ -16,8 +21,8 @@ void GameplayManager::gameplayLoop() {
         }
         // Handle each game state
         switch (m_gpState) {
-            case GameplayState::Intro:
-                handleIntroState();
+            case GameplayState::Start:
+                handleStartState();
                 break;
             case GameplayState::Barber:
                 handleBarberState();
@@ -41,21 +46,22 @@ void GameplayManager::gameplayLoop() {
 }
 void GameplayManager::updateZorbs() {
     // clear the player and enemy party vectors
-    m_playerParty.clear();
-    m_enemyParty.clear();
-
+    m_playerz.clear();
+    m_enemyz.clear();
+    Zorb empty;
     // Loop through the m_zorbs vector
     for (const auto& zorb : m_zorbs) {
-        if (SharedCast(zorb).GetTeamId() == PLAYERTEAM) {
-            m_playerParty.emplace_back(zorb);   // Add the zorb to the player party vector
-        }
-        else if (SharedCast(zorb).GetTeamId() == ENEMYTEAM) {
-            m_enemyParty.emplace_back(zorb);    // Add the zorb to the enemy party vector
-        }
-
-        // delete imploded zorbs
-        if (SharedCast(zorb).GetPower() == -1) {
+        // Erase invalid zorbs from the zorb vector (empty zorbs that dont have a power)
+        if ((*zorb) == empty) {
             m_zorbs.erase(std::find(m_zorbs.begin(), m_zorbs.end(), zorb));
+            continue;
+        }
+        
+        if ((*zorb).GetTeamId() == PLAYERTEAM) {
+            m_playerz.emplace_back(zorb);   // Add the zorb to the player party vector
+        }
+        else if ((*zorb).GetTeamId() == ENEMYTEAM) {
+            m_enemyz.emplace_back(zorb);    // Add the zorb to the enemy party vector
         }
     }
 }
@@ -66,154 +72,46 @@ void GameplayManager::EraseZorb(std::shared_ptr<Zorb> zorb) { // Erase a zorb fr
 
     // Check if the zorb is a in the player party or enemy party
     if (zorb->GetTeamId() == PLAYERTEAM)
-        m_playerParty.erase(std::find(m_playerParty.begin(), m_playerParty.end(), zorb));
+        m_playerz.erase(std::find(m_playerz.begin(), m_playerz.end(), zorb));
     else if (zorb->GetTeamId() == ENEMYTEAM)
-        m_enemyParty.erase(std::find(m_enemyParty.begin(), m_enemyParty.end(), zorb));
+        m_enemyz.erase(std::find(m_enemyz.begin(), m_enemyz.end(), zorb));
 }
-
-//region Battle Functions
-void Battle::Update() {
-    //update the zorbs
-    generateEnemyParty();
-    
-    // while the player party and enemy party are not empty
-    while((b_players.size() > 0 && b_enemies.size() > 0) && leaveBattle == false) {
-        //display the battle screen
-        _gpM.m_ui.screenBattle(SharedCast(b_players), SharedCast(b_enemies), "Player Team", "Enemy Team");
-        _gpM.handleBattleInput(); //handle the battle input
-    }
-    //end the battle
-    End();
-}
-void Battle::End() {
-    std::cout << z_util::CenterAlignString("AFTERMATH", CONSOLESIZE) << std::endl;
-    // Check if the player party is empty
-    if (b_players.size() == 0) {
-        std::cout << "You lost the battle!" << std::endl;
-        _pauseSystem();
-        gameplayState = GameplayState::Death;
-    }
-    // Check if the enemy party is empty
-    else if (b_enemies.size() == 0) {
-        std::cout << "You won the battle!" << std::endl;
-        _pauseSystem();
-        winCounter++;
-        gameplayState = GameplayState::Game;
-    }
-    else {  // Runaway
-        std::cout << "You ran away from the battle!" << std::endl;
-        
-        if(gameplayState != GameplayState::ExitGame) {
-            if(z_util::random::value(1, 2) == 1) {
-                std::cout << std::endl << "The enemy team lost your trail and you escaped!" << std::endl;
-
-                // empty the enemy party vector and get rid of corresponding zorbs
-                b_enemies.clear();
-                auto new_end = std::remove_if(b_zorbs.begin(), b_zorbs.end(),
-                    [](const auto& zorb) { return SharedCast(zorb).GetTeamId() == 2; });
-
-                b_zorbs.erase(new_end, b_zorbs.end());
-            } else {
-                std::cout << std::endl << z_util::FormattedText("The enemy team lost you for now...", ansi::YELLOW) << std::endl;
-            }
-            _pauseSystem();
-            gameplayState = GameplayState::Game;
-        } else {
-            gameplayState = GameplayState::ExitGame;
-        }
-    }
-    casualties = 0;
-}
-void Battle::handleEnemyTurn() {
-    if (z_util::random::value(1, 2) == 1) {
-        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyParty.size()) - 1); // Choose a random zorb from the enemy party vector
-        int enemyZorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_playerParty.size()) - 1); // Choose a random zorb from the player party vector
-        
-        _gpM.m_zorbs.emplace_back(attackLogic(_gpM.m_enemyParty[zorbIndex], _gpM.m_playerParty[enemyZorbIndex])); // Call the attackLogic function with the zorb in the enemy party vector and the zorb in the player party vector
-    } else {
-        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyParty.size()) - 1); // Choose a random zorb from the enemy party vector
-
-        _gpM.m_zorbs.emplace_back(std::make_shared<Zorb>(2)); // pushback a new empty sharedptr zorb into the zorb vector
-        _gpM.updateZorbs();
-        _gpM.m_enemyParty[zorbIndex].swap(_gpM.m_enemyParty.back()); // The zorb in the enemy party vector "dodges" by swapping spaces with a new empty spot in the party vector
-    }
-}
-void Battle::generateEnemyParty() {
-    std::cout << "Generating enemy party..." << std::endl;
-
-    //Randomly generate a number of enemies based on the number of player zorbs
-    int lowerBound,
-        upperBound;
-    b_players.size() > 4 ? lowerBound = b_players.size() - 4 : lowerBound = 1;
-    b_players.size() > 4 ? upperBound = b_players.size() + 2 : upperBound = b_players.size() + 1;
-
-    //generate a random number of enemies
-    int numEnemies = z_util::random::value(lowerBound, upperBound);
-    
-    //loop through the player party vector
-    for(int i=0; i<numEnemies; i++) {
-        Zorb recruit = _gpM.GenerateRecruit(b_enemies, CG_ENEMY); //generate a random enemy zorb
-        
-        //emplace the new zorb into the zorb vector
-        b_zorbs.emplace_back(std::make_shared<Zorb>(recruit));
-    }
-
-    _gpM.updateZorbs();
-}
-std::shared_ptr<Zorb> Battle::attackLogic(std::shared_ptr<Zorb> attacker, std::shared_ptr<Zorb> defender) {
-    
-    Zorb newZorb = *attacker + *defender; // addition operator overload to get attack result in a new zorb
-    // tell the player the about the attack
-    std::cout << ansi::DLINE << attacker->GetName() << " attacked " << defender->GetName() << " with " << attacker->GetPower() << " power!" << std::endl;
-    
-    // check if the attack was dodged
-    if(newZorb.GetName() == "~dodged") {
-        std::cout << defender->GetName() << " dodged the attack!" << std::endl;
-        // Return a shared pointer to the new zorb
-        return std::make_shared<Zorb>(newZorb);
-    }
-
-    const int attackerTeamId = (*attacker).GetTeamId();
-    const int defenderTeamId = (*defender).GetTeamId();
-    if (newZorb.GetTeamId() == attackerTeamId) {
-        casualties++;
-        _gpM.m_ui.screenFightOutcome(newZorb, *defender, "The attack was effective!");
-        
-    } else if (newZorb.GetTeamId() == defenderTeamId) {
-        casualties++;
-        _gpM.m_ui.screenFightOutcome(*attacker, *defender, "The attack was ineffective!");
-
-    } else if (newZorb.GetTeamId() == -1) {
-        casualties+=2;
-        std::cout << ansi::RED << "OOPS!" << ansi::RESET;
-        z_util::clearInputBuffer();
-        _gpM.m_ui.screenFightOutcome(newZorb, *defender, "OH SHOOT! backfire!");   
-
-    } else {
-        std::cout << attackerTeamId << ' ' << defenderTeamId << std::endl << "New Zorb team id: " << newZorb.GetTeamId() << std::endl;
-        z_debug::PrintError("Battle::attackLogic() - HDWGH?");
-    }    
-
-    _gpM.EraseZorb(attacker);
-    _gpM.EraseZorb(defender);
-    // Return a shared pointer to the new zorb
-    return std::make_shared<Zorb>(newZorb);
-}
-//endregion
 
 //region State Handling Functions
-void GameplayManager::handleIntroState() {
-    m_zorbs.emplace_back(std::make_shared<Zorb>(ZorbAppearance(static_cast<appearanceEnum>(0), ansi::GREEN), 1, 1, "Neep Narp"));
+void GameplayManager::handleStartState() {
+    m_zorbs.emplace_back(std::make_shared<Zorb>(Zorb(ZorbAppearance(appearanceEnum::A_DEFAULT, ansi::GREEN), 1, 1, "Neep Narp")));
     zorbNameRecord.emplace_back("Neep Narp");
+
+    m_ui.screenStart();
+    while(true) {
+        std::cout << std::string((CONSOLESIZE/3),' ') << ">" << ansi::GREEN;
+        std::getline(std::cin, journeyName);
+        if(journeyName.size() > 0 && journeyName.size() <= 50) {
+            std::cout << ansi::RESET << z_util::CenterAlignString("You have named this journey: " + journeyName) 
+                << "\n\n\n\n" << std::endl;
+            _pauseSystem();
+            break;
+        }
+        else if (journeyName.size() > 50)
+            std::cout << z_util::CenterAlignString(z_util::FormattedText("Enter a shorter name!", ansi::RED))
+            << ansi::UPLINE << ansi::UPLINE << std::endl;
+        else {
+            journeyName = "Adventure #" + std::to_string(z_util::random::value(1, 100));
+            std::cout << ansi::RESET << z_util::CenterAlignString("You have named this journey: " + journeyName) 
+                << "\n\n\n\n" << std::endl;
+            _pauseSystem();
+            break;
+        }
+    }
     m_gpState = GameplayState::Battle;
 }
 void GameplayManager::handleBarberState() {
-    m_ui.screenBarber(SharedCast(m_playerParty));
+    m_ui.screenBarber(SharedCast(m_playerz));
     handleBarberInput();
 }
 void GameplayManager::handleRecruitState() {
-    Zorb recruit = GenerateRecruit(m_playerParty, CG_PLAYER);
-    m_ui.screenRecruitment(recruit, SharedCast(m_playerParty));
+    Zorb recruit = GenerateRecruit(m_playerz, CG_PLAYER);
+    m_ui.screenRecruitment(recruit, SharedCast(m_playerz));
     handleRecruitInput(recruit);
     m_gpState = GameplayState::Battle;
 }
@@ -223,6 +121,7 @@ void GameplayManager::handleBattleState() {
         battle = nullptr;
     }
     battle = new Battle(*this);
+    
     battle->Update();
 }
 void GameplayManager::handleInfoMenuState() {}
@@ -243,24 +142,21 @@ void GameplayManager::handleExitGameState() {
 void GameplayManager::handleBattleInput() {
     int zorbIndex,
         enemyZorbIndex;
-    static int dodgeIndex = -1;
+    static int dodgeIndex;
 
-    // Generate a list of numbers from 1 to the size of the player party vector that is viable for input
-    // Any zorbs that have been dodged will not be able to be selected
-    std::vector<int> zorbIndexList;
-    for (int i = 0; i < m_playerParty.size(); i++) {
-        if (m_playerParty[i]->GetPower() != -1) {
-            zorbIndexList.emplace_back(i+1);
+    auto updateZorbsAndBuildIndexList = [&](std::vector<std::shared_ptr<Zorb>>& zorbs) {
+        std::vector<int> indexList;
+        for (int i = 0; i < zorbs.size(); i++) {
+            if (zorbs[i]->GetPower() != -1) {
+                indexList.emplace_back(i+1);
+                zorbs[i]->UpdateBuffs();
+            }
         }
-    }
-    // list of numbers from 1 to the size of the enemy party vector that is viable for input
-    // Any zorbs that have been dodged will not be able to be selected
-    std::vector<int> enemyIndexList;
-    for (int i = 0; i < m_enemyParty.size(); i++) {
-        if (m_enemyParty[i]->GetPower() != -1) {
-            enemyIndexList.emplace_back(i+1);
-        }
-    }
+        return indexList;
+    };
+    
+    std::vector<int> zorbIndexList = updateZorbsAndBuildIndexList(m_playerz);
+    std::vector<int> enemyIndexList = updateZorbsAndBuildIndexList(m_enemyz);
 
     // Get the player's input for choices in the battle
     char inputChoice[] = {'1','2','3',EXITCOMMAND};
@@ -273,26 +169,14 @@ void GameplayManager::handleBattleInput() {
             enemyZorbIndex = validatedInput<int>(enemyIndexList)-1; // input for which enemy zorb to attack
 
             // attackLogic function with the zorb in the player party vector and the zorb in the enemy party vector
-            m_zorbs.emplace_back(battle->attackLogic(m_playerParty[zorbIndex], m_enemyParty[enemyZorbIndex]));
-            updateZorbs();
+            m_zorbs.emplace_back(battle->attackLogic(m_playerz[zorbIndex], m_enemyz[enemyZorbIndex]));
             break;
         case '2':
             std::cout << ansi::DLINE << z_util::CenterAlignString("Dodging:", CONSOLESIZE) << std::endl 
                 << "Choose a Zorb to dodge with: ";
             dodgeIndex = validatedInput<int>(zorbIndexList)-1; // input for which zorb to dodge with
 
-            // pushback a new empty sharedptr zorb into the zorb vector
-            m_zorbs.emplace_back(std::make_shared<Zorb>(1));
-
-            //temporarily add 1 power to the zorb that dodged
-            m_playerParty[dodgeIndex]->SetPower(m_playerParty[dodgeIndex]->GetPower()+1);
-            updateZorbs();
-
-            // The zorb in the player party vector "dodges" by swapping spaces with a new empty spot in the party vector
-            m_playerParty[dodgeIndex].swap(m_playerParty.back());
-            
-            // Reset the dodgeIndex to be the index of the new empty zorb
-            dodgeIndex = m_playerParty.size()-1;
+            battle->Dodge(m_playerz[dodgeIndex], dodgeIndex); // dodge function with the zorb in the player party vector
             break;
         case '3':
             battle->leaveBattle = true;
@@ -303,25 +187,14 @@ void GameplayManager::handleBattleInput() {
             m_gpState = GameplayState::ExitGame;
             return;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleBattleInput()");
+            z_debug::PrintError(exc);
             break;
     }
 
     // Enemy turn
     //battle->handleEnemyTurn();
-    // delete dodged zorbs
-    for (auto& zorb : m_zorbs) {
-        if (SharedCast(zorb).GetPower() == -1 && SharedCast(zorb).GetName() == "~dodged") {
-            m_zorbs.erase(std::find(m_zorbs.begin(), m_zorbs.end(), zorb));
-        }
-    }
-
     turnCounter++;
-    // remove 1 power from the zorbs that have dodged using the static dodgeIndex variable once one turn has passed
-    // if (dodgeIndex != -1 && m_playerParty[dodgeIndex]->GetPower() > 0) {
-    //     m_playerParty[dodgeIndex]->SetPower(m_playerParty[dodgeIndex]->GetPower()-1);
-    //     dodgeIndex = -1;
-    // }
 }
 void GameplayManager::handleBarberInput() {
     std::cout << "Do you trust him? : ";
@@ -339,7 +212,8 @@ void GameplayManager::handleBarberInput() {
             m_gpState = GameplayState::ExitGame;
             break;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleBarberInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
@@ -364,7 +238,8 @@ void GameplayManager::handleRecruitInput(Zorb& recruit) {
             m_gpState = GameplayState::ExitGame;
             break;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleRecruitInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
@@ -375,13 +250,13 @@ void GameplayManager::handleGameOverInput() {
             m_gpState = GameplayState::ExitGame;
             break;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleGameOverInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
 //endregion
 
-//region Gameplay Generation Functions
 Zorb GameplayManager::GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, std::array<std::string_view, 2> colorvar) {
     // Generate a random appearance
     ZorbAppearance recruitAppearance = GenRandomAppearance(colorvar);
@@ -392,12 +267,12 @@ Zorb GameplayManager::GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, 
     int recruitId;
 
     if (team.empty()) // if the team is empty, set recruitId to 2 (the first recruitId for the enemy team)
-        recruitId = 2;
+        recruitId = 2;  // Only the enemy team would be empty and calling this function
     else
         recruitId = team.back()->GetTeamId(); // set recruitId to the id of the last zorb in the team + 1
 
     
-    for (const auto& zorb : m_playerParty) {
+    for (const auto& zorb : m_playerz) {
         recruitPower += zorb->GetPower();
     }
 
@@ -406,7 +281,7 @@ Zorb GameplayManager::GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, 
     // 2. the average power of the player's zorbs
     // 3. the amount of wins the player has
     if(winCounter > 0) {
-        recruitPower = (recruitPower / m_playerParty.size()) + z_util::random::value(-winCounter, (recruitPower / (2*winCounter)));
+        recruitPower = (recruitPower / m_playerz.size()) + z_util::random::value(-winCounter, (recruitPower / (2*winCounter)));
     } else {
         recruitPower = 1;
     }

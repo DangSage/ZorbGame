@@ -21,14 +21,15 @@ namespace z_debug {
         _pauseSystem();
     }
     
-    void PrintError(const std::string& error) {
-        throw std::runtime_error(error);
+    // Function to print an error message and throw a zException with the error message
+    void PrintError(zException& error) {
+        std::cout << std::endl;
+        error.message();
     }
 
 } // namespace z_debug
 
 namespace z_util {
-
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString) {
         std::vector<std::string> lines;
@@ -89,11 +90,16 @@ namespace z_util {
     char clearInputBuffer() {
         std::cin.clear(); // clear any error flags
         char discardedChar = std::cin.get(); // read and return the first discarded character
-        std::cin.ignore(1, '\n'); // read and discard remaining characters until newline
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard remaining characters until newline
         return discardedChar;
     }
-
+    
     namespace random {
+        int value() {
+            std::uniform_int_distribution<int> dist(1, 2);
+            return dist(gen);
+        }
+
         // pick a random color from the color codes
         std::string_view getColor() {
             constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};

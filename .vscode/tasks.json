@@ -33,6 +33,16 @@
             "problemMatcher": [],
             "dependsOn": ["Compile Resources"],
             "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "Run ZorbZenith",
+            "type": "shell",
+            "command": "${workspaceFolder}\\ZorbZenith.exe",
+            "problemMatcher": [],
+            "dependsOn": ["Build ZorbZenith"],
+            "group": {
                 "kind": "build",
                 "isDefault": true
             }

@@ -7,12 +7,9 @@
 #define IDI_MYICON 101
 
 #include <iostream> // Include necessary standard library headers
-#include <iomanip>
 #include <array>
 #include <vector>
 #include <string>
-#include <cstdlib>
-#include <initializer_list>
 
 //make magic numbers for exit command 'Q'
 #define EXITCOMMAND 'Q'
@@ -37,8 +34,10 @@ namespace ansi {
     constexpr std::string_view MAGENTA = "\x1B[35m";
     constexpr std::string_view CYAN = "\x1B[36m";
     constexpr std::string_view WHITE = "\x1B[37m";
+    constexpr std::string_view GRAY = "\x1B[37;2m";
 
     constexpr std::string_view DLINE = "\033[1A\033[2K"; // ANSI escape code to delete the last line from the console
+    constexpr std::string_view DLINE2 = "\033[2K"; // ANSI escape code to delete the current line from the console
     constexpr std::string_view UPLINE = "\033[1A"; // ANSI escape code to move the cursor up one line
 }
 
@@ -66,17 +65,6 @@ void ChangeDebugMode();
 void ForceTerminalBorder();
 
 void ForceTerminal();
-
-//enum for game states to be used in the game driver
-enum class GameState {
-    MainMenu,
-    OptionsMenu,
-    OptionsMenuTheme,
-    Game,
-    InfoMenu,
-    End = -1
-};
-
 
 //namespace for zorb utility functions, NOT to be confused with the Zorb class
 namespace zorb {
@@ -151,9 +139,122 @@ namespace zorb {
         "Zip",
         "Zeegul"
     };
+    // Random enemy team names for the battle segment
+    const std::array<std::string_view, 25> TEAMPREFIX = {
+        "Local",
+        "Ragged",
+        "Raggedy",
+        "Hairy",
+        "Fuzzy",
+        "Furry",
+        "Furrious",
+        "Vagrant",
+        "Vagabond",
+        "Zorg",
+        "Zleepy",
+        "Exhausted",
+        "Eepy",
+        "Deadly",
+        "Wandering",
+        "Aimless",
+        "Lost",
+        "Able",
+        "Hunter",
+        "Feral",
+        "Wild",
+        "Rabid",
+        "Ravenous",
+        "Gung-Ho",
+        "Zorbian"
+    };
+    const std::array<std::string_view, 25> TEAMSUFFIX = {
+        "Blob",
+        "Crew",
+        "Zorbos",
+        "Zorbians",
+        "Zorbites",
+        "Gang",
+        "Blorgal",
+        "Fundamentalists",
+        "Zorbianists",
+        "Locals",
+        "Zraban",
+        "School",
+        "Armed Militia",
+        "Wranglers",
+        "Bunch",
+        "Platoon",
+        "Squad",
+        "Hit Squad",
+        "Zorbs",
+        "Zorbites",
+        "Band",
+        "Zealots",
+        "Hunters",
+        "Meowcenaries",
+        "Guerilla"
+    };
+
+    const std::string N_DODGE = "DODGED";
+    const std::string N_IMPLODE = "IMPLODE";
 } // namespace zorb
 
 extern std::string BARBERNAME;
+
+namespace text {
+    namespace battle {
+        const std::initializer_list<std::string_view> encounter = {
+            "You have encountered a Zorb!",
+            "You are encountered by a group of Zorbs!",
+            "You have been ambushed by a Zorb!",
+            "You have been ambushed by a group of Zorbs!",
+            "You spot some Zorb or 2 in the distance!",
+            "You've been spotted by a group of enemies!",
+            "You've been ambushed by a group of enemies!",
+            "These Zorbs are looking for a fight!",
+            "These Zorbs don't look friendly!",
+            "These Zorbs look like they want to fight!"
+        };
+
+        const std::initializer_list<std::string_view> attackResult = {
+            "ANNIHILATED",
+            "DESTROYED",
+            "slumped",
+            "flattened",
+            "obliterated",
+            "CRUSHED",
+            "smashed",
+            "squashed",
+            "crushed",
+            "crunched",
+            "crumpled",
+            "pulverized",
+            "demolished",
+            "wrecked",
+            "put into a deep rest",
+            "put to sleep",
+            "put to rest",
+            "put to bed",
+        };
+        const std::initializer_list<std::string_view> implode = {
+            "fought", 
+            "battled", 
+            "clashed", 
+            "duked it out", 
+            "went head to head",
+            "went toe to toe",
+            "went at it",
+            "destroyed eachother",
+            "EXPLODED",
+            "imploded",
+            "combusted",
+            "self-destructed",
+            "self-imploded",
+            "self-combusted",
+            "disintegrated"
+        };
+    }
+}
 
 #endif
 

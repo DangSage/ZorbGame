@@ -1,7 +1,12 @@
 #ifndef ZUI_HPP
 #define ZUI_HPP
 
-#include "Zorb.hpp" // Include Zorb.hpp for Zorb class usage
+#include <string>
+#include <vector>
+#include <memory>
+
+// forward declarations
+class Zorb;
 
 namespace z_debug {
     void DisplayDebugColors();
@@ -31,14 +36,16 @@ public:
 
     void screenMainMenu() const;                            // title screen display
     void screenDebugOptions() const;                        // setting screen display
-    void screenInfo() const;                                // info screen display
+    void screenIntro() const;                                // info screen display
     void screenGameOver(std::vector<std::string>& names) const; // gameover screen display
     void screenDebugColors() const;                         // debug color screen display
     void screenDebugZorbs() const;                          // debug zorb screen display
 
+    void screenStart() const;                               // intro screen display
     void screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const; // recruitment screen display
     void screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& attack) const; //screen for battle outcomes
-    void screenBattle(const std::vector<Zorb>& team1, const std::vector<Zorb>& team2, const std::string& team1Name, const std::string& team2Name); //main battle screen that takes 2 arrays of zorbs as parameters
+    void screenBattleEncounter(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2);
+    void screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2); //main battle screen that takes 2 arrays of zorbs as parameters
     void screenBarber(const std::vector<Zorb>& pZorbs) const; // barber shop screen display
 
     friend void _clearScreen();     // wipes output stream in the console

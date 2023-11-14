@@ -1,6 +1,6 @@
 #include "zDefs.hpp"
 
-bool _LIGHTTHEME = false; //toggle for light theme
+bool _LIGHTTHEME = true; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
 
 namespace ansi{

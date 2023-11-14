@@ -1,9 +1,18 @@
+#include "pch.hpp"
 #include "gameManager.hpp"
+#include "gameplayManager.hpp"
+#include "Zorb.hpp"
+#include "zUI.hpp"
 
 std::string url = "https://github.com/DangSage/ZorbGame";
 std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
 
 static int m_playerScore = 0;  // Player's score
+
+GameManager::GameManager(UI& ui) : m_ui(ui) {
+        ForceTerminal();
+        initAppearanceMaps();
+    } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
 
 void GameManager::setGameState(GameState gameState) { 
     m_gameState = gameState; 
@@ -15,7 +24,7 @@ void GameManager::gameLoop() {
     while (true) {
         switch (m_gameState) {
             case GameState::InfoMenu:
-                m_ui.screenInfo();
+                m_ui.screenIntro();
                 m_gameState = GameState::MainMenu;
                 break;
             case GameState::MainMenu:
@@ -27,7 +36,8 @@ void GameManager::gameLoop() {
                 handleOptionsMenuInput();
                 break;
             default:
-                z_debug::PrintError("GameManager::gameLoop() - Invalid GameState");
+                zException exc = UnexpectedCallException("GameManager::gameLoop()");
+                z_debug::PrintError(exc);
                 break;
         }
         if(m_gameState == GameState::Game) {
@@ -74,7 +84,8 @@ void GameManager::handleMainMenuInput() {
             m_gameState = GameState::End;
             break;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleMainMenuInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
@@ -109,7 +120,8 @@ void GameManager::handleOptionsMenuInput() {
             m_gameState = GameState::MainMenu;
             break;
         default:
-            z_debug::PrintError("GameManager::handleOptionsMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleOptionsMenuInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
@@ -123,7 +135,8 @@ void GameManager::handleGameOverInput() {
         case 'Q':
             break;
         default:
-            z_debug::PrintError("GameManager::handleGameOverInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleGameOverInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
