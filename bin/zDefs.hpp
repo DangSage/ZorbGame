@@ -48,6 +48,7 @@ constexpr std::array<std::string_view, 2> CG_ENEMY = { ansi::MAGENTA, ansi::RED 
 extern int turnCounter; //turn counter for the battle segment
 extern int winCounter; //win counter for the game
 extern int casualtyCounter; //casualties counter for the game
+extern int battleCounter; //battle counter for the game
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor();

@@ -10,6 +10,7 @@ namespace ansi{
 int turnCounter = 1; //turn counter for the battle segment
 int winCounter = 0; //win counter for the game
 int casualtyCounter = 0; //casualties counter for the game
+int battleCounter = 0; //battle counter for the game
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {

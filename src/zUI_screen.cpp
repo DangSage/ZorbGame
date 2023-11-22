@@ -12,9 +12,9 @@ void UI::screenMainMenu() const {
     // Define menu options
     std::string menuText =
         "<3 Dedicated to Thomas Worrall <3\n\n"
-        "1. Start Game\n"
-        "2. Instructions\n"
-        "3. Debug Settings\n\n"
+        " 1. Start Game\n"
+        " 2. Instructions\n"
+        " 3. Debug Settings\n\n"
         "Q. Quit to Desktop\n";
 
     // Display the title text
@@ -211,10 +211,14 @@ void UI::screenBattleEncounterJump(std::pair<std::vector<std::shared_ptr<Zorb>>&
 
 void UI::screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2) {
     _clearScreen();
-    // Create header text for the battle
-    std::string headerText = "BATTLE TIME!\n" + team1.second + " vs. " + team2.second + "\n"
-    + std::string(team1.second.length() + team2.second.length() + 5, '-') + "\n"
-    + std::to_string(team1.first.size()) + " vs. " + std::to_string(team2.first.size());
+
+    std::stringstream ss;
+    ss << "BATTLE #" << battleCounter << ":\n" 
+        << team1.second << " vs. " << team2.second << "\n"
+        << std::string(team1.second.length() + team2.second.length() + 5, '-') << "\n"
+        << team1.first.size() << " vs. " << team2.first.size();
+
+    std::string headerText = ss.str();
 
     // Create control header text for the battle
     std::string controlHeaderText = "Turn: " + std::to_string(turnCounter) + " | " + "Casualties: " + std::to_string(casualtyCounter) + " | " + "Wins: " + std::to_string(winCounter) + "\n";
@@ -230,10 +234,10 @@ void UI::screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string
     _createHorizontalLine('-');
     
     std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
-    std::cout << "1. Attack" << std::endl
-    << "2. Dodge" << std::endl
-    << "3. Runaway\n" << std::endl
-    << "Q. Quit back to Title Screen" << std::endl;
+    std::cout << " 1. Attack" << std::endl
+    << " 2. Dodge" << std::endl
+    << " 3. Runaway\n" << std::endl
+    << "Q. Quit back to Title Screen" << std::right << std::setw(CONSOLESIZE-28) << "Controls [?]" << std::endl;
     _createHorizontalLine('-');
 }
 void UI::screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const {
@@ -264,8 +268,8 @@ void UI::screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorb
     controlHeaderText += "Team Power: " + stream.str() + "\n";
 
     std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
-    std::cout << "Y. Recruit" << std::endl
-    << "N. Reject\n" << std::endl
+    std::cout << " Y. Recruit" << std::endl
+    << " N. Reject\n" << std::endl
     << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
 }
@@ -319,8 +323,8 @@ void UI::screenBarber(const std::vector<Zorb>& pZorbs) const {
 
     _createHorizontalLine('-');
     std::cout << z_util::CenterAlignString(z_util::FormattedText(controlHeaderText, ansi::YELLOW), CONSOLESIZE) << std::endl;
-    std::cout << "Y. 'You're right'" << std::endl
-    << "N. 'No thanks..'\n" << std::endl
+    std::cout << " Y. 'You're right'" << std::endl
+    << " N. 'No thanks..'\n" << std::endl
     << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
 }

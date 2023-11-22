@@ -128,26 +128,22 @@ namespace z_util {
 // Function template to validate user input, it can define any type of array of typename T as a parameter
 template<typename T, typename Container>
 T validatedInput(Container& validInputs) {
-    // Using the container validInputs, we can check if the user input is valid
-    // If the user input is not valid, we will ask the user to input again
+    std::string line;
     T input;
     bool valid = false;
-    bool failed = false;
     while (!valid) {
-        // get the line of input after the prompt and store it in input
-        std::cin >> input;
-        if (std::cin.fail()) {
-            std::cin.clear(); // Clear the error state
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the rest of the line
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+        ss >> input;
+        if (ss.fail()) {
             std::cout << ansi::DLINE;
             z_util::PrintFormattedText("Invalid input type, please try again: ", ansi::RED);
-            continue; // Skip the rest of the loop and try again
+            continue;
         }
-        // if the input is a char, convert it to uppercase
+
+        // If the input is a char, convert it to uppercase
         if (std::is_same<T, char>::value) {
             input = std::toupper(input);
-            // limit the input to the first character
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
         // Check if the input is valid
@@ -158,9 +154,7 @@ T validatedInput(Container& validInputs) {
             }
         }
         if (!valid) {
-            // print valid inputs
             std::cout << ansi::DLINE;
-            // ask the user to try again in red text
             z_util::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
         }
     }

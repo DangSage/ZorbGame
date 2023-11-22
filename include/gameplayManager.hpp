@@ -51,6 +51,7 @@ private:
     GameplayState m_gpState = GameplayState::Start;
 
     int* m_winCount = &winCounter;
+    int* m_battleCount = &battleCounter;
     std::vector<std::string> zorbNameRecord;
 
     void handleStartState();
@@ -77,6 +78,7 @@ public:
     ~Battle() {
         casualties = 0;
         turnCount = 1;
+        z_debug::_tag("Battle ended");
     }
 
     void Update();

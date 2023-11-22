@@ -14,6 +14,7 @@ Some of those constant functions and variables include the following:
 #include <cstdlib>
 #include <initializer_list>
 #include <memory>
+#include <sstream>
 
 // defined headers
 #include "zDefs.hpp"

@@ -8,7 +8,7 @@ static bool jumpFlag = false;
 Battle::Battle(GameplayManager& manager) 
 : _gpM(manager), leaveBattle(false), 
 playerTeam(_gpM.m_playerz, _gpM.journeyName), 
-enemyTeam(_gpM.m_enemyz, "") {}
+enemyTeam(_gpM.m_enemyz, "") { battleCounter++; }
 
 void Battle::Update() {
     //update the enemy zorbs
@@ -44,25 +44,21 @@ void Battle::End() {
         winCounter++;
         gameplayState = GameplayState::Game;
     }
-    else {  // Runaway
-        std::cout << "You ran away from the battle!" << std::endl;
-        
+    else {  // Runaway        
         if(gameplayState != GameplayState::ExitGame) {
-            if(z_util::random::value(1, 2) == 1) {
-                std::cout << std::endl << "The enemy team lost your trail and you escaped!" << std::endl;
-                jumpFlag = false; // reset jumpFlag
-                // empty the enemy party vector and get rid of corresponding zorbs
+            if (z_util::random::value(1,2) == 1) {  // enemy party dissapears
+                jumpFlag = false;
                 enemyTeam.first.clear();
                 auto new_end = std::remove_if(b_zorbs.begin(), b_zorbs.end(),
                     [](const auto& zorb) { return (*zorb).GetTeamId() == 2; });
                 
                 b_zorbs.erase(new_end, b_zorbs.end());
-            } else {
-                std::cout << std::endl << z_util::FormattedText("The enemy team lost you for now...", ansi::YELLOW) << std::endl;
+                gameplayState = GameplayState::Game;
+            } else {    // enemy party stays in place
                 jumpFlag = true;
+                gameplayState = GameplayState::Game;
             }
             _pauseSystem();
-            gameplayState = GameplayState::Game;
         } else {
             gameplayState = GameplayState::ExitGame;
         }

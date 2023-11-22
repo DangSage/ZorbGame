@@ -206,9 +206,17 @@ void GameplayManager::handleBattleInput() {
                 battle->Dodge(m_playerz[dodgeIndex], dodgeIndex); // dodge function with the zorb in the player party vector
                 break;
             case '3':
-                battle->leaveBattle = true;
-                m_gpState = GameplayState::Game;
-                return;
+                std::cout << "You tried to flee!" << std::endl << "\nRolling to see if you can escape..." << std::endl;
+                std::cin.get();
+                if(z_util::random::value(1, 100) >= 35) {
+                    std::cout << "Successfully ran away!" << std::endl;
+                    battle->leaveBattle = true;
+                    m_gpState = GameplayState::Game;
+                    return;
+                } else {
+                    std::cout << "Failed to run away!" << std::endl;
+                }
+                break;
             case EXITCOMMAND:
                 battle->leaveBattle = true;
                 m_gpState = GameplayState::ExitGame;

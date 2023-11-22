@@ -91,6 +91,7 @@ void UI::DisplayZorb(const Zorb& zorb, char displaySide) const{
         default:
             std::cout << "Invalid display format\n";
     }
+    std::cout << std::endl;
 }
 std::string UI::GetDisplayFormatAsString() const {
     switch (currentFormat) {
