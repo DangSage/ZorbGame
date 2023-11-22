@@ -19,15 +19,15 @@ private:
 
     std::list<std::shared_ptr<TempBuff>> buffs;   //vector of Buffs
 
-    friend class BuffPowerI; //power increase buff
-    friend class BuffPowerD; //power decrease buff
-    friend class BuffDodge; //dodge buff
+    friend class BuffPowerI;    //power increase buff
+    friend class BuffPowerD;    //power decrease buff
+    friend class BuffDodge;     //dodge buff
 public:
-    Zorb(); // Default constructor (returns nothing)
+    Zorb();                     // Default constructor (returns nothing)
     Zorb(ZorbAppearance _appearance, int power = 0, int team_id = -1, const std::string& name = zorb::RandomName(), std::list<std::shared_ptr<TempBuff>> buffs = {});
-    Zorb(int team_id);  // Empty zorb constructor (used for dodging, and imploded zorbs)
+    Zorb(int team_id);          // Empty zorb constructor (used for dodging, and imploded zorbs)
     Zorb(const Zorb& other);    // Copy constructor
-    ~Zorb() { count--; }    // Default destructor
+    ~Zorb();                    // Default destructor
 
     // Accessor functions
     int GetPower() const;

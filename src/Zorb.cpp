@@ -31,6 +31,10 @@ Zorb::Zorb(const Zorb& other)
         count++;
     }
 
+Zorb::~Zorb() {
+    count--;
+}
+
 int Zorb::GetPower() const { return power; }
 int Zorb::GetTeamId() const { return team_id; }
 std::string Zorb::GetName() const { return name; }
@@ -64,7 +68,7 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
     }
 
     os << z_util::CenterAlignStrings(zorb.GetName(), CONSOLESIZE+(ZORBWIDTH/2))
-    << z_util::CenterAlignString(infoText, CONSOLESIZE-(ZORBWIDTH/2)) << std::endl;
+    << z_util::CenterAlignString(infoText, CONSOLESIZE) << std::endl;
     return os;
 }
 

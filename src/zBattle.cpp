@@ -20,10 +20,11 @@ void Battle::Update() {
     
     // while the player party and enemy party are not empty
     while((playerTeam.first.size() > 0 && enemyTeam.first.size() > 0) && leaveBattle == false) {
-        //display the battle screen
-        _gpM.m_ui.screenBattle(playerTeam, enemyTeam);
-        _gpM.handleBattleInput(); //handle the battle input
-        _gpM.updateZorbs(); //update the zorbs
+        
+        _gpM.m_ui.screenBattle(playerTeam, enemyTeam);      //display the battle screen
+        _gpM.handleBattleInput();                           //handle the battle input
+        //handleEnemyTurn();                                // Enemy turn
+        _gpM.updateZorbs();                                 //update the zorbs
     }
     //end the battle
     End();

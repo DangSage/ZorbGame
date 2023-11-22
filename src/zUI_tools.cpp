@@ -72,6 +72,7 @@ void UI::DisplayZorbs(const std::vector<Zorb>& zorbs, char displaySide) const{
         default:
             std::cout << "Invalid display format\n";
     }
+    std::cout << std::endl;
 }
 void UI::DisplayZorb(const Zorb& zorb, char displaySide) const{
     switch (currentFormat) {

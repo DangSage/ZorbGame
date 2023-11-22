@@ -5,6 +5,10 @@
 
 std::string journeyName; // The name of the save and the player team
 
+const int USER_BACK_INPUT = -2;
+const int INDEX_OFFSET = -1;
+
+
 //region GameplayManager Functions
 void GameplayManager::gameplayLoop() {
     // Gamestate loop for the gameplay
@@ -51,7 +55,7 @@ void GameplayManager::updateZorbs() {
 
     // remove all zorbs that are nullptrs and don't have powers or names
     m_zorbs.erase(std::remove_if(m_zorbs.begin(), m_zorbs.end(),
-        [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{} || zorb->GetPower()<0; }), m_zorbs.end());
+        [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{} || zorb->GetPower()<=0; }), m_zorbs.end());
 
     // Loop through the m_zorbs vector
     for (const auto& zorb : m_zorbs) {
@@ -138,12 +142,12 @@ void GameplayManager::handleExitGameState() {
 
 //region Input Handling
 void GameplayManager::handleBattleInput() {
-    int zorbIndex,
-        enemyZorbIndex;
+    int zorbIndex, enemyZorbIndex;
+    bool confirmed = false;
     static int dodgeIndex;
 
     auto updateZorbsAndBuildIndexList = [&](std::vector<std::shared_ptr<Zorb>>& zorbs) {
-        std::vector<int> indexList;
+        std::vector<int> indexList = {-1};
         for (int i = 0; i < zorbs.size(); i++) {
             if (zorbs[i]->GetPower() > 0) {
                 indexList.emplace_back(i+1);
@@ -157,43 +161,68 @@ void GameplayManager::handleBattleInput() {
 
     // Get the player's input for choices in the battle
     char inputChoice[] = {'1','2','3',EXITCOMMAND};
-    switch(validatedInput<char>(inputChoice)) {
-        case '1':
-            std::cout << ansi::DLINE << z_util::CenterAlignString("Attacking:", CONSOLESIZE) << std::endl 
-                << "Choose a Zorb to attack with: ";
-            zorbIndex = validatedInput<int>(zorbIndexList)-1; // input for which zorb to attack with
-            std::cout << ansi::DLINE << '[' << zorbIndex+1 << "] Choose an Enemy Zorb to attack: ";
-            enemyZorbIndex = validatedInput<int>(enemyIndexList)-1; // input for which enemy zorb to attack
+    while (!confirmed) {
+        std::cout << "Enter your choice: ";
+        switch(validatedInput<char>(inputChoice)) {
+            case '1':
+                std::cout << ansi::DLINE << z_util::CenterAlignString("Select: Attack (-1 to return)", CONSOLESIZE) << std::endl 
+                        << "Choose a Zorb to attack with: ";
+                zorbIndex = validatedInput<int>(zorbIndexList) - 1;
 
-            // attackLogic function with the zorb in the player party vector and the zorb in the enemy party vector
-            m_zorbs.emplace_back(battle->attackLogic(m_playerz[zorbIndex], m_enemyz[enemyZorbIndex]));
-            break;
-        case '2':
-            std::cout << ansi::DLINE << z_util::CenterAlignString("Dodging:", CONSOLESIZE) << std::endl 
-                << "Choose a Zorb to dodge with: ";
-            dodgeIndex = validatedInput<int>(zorbIndexList)-1; // input for which zorb to dodge with
+                if (zorbIndex == USER_BACK_INPUT) { // User entered -1, but we subtracted 1
+                    for(int i=0; i<2; i++)
+                        std::cout << ansi::DLINE;
+                    continue; // Go back to the start of the loop
+                }
 
-            battle->Dodge(m_playerz[dodgeIndex], dodgeIndex); // dodge function with the zorb in the player party vector
-            break;
-        case '3':
-            battle->leaveBattle = true;
-            m_gpState = GameplayState::Game;
-            return;
-        case EXITCOMMAND:
-            battle->leaveBattle = true;
-            m_gpState = GameplayState::ExitGame;
-            return;
-        default:
-            zException exc = UnexpectedCallException("GameManager::handleBattleInput()");
-            z_debug::PrintError(exc);
-            break;
+                std::cout << *m_playerz[zorbIndex] << std::endl;
+                for(int i=0; i<8; i++)
+                        std::cout << ansi::UPLINE;
+                std::cout << ansi::DLINE << "Choose a Zorb to attack: ";
+                enemyZorbIndex = validatedInput<int>(enemyIndexList) - 1;
+
+                if (enemyZorbIndex == USER_BACK_INPUT) { // User entered -1, but we subtracted 1
+                    for(int i=0; i<9; i++)
+                        std::cout << std::endl;
+                    for(int i=0; i<11; i++)
+                        std::cout << ansi::DLINE;
+                    continue; // Go back to the start of the loop
+                }
+
+                // attackLogic function with the zorb in the player party vector and the zorb in the enemy party vector
+                m_zorbs.emplace_back(battle->attackLogic(m_playerz[zorbIndex], m_enemyz[enemyZorbIndex]));
+                break;
+            case '2':
+                std::cout << ansi::DLINE << z_util::CenterAlignString("Select: Dodging (-1 to return)", CONSOLESIZE) << std::endl 
+                    << "Choose a Zorb to dodge with: ";
+                dodgeIndex = validatedInput<int>(zorbIndexList)-1; // input for which zorb to dodge with
+
+                if (dodgeIndex == USER_BACK_INPUT) { // User entered -1, but we subtracted 1
+                    for(int i=0; i<2; i++)
+                        std::cout << ansi::DLINE;
+                    continue; // Go back to the start of the loop
+                }
+
+                battle->Dodge(m_playerz[dodgeIndex], dodgeIndex); // dodge function with the zorb in the player party vector
+                break;
+            case '3':
+                battle->leaveBattle = true;
+                m_gpState = GameplayState::Game;
+                return;
+            case EXITCOMMAND:
+                battle->leaveBattle = true;
+                m_gpState = GameplayState::ExitGame;
+                return;
+            default:
+                zException exc = UnexpectedCallException("GameManager::handleBattleInput()");
+                z_debug::PrintError(exc);
+                return;
+        }
+        confirmed = true;
     }
 
-    // Enemy turn
-    //battle->handleEnemyTurn();
-    //delete the invalid zorbs
     m_zorbs.erase(std::remove_if(m_zorbs.begin(), m_zorbs.end(),
-            [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{}; }), m_zorbs.end());
+            [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{} || zorb->GetPower()<0; }), m_zorbs.end());
     turnCounter++;
 }
 void GameplayManager::handleBarberInput() {

@@ -235,7 +235,6 @@ void UI::screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string
     << "3. Runaway\n" << std::endl
     << "Q. Quit back to Title Screen" << std::endl;
     _createHorizontalLine('-');
-    std::cout << "Enter your choice: ";
 }
 void UI::screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const {
     _clearScreen();
