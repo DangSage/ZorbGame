@@ -10,8 +10,8 @@ ZorbAppearance::ZorbAppearance(appearanceEnum _enum, std::string_view _color)
     << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();} 
 }
 
-ZorbAppearance::ZorbAppearance(int a)   // dodging constructor (used for dodging, no enum or color)
-: color(""), currentEnum(), currentAppearance(dodgedZorbApp) {
+ZorbAppearance::ZorbAppearance(int a)   // empty constructor (used for dodging, no enum or color)
+: color(""), currentEnum(appearanceEnum::EMPTY), currentAppearance(SetAppearance(appearanceEnum::EMPTY, color)){
     if(_DEBUGMODE) { std::cout << "DEBUG: ZorbAppearance() - " << appearanceNames.at(static_cast<appearanceEnum>(currentEnum)) 
     << " created [" << count << ']' << std::endl; z_util::clearInputBuffer();}
 }
@@ -66,9 +66,11 @@ std::string ZorbAppearance::SetAppearance(appearanceEnum _enum, std::string_view
             _appearance += "\n";
         }
         return _appearance;
-    } else {
-        std::cout << "EXCEPTION: appearance not set, invalid enum. (ZorbAppearance::SetAppearance)" << std::endl
-            << "No appearance set for enum " << static_cast<int>(_enum) << std::endl;
+    } else {   
+        std::cout << "EXCEPTION: no appearance found. Make sure appearance is set" << std::endl;
+        // get the enum number
+        std::cout << "appearanceEnum: " << static_cast<int>(_enum) << " of " 
+            << appearanceMap.size() << std::endl;
         exit(0);
     }
 }
@@ -93,12 +95,13 @@ bool operator==(const ZorbAppearance& lhs, const ZorbAppearance& rhs) {
 
 namespace z_debug {
     void PrintZorbAppearances(int a, bool printNames, std::string_view color) {
+        a--;
         if(appearanceMap.size() < 1) {
             std::cout << "No ZorbAppearances in memory" << std::endl;
             return;
         }
         else if(a > appearanceMap.size() || a < 0) {
-            std::cout << "Invalid number of appearances to print" << std::endl
+            std::cout << "Invalid number of appearances to print: " << a << std::endl
                 << "current number of appearances: " << appearanceMap.size() << std::endl;
             return;
         }

@@ -173,7 +173,7 @@ void UI::screenGameOver(std::vector<std::string>& names) const {
 void UI::screenBattleEncounter(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2) {
     _clearScreen();
     std::cout << std::string(8, '\n') 
-        << z_util::CenterAlignString(z_util::FormattedText("!!ENCOUNTER!!", ansi::RED)) << std::endl;
+        << z_util::CenterAlignString(z_util::FormattedText("!! ENCOUNTER !!", ansi::RED)) << std::endl;
     
     // Create header text for the battle
     std::string headerText = std::string(team1.second.length() + team2.second.length() + 5, '-') + "\n";
@@ -186,6 +186,28 @@ void UI::screenBattleEncounter(std::pair<std::vector<std::shared_ptr<Zorb>>&, st
     _createHorizontalLine('-');
     _pauseSystem();
 }
+
+void UI::screenBattleEncounterJump(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2) {
+    _clearScreen();
+    std::cout << std::string(8, '\n') 
+        << z_util::CenterAlignString(z_util::FormattedText("?!? HUH ?!?", ansi::RED)) << std::endl;
+    _pauseSystem();
+    _clearScreen();
+    
+    std::cout << std::string(8, '\n') 
+        << z_util::CenterAlignString(z_util::FormattedText("!!! OH SNAP, YOU GOT JUMPED !!!", ansi::RED)) << std::endl;
+    // Create header text for the battle
+    std::string headerText = std::string(team1.second.length() + team2.second.length() + 5, '-') + "\n";
+    headerText += "\n\nIt's " + team2.second + " again!!!\n";
+    headerText += team2.first[0]->GetName() + " rallied his gang!\n";
+    headerText += std::string(team1.second.length() + team2.second.length() + 5, '-') + "\n";
+
+    DisplayZorbs(SharedCast(team2.first), 'R');
+    _createStyledTextBox(headerText);
+    _createHorizontalLine('-');
+    _pauseSystem();
+}
+
 
 void UI::screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2) {
     _clearScreen();
@@ -284,7 +306,7 @@ void UI::screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& at
 }
 void UI::screenBarber(const std::vector<Zorb>& pZorbs) const {
     _clearScreen();
-    std::string titleText = "You are approached by a pecular rat who offers to change your Zorbs' appearances!\n \n";
+    std::string titleText = "You are approached by a peculiar rat who offers to change your Zorbs' appearances!\n \n";
     titleText+= BARBERNAME + ": \"You seem to need a haircut!!\"\n";
     titleText+= "You: \"What?\"\n";
 

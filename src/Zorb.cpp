@@ -18,7 +18,7 @@ Zorb::Zorb(ZorbAppearance _appearance, int power, int team_id, const std::string
     }
 
 Zorb::Zorb(int team_id) 
-    : team_id(team_id), name(zorb::N_DODGE), appearance(0), power(-1){
+    : team_id(team_id), name(), appearance(team_id), power(0){
         count++;
     }
 
@@ -40,6 +40,7 @@ void Zorb::SetPower(int _power) { this->power = _power; }
 void Zorb::SetName(std::string _name) { this->name = _name; }
 void Zorb::SetAppearance(appearanceEnum _enum, std::string_view _color = "") { appearance.SetAppearance(_enum, _color); }
 void Zorb::SetColor(std::string_view _color) { appearance.SetColor(_color); }
+
 
 // Overload the insertion operator
 std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
@@ -86,10 +87,10 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
     }
 
     if(zorb1 > zorb2) {
-        return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+        return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name, zorb1.buffs);
     }
     else if(zorb1 < zorb2) {
-        return Zorb(zorb2.appearance, combined_power, zorb2.team_id, zorb2.name);
+        return Zorb(zorb2.appearance, combined_power, zorb2.team_id, zorb2.name, zorb2.buffs);
     }
     else {
         // If the Zorbs have the same power, the team id is turned to negative and the Zorb implodes
@@ -97,7 +98,7 @@ Zorb operator+(const Zorb& zorb1, const Zorb& zorb2) {
             ZorbAppearance new_appearance = ZorbAppearance(static_cast<appearanceEnum>(0), ansi::RED);
             return Zorb(new_appearance, -1, -1, zorb::N_IMPLODE);
         } else {
-            return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name);
+            return Zorb(zorb1.appearance, combined_power, zorb1.team_id, zorb1.name, zorb1.buffs);
         }        
     }
 }

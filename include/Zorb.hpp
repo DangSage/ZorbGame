@@ -59,7 +59,7 @@ public:
 class TempBuff {
 public:
     int duration; // Number of turns or seconds, depending on your game
-    TempBuff(int _duration) : duration(_duration) {}
+    TempBuff(int _duration) : duration(_duration+1) {} // Constructor
     
     virtual void Apply(Zorb& zorb) = 0; // Pure virtual function
     virtual void Remove(Zorb& zorb) = 0; // Pure virtual function

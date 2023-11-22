@@ -45,6 +45,7 @@ public:
     void screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const; // recruitment screen display
     void screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& attack) const; //screen for battle outcomes
     void screenBattleEncounter(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2);
+    void screenBattleEncounterJump(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2);
     void screenBattle(std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team1, std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string>& team2); //main battle screen that takes 2 arrays of zorbs as parameters
     void screenBarber(const std::vector<Zorb>& pZorbs) const; // barber shop screen display
 

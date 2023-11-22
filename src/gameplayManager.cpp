@@ -48,15 +48,14 @@ void GameplayManager::updateZorbs() {
     // clear the player and enemy party vectors
     m_playerz.clear();
     m_enemyz.clear();
-    Zorb empty;
+
+    // remove all zorbs that are nullptrs and don't have powers or names
+    m_zorbs.erase(std::remove_if(m_zorbs.begin(), m_zorbs.end(),
+        [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{} || zorb->GetPower()<0; }), m_zorbs.end());
+
     // Loop through the m_zorbs vector
     for (const auto& zorb : m_zorbs) {
-        // Erase invalid zorbs from the zorb vector (empty zorbs that dont have a power)
-        if ((*zorb) == empty) {
-            m_zorbs.erase(std::find(m_zorbs.begin(), m_zorbs.end(), zorb));
-            continue;
-        }
-        
+        zorb->UpdateBuffs();    // Update the zorb's buffs
         if ((*zorb).GetTeamId() == PLAYERTEAM) {
             m_playerz.emplace_back(zorb);   // Add the zorb to the player party vector
         }
@@ -96,7 +95,7 @@ void GameplayManager::handleStartState() {
             std::cout << z_util::CenterAlignString(z_util::FormattedText("Enter a shorter name!", ansi::RED))
             << ansi::UPLINE << ansi::UPLINE << std::endl;
         else {
-            journeyName = "Adventure #" + std::to_string(z_util::random::value(1, 100));
+            journeyName = "Expedition 1";
             std::cout << ansi::RESET << z_util::CenterAlignString("You have named this journey: " + journeyName) 
                 << "\n\n\n\n" << std::endl;
             _pauseSystem();
@@ -121,7 +120,6 @@ void GameplayManager::handleBattleState() {
         battle = nullptr;
     }
     battle = new Battle(*this);
-    
     battle->Update();
 }
 void GameplayManager::handleInfoMenuState() {}
@@ -147,9 +145,8 @@ void GameplayManager::handleBattleInput() {
     auto updateZorbsAndBuildIndexList = [&](std::vector<std::shared_ptr<Zorb>>& zorbs) {
         std::vector<int> indexList;
         for (int i = 0; i < zorbs.size(); i++) {
-            if (zorbs[i]->GetPower() != -1) {
+            if (zorbs[i]->GetPower() > 0) {
                 indexList.emplace_back(i+1);
-                zorbs[i]->UpdateBuffs();
             }
         }
         return indexList;
@@ -194,14 +191,19 @@ void GameplayManager::handleBattleInput() {
 
     // Enemy turn
     //battle->handleEnemyTurn();
+    //delete the invalid zorbs
+    m_zorbs.erase(std::remove_if(m_zorbs.begin(), m_zorbs.end(),
+            [](const auto& zorb) { return zorb == nullptr || *zorb == Zorb{}; }), m_zorbs.end());
     turnCounter++;
 }
 void GameplayManager::handleBarberInput() {
+    zException NIexc = NotImplementedException("GameManager::handleBarberInput()");
     std::cout << "Do you trust him? : ";
     char inputs[] = {'Y','N',EXITCOMMAND};
     std::string goodbyeText = z_util::random::choice({"Au voire", "See you later", "Goodbye", "Bye", "See ya", "Adios", "Sayonara", "Adieu", "Farewell", "Ciao"});
     switch (validatedInput<char>(inputs)) {
         case 'Y':
+            z_debug::PrintError(NIexc);
             break;
         case 'N':
             std::cout << std::endl << z_util::FormattedText("''"+goodbyeText+", friend(s)''", ansi::YELLOW) << std::endl;
@@ -212,8 +214,8 @@ void GameplayManager::handleBarberInput() {
             m_gpState = GameplayState::ExitGame;
             break;
         default:
-            zException exc = UnexpectedCallException("GameManager::handleBarberInput()");
-            z_debug::PrintError(exc);
+            zException UCexc = UnexpectedCallException("GameManager::handleBarberInput()");
+            z_debug::PrintError(UCexc);
             break;
     }
 }

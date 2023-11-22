@@ -3,6 +3,8 @@
 #include "gameplayManager.hpp"
 #include "Zorb.hpp"
 
+static bool jumpFlag = false;
+
 Battle::Battle(GameplayManager& manager) 
 : _gpM(manager), leaveBattle(false), 
 playerTeam(_gpM.m_playerz, _gpM.journeyName), 
@@ -11,7 +13,10 @@ enemyTeam(_gpM.m_enemyz, "") {}
 void Battle::Update() {
     //update the enemy zorbs
     generateEnemyParty();
-    _gpM.m_ui.screenBattleEncounter(playerTeam, enemyTeam);
+    if(jumpFlag)
+        _gpM.m_ui.screenBattleEncounterJump(playerTeam, enemyTeam);
+    else
+        _gpM.m_ui.screenBattleEncounter(playerTeam, enemyTeam);
     
     // while the player party and enemy party are not empty
     while((playerTeam.first.size() > 0 && enemyTeam.first.size() > 0) && leaveBattle == false) {
@@ -44,15 +49,16 @@ void Battle::End() {
         if(gameplayState != GameplayState::ExitGame) {
             if(z_util::random::value(1, 2) == 1) {
                 std::cout << std::endl << "The enemy team lost your trail and you escaped!" << std::endl;
-
+                jumpFlag = false; // reset jumpFlag
                 // empty the enemy party vector and get rid of corresponding zorbs
                 enemyTeam.first.clear();
                 auto new_end = std::remove_if(b_zorbs.begin(), b_zorbs.end(),
                     [](const auto& zorb) { return (*zorb).GetTeamId() == 2; });
-
+                
                 b_zorbs.erase(new_end, b_zorbs.end());
             } else {
                 std::cout << std::endl << z_util::FormattedText("The enemy team lost you for now...", ansi::YELLOW) << std::endl;
+                jumpFlag = true;
             }
             _pauseSystem();
             gameplayState = GameplayState::Game;
@@ -66,50 +72,6 @@ void Battle::End() {
         zorb->UpdateBuffs();
     }
     casualties = 0;
-}
-void Battle::handleEnemyTurn() {
-    if (z_util::random::value() == 1) {
-        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyz.size()) - 1); // Choose a random zorb from the enemy party vector
-        int enemyZorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_playerz.size()) - 1); // Choose a random zorb from the player party vector
-        
-        _gpM.m_zorbs.emplace_back(attackLogic(_gpM.m_enemyz[zorbIndex], _gpM.m_playerz[enemyZorbIndex])); // Call the attackLogic function with the zorb in the enemy party vector and the zorb in the player party vector
-    } else {
-        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyz.size()) - 1); // Choose a random zorb from the enemy party vector
-
-        _gpM.m_zorbs.emplace_back(std::make_shared<Zorb>(2)); // pushback a new empty sharedptr zorb into the zorb vector
-        _gpM.updateZorbs();
-        _gpM.m_enemyz[zorbIndex].swap(_gpM.m_enemyz.back()); // The zorb in the enemy party vector "dodges" by swapping spaces with a new empty spot in the party vector
-    }
-}
-void Battle::generateEnemyParty() {
-    std::cout << "Generating enemy party..." << std::endl;
-    // randomly generate a name for the enemy team
-    std::string_view pre = zorb::TEAMPREFIX[z_util::random::value(static_cast<size_t>(0), zorb::TEAMPREFIX.size() - 1)];
-    enemyTeam.second = pre.data();
-    if(z_util::random::value() == 1) {
-        std::string_view suf = zorb::TEAMSUFFIX[z_util::random::value(static_cast<size_t>(0), zorb::TEAMSUFFIX.size() - 1)];
-        enemyTeam.second+= ' ';
-        enemyTeam.second+= suf.data();
-    }
-
-    //Randomly generate a number of enemies based on the number of player zorbs
-    int lowerBound,
-        upperBound;
-    playerTeam.first.size() > 4 ? lowerBound = playerTeam.first.size() - 4 : lowerBound = 1;
-    playerTeam.first.size() > 4 ? upperBound = playerTeam.first.size() + 2 : upperBound = playerTeam.first.size() + 1;
-
-    //generate a random number of enemies
-    int numEnemies = z_util::random::value(lowerBound, upperBound);
-    
-    //loop through the player party vector
-    for(int i=0; i<numEnemies; i++) {
-        Zorb recruit = _gpM.GenerateRecruit(enemyTeam.first, CG_ENEMY); //generate a random enemy zorb
-        
-        //emplace the new zorb into the zorb vector
-        b_zorbs.emplace_back(std::make_shared<Zorb>(recruit));
-    }
-
-    _gpM.updateZorbs();
 }
 std::shared_ptr<Zorb> Battle::attackLogic(std::shared_ptr<Zorb> attacker, std::shared_ptr<Zorb> defender) {
     Zorb newZorb = *attacker + *defender; // addition operator overload to get attack result in a new zorb
@@ -149,7 +111,6 @@ std::shared_ptr<Zorb> Battle::attackLogic(std::shared_ptr<Zorb> attacker, std::s
     // Return a shared pointer to the new zorb
     return std::make_shared<Zorb>(newZorb);
 }
-
 void Battle::Dodge(std::shared_ptr<Zorb>& zorb, int& dodgeIndex) {
     // make sure the zorb is not a nullptr
     if(zorb == nullptr) {
@@ -175,4 +136,55 @@ void Battle::Dodge(std::shared_ptr<Zorb>& zorb, int& dodgeIndex) {
     // find the zorb in the b_zorbs vector and swap it with the last zorb in the vector
     std::iter_swap(std::find(b_zorbs.begin(), b_zorbs.end(), zorb), b_zorbs.end() - 1);
 }
+
+void Battle::handleEnemyTurn() {
+    if (z_util::random::value() == 1) {
+        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyz.size()) - 1); // Choose a random zorb from the enemy party vector
+        int enemyZorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_playerz.size()) - 1); // Choose a random zorb from the player party vector
+        
+        _gpM.m_zorbs.emplace_back(attackLogic(_gpM.m_enemyz[zorbIndex], _gpM.m_playerz[enemyZorbIndex])); // Call the attackLogic function with the zorb in the enemy party vector and the zorb in the player party vector
+    } else {
+        int zorbIndex = z_util::random::value(0, static_cast<int>(_gpM.m_enemyz.size()) - 1); // Choose a random zorb from the enemy party vector
+
+        _gpM.m_zorbs.emplace_back(std::make_shared<Zorb>(2)); // pushback a new empty sharedptr zorb into the zorb vector
+        _gpM.updateZorbs();
+        _gpM.m_enemyz[zorbIndex].swap(_gpM.m_enemyz.back()); // The zorb in the enemy party vector "dodges" by swapping spaces with a new empty spot in the party vector
+    }
+}
+void Battle::generateEnemyParty() {
+    std::cout << "Generating enemy party..." << std::endl;
+    static std::string ENEMYTEAMNAME;
+    // randomly generate a name for the enemy team
+    if(!jumpFlag) {
+        std::string_view pre = zorb::TEAMPREFIX[z_util::random::value(static_cast<size_t>(0), zorb::TEAMPREFIX.size() - 1)];
+        enemyTeam.second = pre.data();
+        if(z_util::random::value() == 1) {
+            std::string_view suf = zorb::TEAMSUFFIX[z_util::random::value(static_cast<size_t>(0), zorb::TEAMSUFFIX.size() - 1)];
+            enemyTeam.second+= ' ';
+            enemyTeam.second+= suf.data();
+        }
+    } else
+        enemyTeam.second = ENEMYTEAMNAME;
+
+    //Randomly generate a number of enemies based on the number of player zorbs
+    int lowerBound,
+        upperBound;
+    playerTeam.first.size() > 4 ? lowerBound = playerTeam.first.size() - 4 : lowerBound = 1;
+    playerTeam.first.size() > 4 ? upperBound = playerTeam.first.size() + 2 : upperBound = playerTeam.first.size() + 1;
+
+    //generate a random number of enemies
+    int numEnemies = z_util::random::value(lowerBound, upperBound);
+    
+    //loop through the player party vector
+    for(int i=0; i<numEnemies; i++) {
+        Zorb recruit = _gpM.GenerateRecruit(enemyTeam.first, CG_ENEMY); //generate a random enemy zorb
+        
+        //emplace the new zorb into the zorb vector
+        b_zorbs.emplace_back(std::make_shared<Zorb>(recruit));
+    }
+
+    ENEMYTEAMNAME = enemyTeam.second;
+    _gpM.updateZorbs();
+}
+
 //endregion

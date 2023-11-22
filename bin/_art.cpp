@@ -4,8 +4,13 @@
 
 //map of appearance enums to appearance strings
 std::map<appearanceEnum, std::string> appearanceMap = {
-{
-appearanceEnum::A_DEFAULT, 
+{ appearanceEnum::EMPTY,
+R"(       
+   .   
+`/\`/\`
+(     )
+`>   <`)"},
+{ appearanceEnum::A_DEFAULT, 
 R"(       
    o   
 ./\|/\.
@@ -14,7 +19,7 @@ R"(
 };
 
 //map of appearance enums to names
-std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::A_DEFAULT, "normal"}}; 
+std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::EMPTY, "emptier"},{appearanceEnum::A_DEFAULT, "normal"}}; 
 //map of weights (double) to appearance enums
 std::map<appearanceEnum, double> appearanceWeights = {{appearanceEnum::A_DEFAULT, 5.0}};
 

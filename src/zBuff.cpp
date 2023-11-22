@@ -34,6 +34,7 @@ void BuffPowerD::Remove(Zorb& zorb) {
 BuffDodge::BuffDodge(int teamID) : BuffPowerI(1, 1), dodgedZorb(std::make_shared<Zorb>(teamID)) {}
 
 void BuffDodge::Apply(Zorb& zorb) {
+    zorb.name.insert(0, "*");
     if(zorb.power >= 4)
         amount = zorb.power / 3;
     zorb.power += amount;
@@ -41,8 +42,9 @@ void BuffDodge::Apply(Zorb& zorb) {
 
 void BuffDodge::Remove(Zorb& zorb) {
     zorb.power -= amount;
-    // set dodgeZorb to be empty
-    *dodgedZorb = Zorb();    
+    zorb.name.erase(0, 1); // remove the * from the name
+    dodgedZorb->SetPower(-2);
+    dodgedZorb = nullptr;
 }
 
 std::shared_ptr<Zorb> BuffDodge::GetDodged() const {

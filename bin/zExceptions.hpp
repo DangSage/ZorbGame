@@ -3,6 +3,8 @@
 #include <string>
 #include <exception>
 
+void _pauseSystem();
+
 // make a base class called zException, that all other exceptions will inherit from
 // zException should have a function called what() that returns a string that tells the user what the exception is
 // zException should have a function called where() that returns a string that tells the user where the exception was thrown (what function in the code)
@@ -25,6 +27,8 @@ public:
         } catch (const zException& e) {
             std::cout << std::endl << e.what() << " @" << e.where() << std::endl;
         }
+        if(!interrupt())
+            _pauseSystem(); 
     }
 protected:
     std::string m_what;
@@ -45,7 +49,7 @@ public:
 Thrown: Game feature not implemented yet*/
 class NotImplementedException : public zException {
 public:
-    NotImplementedException(const std::string& where) : zException("Not yet implemented", where, true) {}
+    NotImplementedException(const std::string& where) : zException("Not yet implemented", where, false) {}
 };
 
 /* "No JSON file" exception.
@@ -58,3 +62,10 @@ public:
     NoJSONException(const std::string& where, const std::string& what) : zException((what+" file not found"), where, false) {}
 };
 
+/* "Invalid Input" exception
+
+Thrown: Input is not acceptable*/
+class InvalidInputException : public zException {
+public:
+    InvalidInputException(const std::string& where) : zException("Invalid input", where, false) {}
+};
