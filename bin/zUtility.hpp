@@ -57,6 +57,17 @@ namespace z_util {
         return length;
     }
 
+    // Helper function to get the amount of lines in a string
+    inline size_t GetHeight(const std::string& input) {
+        size_t height = 1;
+        std::istringstream iss(input);
+        std::string line;
+        while (std::getline(iss, line)) {
+            height++;
+        }
+        return height;
+    }
+
     // Function to get the length of a string without counting escape codes
     inline size_t GetLengthWithoutEscapeCodes(const std::string& input) {
         return GetLength(input, false);
@@ -70,11 +81,8 @@ namespace z_util {
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString);
 
-    // Function to center-align a SINGLE-line string within a given width
+    // Function to center-align a string within a given width (default: console width)
     std::string CenterAlignString(const std::string& input, int width = CONSOLESIZE);
-
-     // Function to center-align a MULTI-line string within a given width
-    std::string CenterAlignStrings(const std::string& input, int width = CONSOLESIZE);
 
     // Function to print a string with color and reset color codes
     void PrintFormattedText(const std::string& text, const std::string_view& color = "");

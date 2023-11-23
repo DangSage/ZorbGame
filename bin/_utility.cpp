@@ -43,27 +43,29 @@ namespace z_util {
         return lines;
     }
 
-    // Function to center-align a SINGLE-line string within a given width
     std::string CenterAlignString(const std::string& input, int width) {
         std::string output;
         std::vector<std::string> lines = SplitMultilineString(input);
+        // If the width of the string is greater than the width of the console, wrap the string to the next line
 
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line;
+        // make all lines the same length in relation to the biggest line
+        int biggestLine = 0;
+        for (auto it = lines.begin(); it != lines.end(); ) {
+            if (GetLengthWithoutEscapeCodes(*it) > biggestLine) {
+                biggestLine = GetLengthWithoutEscapeCodes(*it)+1;
+                it--;
+                continue;
+            } else
+                *it += SpaceToPrint(biggestLine - GetLengthWithoutEscapeCodes(*it));
+
+            int margin = (width - GetLengthWithoutEscapeCodes(*it)) / 2;
+            output += SpaceToPrint(margin) + *it;
+            if(lines.size() > 1) {
+                output += "\n";
+            }
+            it++;
         }
-        return output;
-    }
 
-     // Function to center-align a MULTI-line string within a given width
-    std::string CenterAlignStrings(const std::string& input, int width) {
-        std::string output;
-        std::vector<std::string> lines = SplitMultilineString(input);
-
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line + "\n";
-        }
         return output;
     }
 
