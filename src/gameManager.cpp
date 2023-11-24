@@ -4,9 +4,6 @@
 #include "Zorb.hpp"
 #include "zUI.hpp"
 
-std::string url = "https://github.com/DangSage/ZorbGame";
-std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
-
 static int m_playerScore = 0;  // Player's score
 
 GameManager::GameManager(UI& ui) : m_ui(ui) {
@@ -64,11 +61,8 @@ void GameManager::endGame() {
 
 //region Input Handling
 void GameManager::handleMainMenuInput() {
-    char input[] = {'0','1','2','3','Q'};
+    char input[] = {'1','2','3',USERGIT,USERHELP,USEREXIT};
     switch (validatedInput<char>(input)) {
-        case '0':
-            system(command.c_str());
-            break;
         case '1':
             m_gameState = GameState::Game;
             break;
@@ -78,7 +72,16 @@ void GameManager::handleMainMenuInput() {
         case '3':
             m_gameState = GameState::OptionsMenu;
             break;
-        case 'Q':
+        case USERGIT:
+            system(command.c_str());
+            break;
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::general;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::general); i++)
+                std::cout << ansi::DLINE;
+            break;
+        case USEREXIT:
             endGame();
             z_debug::CountGameObjectsInMemory();
             m_gameState = GameState::End;
@@ -90,7 +93,7 @@ void GameManager::handleMainMenuInput() {
     }
 }
 void GameManager::handleOptionsMenuInput() {
-    char input[] = {'1','2','3','4','A','B','C','D','Q'};
+    char input[] = {'1','2','3','4','A','B','C','D',USEREXIT,USERHELP};
     switch (validatedInput<char>(input)) {
         case '1':
             m_ui.SetDisplayFormat(SIMPLE);
@@ -116,7 +119,13 @@ void GameManager::handleOptionsMenuInput() {
         case 'D':
             ChangeDebugMode();
             break;
-        case 'Q':
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::debug;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::debug); i++)
+                std::cout << ansi::DLINE;
+            break;
+        case USEREXIT:
             m_gameState = GameState::MainMenu;
             break;
         default:
@@ -127,7 +136,7 @@ void GameManager::handleOptionsMenuInput() {
 }
 void GameManager::handleGameOverInput() {
     endGame();
-    char input[] = {'1','Q'};
+    char input[] = {'1',USEREXIT};
     switch (validatedInput<char>(input)) {
         case '1':
             m_gameState = GameState::MainMenu;

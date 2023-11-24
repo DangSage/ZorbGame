@@ -9,7 +9,7 @@ void UI::screenMainMenu() const {
     _clearScreen();
     std::stringstream ss;
     ss << "This is a game made by Dang. Report any bugs to the repo:\n" 
-    << '[' << USERGIT << "] " << " https://github.com/DangSage/ZorbGame";
+        << '[' << USERGIT << "] " << "https://github.com/DangSage/ZorbGame";
     _createStyledTextBox(ss.str());
     // Define the title text
     std::string titleText = z_art::gameTitle;
@@ -45,7 +45,7 @@ void UI::screenDebugOptions() const {
                   << std::setw(columnWidth + (option2Length - optionLength)) << option2 << std::endl;
     };
 
-    std::cout << z_art::optionsScreen << std::endl;
+    std::cout << z_util::CenterAlignString(z_art::optionsScreen) << std::endl;
     _createHorizontalLine('-');
     columnDisplay(("Battle Display Type: " + z_util::FormattedText(GetDisplayFormatAsString(), ansi::YELLOW) + '\t'), 
         "Other Options: ");
@@ -80,7 +80,7 @@ void UI::screenIntro() const {
         "In the furthest reaches of the cosmos, in a galaxy far, far away, there exists a race of adorable yet feisty aliens known as Zorbs. These lovable creatures, resembling a delightful fusion of Earthly cats and fuzzy aliens, lived in a galaxy filled with cuddles, meows, and of course, intergalactic warfare...",
         "This is a rogue-like video game that introduces you to the whimsical world of these fluffy aliens. The game's first character, Neep Narp, is a Zorb with the heart of a true hero, and it's your mission to guide Neep Narp and their friends through the cosmic chaos...",
         "In Zorb Zenith, you'll control groups of Zorbs in epic battles that will test your tactical prowess.  But beware, Zorbs are not immortal - permadeath is a reality, and you'll need to recruit new Zorbs to bolster your ranks as you navigate the tumultuous galactic battlefield...",
-        "The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield. You can move your Zorbs to attack enemy Zorbs, or you can move them to pick up power-ups that will increase their power. Prepare to face off against other Zorb groups, each with their own adorable names and appearances. Will you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits..."
+        "The game is turn-based, and each turn you'll be able to move your Zorbs around the battlefield.\nYou can move your Zorbs to attack enemy Zorbs. Prepare to face off against other Zorb groups, each with their own adorable names and appearances.\n\nWill you encounter a formidable foe named Glarp or a cunning adversary known as Quor Bleep? The galaxy is teeming with characters like Bleepy, Porg, and even Beep, each with their unique traits..."
     };
     
     _createStyledTextBox("Press any character to skip, other press enter to continue.");
@@ -94,11 +94,12 @@ void UI::screenIntro() const {
             std::cout << std::endl << z_util::CenterAlignString(z_art::introSpace) << std::endl;
         else if (iteration==1){
             Zorb neepnarp(ZorbAppearance(static_cast<appearanceEnum>(0),ansi::GREEN), 0, 1, "Neep Narp");
-            std::cout << neepnarp << std::endl;
+            std::cout << std::string(8, '\n') << neepnarp << std::string(7, '\n') << std::endl;
         }
         else if (iteration==2) {
-            std::cout << std::endl << std::endl;
+            std::cout << std::string(8, '\n');
             z_debug::PrintZorbAppearances(8, false, ansi::GREEN);
+            std::cout << std::string(8, '\n');
         }
         else if (iteration==3){
             std::cout << std::endl << z_util::CenterAlignString(z_art::planetZorb);
@@ -123,9 +124,8 @@ void UI::screenIntro() const {
     }
     _clearScreen();
     std::cout << z_util::CenterAlignString(z_art::introSpace) << std::endl;
-    _createStyledTextBox("The galaxy is waiting for you, commander. Are you ready to lead the Zorbs to victory?");
+    _createStyledTextBox("The galaxy is waiting for you, commander. Are you ready to lead the Zorbs to victory?\n\nEND OF INTRODUCTION");
     _createHorizontalLine('-');
-    std::cout << "CONTINUE TO THE MAIN MENU: ";
     _pauseSystem();
 }
 
@@ -198,12 +198,12 @@ void UI::screenBattleEncounterJump(std::pair<std::vector<std::shared_ptr<Zorb>>&
     _clearScreen();
     std::stringstream ss;
 
-    ss << std::string(8, '\n') 
+    std::cout << std::string(10, '\n') 
         << z_util::CenterAlignString(z_util::FormattedText("?!? HUH ?!?", ansi::RED)) << std::string(8, '\n');
     _pauseSystem();
     _clearScreen();
 
-    ss << std::string(8, '\n') 
+    std::cout << std::string(10, '\n') 
         << z_util::CenterAlignString(z_util::FormattedText("!!! OH SNAP, YOU GOT JUMPED !!!", ansi::RED)) << std::endl;
 
     // header text for the surprise encounter
@@ -293,20 +293,21 @@ void UI::screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& at
         if(winZorb.GetName() == zorb::N_DODGE)
             ss << " \n" << lossZorb.GetName() << " missed their attack!";
         else if (winZorb.GetName() == zorb::N_IMPLODE) {
-            ss << "\nBoth zorbs were equal in power, creating a fission in time and space!\n The zorbs"
+            ss << "\nBoth zorbs were equal in power, creating a fission in time and space!\n The zorbs "
             << z_util::random::choice(text::battle::implode)
             << " simultaneously!";
         }
+        _createStyledTextBox(ss.str());
         std::cout << z_util::CenterAlignString(z_util::FormattedText(z_art::implode, ansi::RED)) << std::endl;
     } else {
         ss << std::endl << lossZorb.GetName() << " was " 
-            << z_util::random::choice(text::battle::attackResult) << " by " << winZorb.GetName() << "!" << std::endl
-            << std::endl << winZorb.GetName() << " gained " << std::to_string(lossZorb.GetPower()) << " power!" << std::endl;
+            << z_util::random::choice(text::battle::attackResult) << " by " << winZorb.GetName() << "!\n\n"
+            << winZorb.GetName() << " gained " << std::to_string(lossZorb.GetPower()) << " power!" << std::endl;
         lossZorb.SetColor((ansi::GRAY)); //set color of the losing zorb to the gray color
+        _createStyledTextBox(ss.str());
         std::cout << winZorb << std::endl << lossZorb << std::endl;
     }
 
-    _createStyledTextBox(ss.str());
     ss.str(std::string());
     ss.clear();
     std::cout << std::endl << std::endl;
@@ -314,8 +315,7 @@ void UI::screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& at
     _createHorizontalLine('-');
     ss << "Turn: " << turnCounter << " | " << "Casualties: " << casualtyCounter << " | " << std::endl;
     std::string controlHeaderText = z_util::CenterAlignString(z_util::FormattedText(ss.str(), ansi::YELLOW), CONSOLESIZE);
-    std::cout << controlHeaderText << std::right << std::setw(CONSOLESIZE-controlHeaderText.size()+8) 
-        << "GitHub [" << USERGIT << "]" << std::endl;
+    std::cout << controlHeaderText << std::endl;
 
     _pauseSystem();
 }

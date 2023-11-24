@@ -227,7 +227,7 @@ void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) co
         appearanceLines.erase(appearanceLines.begin(), appearanceLines.begin()+2);
 
         std::string nameText = zorb.GetName();
-        std::string powerText = z_util::CenterAlignString((z_util::FormattedText(std::to_string(&zorb - &zorbs[0])) + ", " + std::to_string(zorb.GetPower()) + 'p'), ZORBWIDTH);
+        std::string powerText = z_util::CenterAlignString((z_util::FormattedText(std::to_string((&zorb - &zorbs[0])+1)) + ":" + std::to_string(zorb.GetPower()) + 'p'), ZORBWIDTH);
 
         if (charLines.size() < appearanceLines.size()) {
             charLines.resize(appearanceLines.size()+1);
@@ -262,8 +262,16 @@ void UI::ZorbDisplayCompact(const std::vector<Zorb>& zorbs, char displaySide) co
 
     rowBuffers.push_back(charLines);
     for (const auto& rowBuffer : rowBuffers) {
-        for (const std::string& charLine : rowBuffer) {
-            std::cout << charLine << std::endl;
+        for (const std::string& displayLine : rowBuffer) {
+            if(displaySide == 'R') {
+                int escapeCodeLength = z_util::GetLengthOfEscapeCodes(displayLine);
+                if(escapeCodeLength == 0)
+                    std::cout << std::right << std::setw(CONSOLESIZE-margin) << displayLine << std::endl;
+                else
+                    std::cout << std::right << std::setw(CONSOLESIZE+escapeCodeLength-margin) << displayLine << std::endl;
+            }
+            else
+                std::cout << std::left << std::setw(0) << displayLine << std::endl;
         }
     }
 }

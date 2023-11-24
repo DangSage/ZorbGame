@@ -3,14 +3,14 @@
 bool _LIGHTTHEME = true; //toggle for light theme
 bool _DEBUGMODE = false; //toggle for debug mode
 
-namespace ansi{
-    std::string RESET = "\x1B[0m";
-}
-
 int turnCounter = 1; //turn counter for the battle segment
 int winCounter = 0; //win counter for the game
 int casualtyCounter = 0; //casualties counter for the game
 int battleCounter = 0; //battle counter for the game
+
+namespace ansi{
+    std::string RESET = "\x1B[0m";
+}
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor() {
@@ -98,4 +98,5 @@ void ForceTerminal() {
     ForceTerminalBorder();
     ForceTerminalColor();
     ChangeConsoleTheme();
+
 }

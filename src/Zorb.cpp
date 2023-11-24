@@ -67,8 +67,7 @@ std::ostream& operator<<(std::ostream& os, const Zorb& zorb) {
         os << z_util::SpaceToPrint(margin+ZORBWIDTH) << line << std::endl;
     }
 
-    os << z_util::CenterAlignString(zorb.GetName(), CONSOLESIZE+(ZORBWIDTH/2))
-    << z_util::CenterAlignString(infoText, CONSOLESIZE) << std::endl;
+    os << z_util::CenterAlignString(zorb.GetName()+'\n'+infoText, CONSOLESIZE+(ZORBWIDTH/2)) << std::endl;
     return os;
 }
 

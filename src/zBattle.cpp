@@ -30,16 +30,15 @@ void Battle::Update() {
     End();
 }
 void Battle::End() {
-    std::cout << z_util::CenterAlignString("AFTERMATH", CONSOLESIZE) << std::endl;
     // Check if the player party is empty
     if (playerTeam.first.size() == 0) {
-        std::cout << "You lost the battle!" << std::endl;
+        std::cout << "\nYou lost the battle!" << std::endl;
         _pauseSystem();
         gameplayState = GameplayState::Death;
     }
     // Check if the enemy party is empty
     else if (enemyTeam.first.size() == 0) {
-        std::cout << "You won the battle!" << std::endl;
+        std::cout << "\nYou won the battle!" << std::endl;
         _pauseSystem();
         winCounter++;
         gameplayState = GameplayState::Game;

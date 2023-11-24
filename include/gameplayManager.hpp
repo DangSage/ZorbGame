@@ -78,7 +78,6 @@ public:
     ~Battle() {
         casualties = 0;
         turnCount = 1;
-        z_debug::_tag("Battle ended");
     }
 
     void Update();

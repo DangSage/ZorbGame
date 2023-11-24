@@ -160,7 +160,7 @@ void GameplayManager::handleBattleInput() {
     std::vector<int> enemyIndexList = updateZorbsAndBuildIndexList(m_enemyz);
 
     // Get the player's input for choices in the battle
-    char inputChoice[] = {'1','2','3',EXITCOMMAND};
+    char inputChoice[] = {'1','2','3',USERGIT,USERHELP,USEREXIT};
     while (!confirmed) {
         std::cout << "Enter your choice: ";
         switch(validatedInput<char>(inputChoice)) {
@@ -176,7 +176,7 @@ void GameplayManager::handleBattleInput() {
                 }
 
                 std::cout << *m_playerz[zorbIndex] << std::endl;
-                for(int i=0; i<8; i++)
+                for(int i=0; i<9; i++)
                         std::cout << ansi::UPLINE;
                 std::cout << ansi::DLINE << "Choose a Zorb to attack: ";
                 enemyZorbIndex = validatedInput<int>(enemyIndexList) - 1;
@@ -206,18 +206,29 @@ void GameplayManager::handleBattleInput() {
                 battle->Dodge(m_playerz[dodgeIndex], dodgeIndex); // dodge function with the zorb in the player party vector
                 break;
             case '3':
-                std::cout << "You tried to flee!" << std::endl << "\nRolling to see if you can escape..." << std::endl;
+                std::cout << ansi::DLINE << "\nYou tried to flee!\n" << std::endl << "...";
                 std::cin.get();
                 if(z_util::random::value(1, 100) >= 35) {
-                    std::cout << "Successfully ran away!" << std::endl;
+                    z_util::PrintFormattedText("Successfully ran away!\n", ansi::YELLOW);
                     battle->leaveBattle = true;
                     m_gpState = GameplayState::Game;
                     return;
                 } else {
-                    std::cout << "Failed to run away!" << std::endl;
+                    z_util::PrintFormattedText("Failed to run away!\n", ansi::RED);
+                    _pauseSystem();
                 }
                 break;
-            case EXITCOMMAND:
+            case USERGIT:
+                system(command.c_str());
+                std::cout << ansi::DLINE;
+                continue;
+            case USERHELP:
+                std::cout << ansi::DLINE << text::help::battle;
+                std::cin.get();
+                for(int i=0; i<z_util::GetHeight(text::help::battle); i++)
+                    std::cout << ansi::DLINE;
+                continue;
+            case USEREXIT:
                 battle->leaveBattle = true;
                 m_gpState = GameplayState::ExitGame;
                 return;
@@ -236,7 +247,7 @@ void GameplayManager::handleBattleInput() {
 void GameplayManager::handleBarberInput() {
     zException NIexc = NotImplementedException("GameManager::handleBarberInput()");
     std::cout << "Do you trust him? : ";
-    char inputs[] = {'Y','N',EXITCOMMAND};
+    char inputs[] = {'Y','N',USERGIT,USEREXIT};
     std::string goodbyeText = z_util::random::choice({"Au voire", "See you later", "Goodbye", "Bye", "See ya", "Adios", "Sayonara", "Adieu", "Farewell", "Ciao"});
     switch (validatedInput<char>(inputs)) {
         case 'Y':
@@ -247,7 +258,16 @@ void GameplayManager::handleBarberInput() {
             _pauseSystem();
             m_gpState = GameplayState::Battle;
             break;
-        case EXITCOMMAND:
+        case USERGIT:
+            system(command.c_str());
+            std::cout << ansi::DLINE;
+            break;
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::general;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::general); i++)
+                std::cout << ansi::DLINE;
+        case USEREXIT:
             m_gpState = GameplayState::ExitGame;
             break;
         default:
@@ -259,7 +279,7 @@ void GameplayManager::handleBarberInput() {
 void GameplayManager::handleRecruitInput(Zorb& recruit) {
     std::cout << "Do you trust him? : ";
     std::string chant = z_util::random::choice({"Hooray!", "Yay!", "Yippee!"});
-    char inputs[] = {'Y','N',EXITCOMMAND};
+    char inputs[] = {'Y','N',USERGIT,USEREXIT};
     switch (validatedInput<char>(inputs)) {
         case 'Y':
             m_zorbs.emplace_back(std::make_shared<Zorb>(recruit));
@@ -273,7 +293,16 @@ void GameplayManager::handleRecruitInput(Zorb& recruit) {
             _pauseSystem();
             m_gpState = GameplayState::Game;
             break;
-        case EXITCOMMAND:
+        case USERGIT:
+            system(command.c_str());
+            std::cout << ansi::DLINE;
+            break;
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::general;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::general); i++)
+                std::cout << ansi::DLINE;
+        case USEREXIT:
             m_gpState = GameplayState::ExitGame;
             break;
         default:
@@ -283,9 +312,9 @@ void GameplayManager::handleRecruitInput(Zorb& recruit) {
     }
 }
 void GameplayManager::handleGameOverInput() {
-    char input[] = {EXITCOMMAND};
+    char input[] = {USEREXIT};
     switch (validatedInput<char>(input)) {
-        case EXITCOMMAND:
+        case USEREXIT:
             m_gpState = GameplayState::ExitGame;
             break;
         default:

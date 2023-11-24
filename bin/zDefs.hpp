@@ -10,9 +10,12 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <sstream>
 
 //make magic numbers for exit command 'Q'
-#define EXITCOMMAND 'Q'
+#define USEREXIT 'Q'
+#define USERGIT 'G'
+#define USERHELP '?'
 
 // make magic numbers for team identification
 constexpr int PLAYERTEAM = 1;
@@ -39,6 +42,7 @@ namespace ansi {
     constexpr std::string_view DLINE = "\033[1A\033[2K"; // ANSI escape code to delete the last line from the console
     constexpr std::string_view DLINE2 = "\033[2K"; // ANSI escape code to delete the current line from the console
     constexpr std::string_view UPLINE = "\033[1A"; // ANSI escape code to move the cursor up one line
+    constexpr std::string_view ENDLINE = "\033[1F\033[999D"; // Ansi escape code to move the cursor the end of the last line
 }
 
 // Define which ANSI color code to use for the Zorb's color (color groups)
@@ -254,6 +258,29 @@ namespace text {
             "self-combusted",
             "disintegrated"
         };
+    }
+
+    // stringstreams for the controls of the game
+    namespace help {
+        const std::string battle = 
+            "During a battle, you have several options:\n\n"
+            "1. Attack: Choose a Zorb from your party and an enemy Zorb to engage in a power comparison. \nEach Zorb has a power level and a position in the party order.\n\n"
+            "2. Dodge: Select a Zorb to dodge, which temporarily increases its power and changes its position in the party order.\n\n"
+            "3. Run Away: Attempt to disengage from the fight. This is a chance-based action and may not always succeed.\n\n"
+            "You can return to the previous battle options by typing -1.\n\n";
+
+        const std::string general = 
+        "Each menu option has a corresponding command:\n\n"
+        "In the input query, type the character of the option you want to select.\n";
+
+        const std::string debug =
+        "This menu allows you to toggle and view certain debug settings,\n"
+        "As well as some display options for the game.\n\n"
+        "- Battle Display Type: The way zorbs will appear in battle. All options in this column affect this value.\n"
+        "- Toggle Theme: Toggles the game between light and dark mode.\n"
+        "- Toggle Debug Mode: Toggles debug mode on and off. Explicitly for Development\n\n"
+        "Most of these options are self-explanatory, but if you need help, type ? at any time.\n\n";
+
     }
 }
 

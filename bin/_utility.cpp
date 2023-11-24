@@ -49,16 +49,13 @@ namespace z_util {
         // If the width of the string is greater than the width of the console, wrap the string to the next line
 
         // make all lines the same length in relation to the biggest line
-        int biggestLine = 0;
+        size_t biggestLine = lines[0].length();
         for (auto it = lines.begin(); it != lines.end(); ) {
-            if (GetLengthWithoutEscapeCodes(*it) > biggestLine) {
-                biggestLine = GetLengthWithoutEscapeCodes(*it)+1;
-                it--;
-                continue;
-            } else
-                *it += SpaceToPrint(biggestLine - GetLengthWithoutEscapeCodes(*it));
-
+            biggestLine = std::max(biggestLine, GetLengthWithoutEscapeCodes(*it));
+            *it += SpaceToPrint(biggestLine - GetLengthWithoutEscapeCodes(*it));
+            
             int margin = (width - GetLengthWithoutEscapeCodes(*it)) / 2;
+
             output += SpaceToPrint(margin) + *it;
             if(lines.size() > 1) {
                 output += "\n";

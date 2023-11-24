@@ -38,20 +38,23 @@ namespace z_util {
             std::sregex_iterator end;
             while (it != end) {
                 std::smatch match = *it;
-                    //add the length of the escape code to the total length
-                    length += match.str().length();
-                    //if the escape code is ansi::RESET, subtract the length of the escape code from the total length
-                ++it;
+                //add the length of the escape code to the total length
+                length += match.str().length();
+                it++;
             }
-        } else {
-            for (char c : input) {
+        } else { // Getting the length of the string without counting escape codes
+            for (const auto& c : input) {
                 if (c == '\x1B') {
                     inEscape = true;
-                } else if (inEscape && c == 'm') {
-                    inEscape = false;
-                } else if (!inEscape) {
-                    length++;
+                    continue;
                 }
+                else if (inEscape) {
+                    if (c == 'm') {
+                        inEscape = false;
+                    }
+                    continue;
+                }
+                length++;
             }
         }
         return length;
