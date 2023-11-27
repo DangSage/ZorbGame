@@ -21,14 +21,15 @@ namespace z_debug {
         _pauseSystem();
     }
     
-    void PrintError(const std::string& error) {
-        throw std::runtime_error(error);
+    // Function to print an error message and throw a zException with the error message
+    void PrintError(zException& error) {
+        std::cout << std::endl;
+        error.message();
     }
 
 } // namespace z_debug
 
 namespace z_util {
-
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString) {
         std::vector<std::string> lines;
@@ -42,27 +43,26 @@ namespace z_util {
         return lines;
     }
 
-    // Function to center-align a SINGLE-line string within a given width
     std::string CenterAlignString(const std::string& input, int width) {
         std::string output;
         std::vector<std::string> lines = SplitMultilineString(input);
+        // If the width of the string is greater than the width of the console, wrap the string to the next line
 
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line;
+        // make all lines the same length in relation to the biggest line
+        size_t biggestLine = lines[0].length();
+        for (auto it = lines.begin(); it != lines.end(); ) {
+            biggestLine = std::max(biggestLine, GetLengthWithoutEscapeCodes(*it));
+            *it += SpaceToPrint(biggestLine - GetLengthWithoutEscapeCodes(*it));
+            
+            int margin = (width - GetLengthWithoutEscapeCodes(*it)) / 2;
+
+            output += SpaceToPrint(margin) + *it;
+            if(lines.size() > 1) {
+                output += "\n";
+            }
+            it++;
         }
-        return output;
-    }
 
-     // Function to center-align a MULTI-line string within a given width
-    std::string CenterAlignStrings(const std::string& input, int width) {
-        std::string output;
-        std::vector<std::string> lines = SplitMultilineString(input);
-
-        for (const std::string& line : lines) {
-            int margin = (width - GetLengthWithoutEscapeCodes(line)) / 2;
-            output += SpaceToPrint(margin) + line + "\n";
-        }
         return output;
     }
 
@@ -89,11 +89,16 @@ namespace z_util {
     char clearInputBuffer() {
         std::cin.clear(); // clear any error flags
         char discardedChar = std::cin.get(); // read and return the first discarded character
-        std::cin.ignore(1, '\n'); // read and discard remaining characters until newline
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard remaining characters until newline
         return discardedChar;
     }
-
+    
     namespace random {
+        int value() {
+            std::uniform_int_distribution<int> dist(1, 2);
+            return dist(gen);
+        }
+
         // pick a random color from the color codes
         std::string_view getColor() {
             constexpr std::string_view COLOR_CODES[] = {ansi::RED, ansi::GREEN, ansi::YELLOW, ansi::BLUE, ansi::MAGENTA, ansi::CYAN, ansi::WHITE};

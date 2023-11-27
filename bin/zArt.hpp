@@ -2,14 +2,13 @@
 #define Z_ART_HPP
 
 #include "zDefs.hpp"
-#include "zUtility.hpp"
-#include <fstream>
 #include "json.hpp"
 
 using json = nlohmann::json;
 
 //region appearance enums and maps
 enum class appearanceEnum : int {
+    EMPTY = -1,
     A_DEFAULT = 0,
 }; //dynamic enum for appearance
 
@@ -19,12 +18,6 @@ extern std::map<appearanceEnum, std::string> appearanceMap;
 extern std::map<appearanceEnum, std::string> appearanceNames;
 //map of weights (double) to appearance enums
 extern std::map<appearanceEnum, double> appearanceWeights;
-//define constexpr string for dodged zorb
-constexpr char dodgedZorb[] = R"(
-   o   
-~/\~/\~
-(     )
-~>   <~)";
 
 //initialize appearance maps
 void initAppearanceMaps();
