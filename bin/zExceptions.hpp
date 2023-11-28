@@ -52,11 +52,16 @@ public:
     NotImplementedException(const std::string& where) : zException("Not yet implemented", where, false) {}
 };
 
-/* "No JSON file" exception.
+/* "No file" exception.
 
-Thrown: JSON file is not found
-Caused by: z_util::json::loadJSON()
+Thrown: file is not found
+Caused by: z_util::json::loadJSON() and GameplayManager::LoadGame()
 If thrown, do not interrupt, do not log*/
+class NoFileException : public zException {
+public:
+    NoFileException(const std::string& where, const std::string& what) : zException((what+" file not found"), where, false) {}
+};
+
 class NoJSONException : public zException {
 public:
     NoJSONException(const std::string& where, const std::string& what) : zException((what+" file not found"), where, false) {}

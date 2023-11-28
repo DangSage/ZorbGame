@@ -45,7 +45,7 @@ void initAppearanceMaps() {
         outfile << std::setw(4) << j << std::endl;
         outfile.close();
 
-        NoJSONException exc = NoJSONException("initAppearanceMaps()", "appearances.json");
+        NoFileException exc = NoFileException("initAppearanceMaps()", "appearances.json");
         z_debug::PrintError(exc);
     }
 
