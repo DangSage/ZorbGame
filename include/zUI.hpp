@@ -41,6 +41,7 @@ public:
     void screenDebugColors() const;                         // debug color screen display
     void screenDebugZorbs() const;                          // debug zorb screen display
 
+    void screenSaves() const;                                // save screen display
     void screenStart() const;                               // intro screen display
     void screenRecruitment(const Zorb& zorb, const std::vector<Zorb>& playerZorbs) const; // recruitment screen display
     void screenFightOutcome(Zorb& winZorb, Zorb& lossZorb, const std::string& attack) const; //screen for battle outcomes
