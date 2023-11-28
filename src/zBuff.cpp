@@ -18,6 +18,11 @@ void BuffPowerI::Apply(Zorb& zorb) {
 void BuffPowerI::Remove(Zorb& zorb) { 
     zorb.power -= amount; 
 }
+void BuffPowerI::serialize(std::ostream& out) const {
+    out << "BuffPowerI" << std::endl;
+    out << duration << std::endl;
+    out << amount << std::endl;
+}
 
 //Power decrease debuff constructor definition
 BuffPowerD::BuffPowerD(int _duration, int _amount) : TempBuff(_duration), amount(_amount) {}
@@ -27,6 +32,11 @@ void BuffPowerD::Apply(Zorb& zorb) {
 }
 void BuffPowerD::Remove(Zorb& zorb) { 
     zorb.power += amount;
+}
+void BuffPowerD::serialize(std::ostream& out) const {
+    out << "BuffPowerD" << std::endl;
+    out << duration << std::endl;
+    out << amount << std::endl;
 }
 
 //Dodge buff
@@ -39,12 +49,16 @@ void BuffDodge::Apply(Zorb& zorb) {
         amount = zorb.power / 3;
     zorb.power += amount;
 }
-
 void BuffDodge::Remove(Zorb& zorb) {
     zorb.power -= amount;
     zorb.name.erase(0, 1); // remove the * from the name
     dodgedZorb->SetPower(-2);
     dodgedZorb = nullptr;
+}
+void BuffDodge::serialize(std::ostream& out) const {
+    out << "BuffDodge" << std::endl;
+    out << duration << std::endl;
+    out << amount << std::endl;
 }
 
 std::shared_ptr<Zorb> BuffDodge::GetDodged() const {
@@ -55,6 +69,7 @@ std::shared_ptr<Zorb> BuffDodge::GetDodged() const {
     // The pointer is not null, so return it
     return dodgedZorb;
 }
+
 
 void Zorb::UpdateBuffs() {
     // Loop through all buffs and update their duration

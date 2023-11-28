@@ -33,6 +33,8 @@ public:
 
     // overload == operator to compare two ZorbAppearance objects
     friend bool operator==(const ZorbAppearance& lhs, const ZorbAppearance& rhs);
+
+    void serialize(std::ostream& out) const; // Serialize the ZorbAppearance object for saving
 };
 
 namespace z_debug {

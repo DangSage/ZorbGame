@@ -93,6 +93,13 @@ bool operator==(const ZorbAppearance& lhs, const ZorbAppearance& rhs) {
     return lhs.currentAppearance == rhs.currentAppearance;
 }
 
+void ZorbAppearance::serialize(std::ostream& out) const {
+    // Serialize the enum
+    out << static_cast<int>(currentEnum) << ' ';
+    // Serialize the ZorbAppearance object for saving, only used by the owning Zorb object
+    out << currentAppearance << ' ' << color << ' ';
+}
+
 namespace z_debug {
     void PrintZorbAppearances(int a, bool printNames, std::string_view color) {
         a--;
