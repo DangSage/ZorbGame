@@ -55,6 +55,7 @@ public:
     friend bool operator==(const Zorb& lhs, const Zorb& rhs);
 
     void serialize(std::ostream& out) const; // Serialize the Zorb object for saving
+    void deserialize(std::istream& in); // Deserialize the Zorb object for loading
 };
 
 // Abstract class for temporary buffs
@@ -101,6 +102,7 @@ public:
     void Remove(Zorb& zorb) override;
     void serialize(std::ostream& out) const override;
 
+    bool dflag = true;
     // returns a shared pointer to the dodge zorb that represents the dodge
     std::shared_ptr<Zorb> GetDodged() const;
 private:

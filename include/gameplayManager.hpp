@@ -34,6 +34,7 @@ public:
         m_winCount = 0;
     }
 
+    void writeSaveData();
     std::string journeyName;
 
     void gameplayLoop();
@@ -54,8 +55,6 @@ private:
     int& m_winCount = winCounter;
     int& m_battleCount = battleCounter;
     std::vector<std::string> zorbNameRecord;
-
-    void saveSave();
 
     void handleStartState();
     void handleBarberState();

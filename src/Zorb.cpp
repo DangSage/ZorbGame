@@ -113,24 +113,3 @@ bool operator==(const Zorb& lhs, const std::shared_ptr<Zorb>& rhs) {
 bool operator==(const Zorb& lhs, const Zorb& rhs) {
     return lhs.team_id == rhs.team_id && lhs.name == rhs.name && lhs.appearance == rhs.appearance;
 }
-
-void Zorb::serialize(std::ostream& out) const {
-    // Serialize the Zorb object for saving
-    out.write(reinterpret_cast<const char*>(&power), sizeof(power));
-    out.write(reinterpret_cast<const char*>(&team_id), sizeof(team_id));
-
-    // For strings, write their length and then their characters
-    size_t nameSize = name.size();
-    out.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
-    out.write(name.c_str(), name.size());
-
-    // For appearance, write using the serialize function
-    appearance.serialize(out);
-
-    // For vector of buffs, write its size and then each element
-    size_t buffsSize = buffs.size();
-    out.write(reinterpret_cast<const char*>(&buffsSize), sizeof(buffsSize));
-    for (const auto& buff : buffs) {
-        buff->serialize(out);
-    }
-}

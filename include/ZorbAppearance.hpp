@@ -35,6 +35,7 @@ public:
     friend bool operator==(const ZorbAppearance& lhs, const ZorbAppearance& rhs);
 
     void serialize(std::ostream& out) const; // Serialize the ZorbAppearance object for saving
+    void deserialize(std::istream& in); // Deserialize the ZorbAppearance object for loading
 };
 
 namespace z_debug {

@@ -13,6 +13,7 @@ const int INDEX_OFFSET = -1;
 void GameplayManager::gameplayLoop() {
     // Gamestate loop for the gameplay
     while (true) {
+        bool breakLoop = false;
         updateZorbs();
         if(m_gpState == GameplayState::Game) {
             int chance = z_util::random::value(1, 200);
@@ -42,10 +43,14 @@ void GameplayManager::gameplayLoop() {
                 break;
             case GameplayState::ExitGame:
                 handleExitGameState();
-                return;
+                breakLoop = true;
+                break;
             default:
                 break;
         }
+        writeSaveData();
+        if(breakLoop)
+            break;
     }
 }
 void GameplayManager::updateZorbs() {
