@@ -49,8 +49,9 @@ void GameplayManager::saveSave() {
 
     ensureSaveFolder();
 
-    std::string fileName = data.UUID + ".zzsave";
-    std::ofstream out(fileName, std::ios::binary);
+    // path to the save file is the save folder + the UUID + the extension
+    std::string filePath = SAVEFOLDER + "/" + data.UUID + ".zzsave";
+    std::ofstream out(filePath, std::ios::binary);
 
     // strings, write their length and then their characters
     size_t nameSize = data.journeyName.size();
