@@ -22,13 +22,14 @@ public:
     ~GameManager() {} //default destructor
 
     void gameLoop();
+    void startGame();
     void endGame();
 
     void setGameState(GameState gameState);
 protected:
     GameState m_gameState = GameState::InfoMenu;
     UI& m_ui;   // UI object
-    
+
 private:
     //region Input Handling
     void handleMainMenuInput();

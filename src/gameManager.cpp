@@ -38,9 +38,7 @@ void GameManager::gameLoop() {
                 break;
         }
         if(m_gameState == GameState::Game) {
-            GameplayManager* m_gameplayManager = new GameplayManager(m_ui);
-            m_gameplayManager->gameplayLoop();
-            delete m_gameplayManager;
+            startGame();
             m_gameState = GameState::MainMenu;
         }
         if(m_gameState == GameState::End)
@@ -52,6 +50,7 @@ void GameManager::gameLoop() {
     _createStyledTextBox(z_art::endCard+"\n<3 Thank you for playing Zorb Zenith! <3\nMay you attain your own inner zen!\n\n-Dang");
     _pauseSystem();
 }
+
 void GameManager::endGame() {
     // Clean up game objects
     z_debug::CountGameObjectsInMemory();

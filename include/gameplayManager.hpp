@@ -1,6 +1,7 @@
 #ifndef GAMEPLAYMANAGER_HPP
 #define GAMEPLAYMANAGER_HPP
 
+#include "zDefs.hpp"
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ public:
         m_playerz.clear();
         m_enemyz.clear();
         m_zorbs.clear();
-        m_winCount = nullptr;
+        m_winCount = 0;
     }
 
     std::string journeyName;
@@ -50,9 +51,11 @@ private:
 
     GameplayState m_gpState = GameplayState::Start;
 
-    int* m_winCount = &winCounter;
-    int* m_battleCount = &battleCounter;
+    int& m_winCount = winCounter;
+    int& m_battleCount = battleCounter;
     std::vector<std::string> zorbNameRecord;
+
+    void saveSave();
 
     void handleStartState();
     void handleBarberState();
