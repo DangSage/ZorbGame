@@ -48,7 +48,6 @@ void GameplayManager::gameplayLoop() {
             default:
                 break;
         }
-        writeSaveData();
         if(breakLoop)
             break;
     }
@@ -230,7 +229,7 @@ void GameplayManager::handleBattleInput() {
             case USERHELP:
                 std::cout << ansi::DLINE << text::help::battle;
                 std::cin.get();
-                for(int i=0; i<z_util::GetHeight(text::help::battle); i++)
+                for(int i=0; i<z_util::GetHeight(text::help::battle)+1; i++)
                     std::cout << ansi::DLINE;
                 continue;
             case USEREXIT:
@@ -331,11 +330,6 @@ void GameplayManager::handleGameOverInput() {
 //endregion
 
 Zorb GameplayManager::GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, std::array<std::string_view, 2> colorvar) {
-    // Generate a random appearance
-    ZorbAppearance recruitAppearance = GenRandomAppearance(colorvar);
-        // Generate a random name
-    std::string recruitName = zorb::RandomName();
-        // Generate a random power, using the some of the player's zorbs' power as a weight
     int recruitPower = 1;
     int recruitId;
 
@@ -349,16 +343,17 @@ Zorb GameplayManager::GenerateRecruit(std::vector<std::shared_ptr<Zorb>>& team, 
         recruitPower += zorb->GetPower();
     }
 
-    // create a scaling system for the recruit power that takes into account the following
+    // recruit power calculation:
     // 1. the number of zorbs in the player's party
     // 2. the average power of the player's zorbs
     // 3. the amount of wins the player has
     if(winCounter > 0) {
-        recruitPower = (recruitPower / m_playerz.size()) + z_util::random::value(-winCounter, (recruitPower / (2*winCounter)));
+        recruitPower = (recruitPower / m_playerz.size()) + 
+                        z_util::random::value(-winCounter, (recruitPower / (2*winCounter)));
     } else {
         recruitPower = 1;
     }
 
-    return Zorb(recruitAppearance, recruitPower, recruitId, recruitName);
+    return Zorb(GenRandomAppearance(colorvar), recruitPower, recruitId, zorb::RandomName());
 }
 //endregion

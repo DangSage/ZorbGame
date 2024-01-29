@@ -173,10 +173,10 @@ T validatedInput(Container& validInputs) {
     return input;
 }
 
+// Dereference vector of shared pointers -> returns a vector of objects
+// Should only be used for displaying objects
 template<typename T>
-std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) { 
-    // Dereference the shared pointers and return a vector of objects
-    // Should only be used for displaying objects
+std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) {
     std::vector<T> castObjs;
     for(auto& obj : _objs) {
         castObjs.emplace_back(*obj);

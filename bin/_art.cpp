@@ -114,5 +114,10 @@ std::vector<std::array<std::string, 3>> barberHair = {
         "       ",
         "   o   ",
         ".^,|,^.",
+    },
+    {
+        "       ",
+        "  _____",
+        "./\\|//]",
     }
 };

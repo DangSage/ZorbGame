@@ -61,7 +61,7 @@ void Zorb::UpdateBuffs() {
     for (auto it = buffs.begin(); it != buffs.end(); ) {
         (*it)->duration--;
         // If the buff has expired, remove it
-        if ((*it)->duration <= 0) {
+        if ((*it)->duration <= 0 && (*it)->duration != -1){
             (*it)->Remove(*this);
             it = buffs.erase(it);
         } else {

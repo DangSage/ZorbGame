@@ -38,7 +38,9 @@ void GameManager::gameLoop() {
                 break;
         }
         if(m_gameState == GameState::Game) {
-            startGame();
+            GameplayManager* m_gameplayManager = new GameplayManager(m_ui);
+            m_gameplayManager->gameplayLoop();
+            delete m_gameplayManager;
             m_gameState = GameState::MainMenu;
         }
         if(m_gameState == GameState::End)

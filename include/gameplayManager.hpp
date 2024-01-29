@@ -34,7 +34,6 @@ public:
         m_winCount = 0;
     }
 
-    void writeSaveData();
     std::string journeyName;
 
     void gameplayLoop();

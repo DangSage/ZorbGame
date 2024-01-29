@@ -5,12 +5,6 @@
 
 void _pauseSystem();
 
-// make a base class called zException, that all other exceptions will inherit from
-// zException should have a function called what() that returns a string that tells the user what the exception is
-// zException should have a function called where() that returns a string that tells the user where the exception was thrown (what function in the code)
-// zException has a bool to determine if the exception should interrupt or not
-// zException has a bool to determine if the exception should be logged or not
-
 class zException : public std::exception {
 public:
     zException(const std::string& what, const std::string& where, bool interrupt) : m_what(what), m_where(where), m_interrupt(interrupt) {}

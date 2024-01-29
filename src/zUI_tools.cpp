@@ -310,7 +310,7 @@ void _createStyledTextBox(const std::string& text) {
 
     // Print top margin
     for (int i = 0; i < topMargin + topPadding; ++i) {
-        std::cout << "| " << std::setw(CONSOLESIZE - 1) << " |\n";
+        std::cout << "| " << std::setw(CONSOLESIZE - 1) << " | \n";
     }
 
     std::istringstream iss(text);

@@ -53,9 +53,6 @@ public:
     //define operator== to check Zorb objects to shared pointers of Zorb objects
     friend bool operator==(const Zorb& lhs, const std::shared_ptr<Zorb>& rhs);
     friend bool operator==(const Zorb& lhs, const Zorb& rhs);
-
-    void serialize(std::ostream& out) const; // Serialize the Zorb object for saving
-    void deserialize(std::istream& in); // Deserialize the Zorb object for loading
 };
 
 // Abstract class for temporary buffs
@@ -66,8 +63,6 @@ public:
     
     virtual void Apply(Zorb& zorb) = 0; // Pure virtual function
     virtual void Remove(Zorb& zorb) = 0; // Pure virtual function
-
-    virtual void serialize(std::ostream& out) const = 0; // Serialize the TempBuff object for saving
 };
 
 // Power increase buff
@@ -78,8 +73,6 @@ public:
 
     void Apply(Zorb& zorb) override;
     void Remove(Zorb& zorb) override;
-
-    void serialize(std::ostream& out) const override;
 };
 
 // Power decrease debuff
@@ -90,7 +83,6 @@ public:
 
     void Apply(Zorb& zorb) override;
     void Remove(Zorb& zorb) override;
-    void serialize(std::ostream& out) const override;
 };
 
 // Dodge buff, inherits from BuffPowerI
@@ -100,7 +92,6 @@ public:
 
     void Apply(Zorb& zorb) override;
     void Remove(Zorb& zorb) override;
-    void serialize(std::ostream& out) const override;
 
     bool dflag = true;
     // returns a shared pointer to the dodge zorb that represents the dodge
