@@ -1,5 +1,4 @@
 *.log
 *.exe
 .saves/
-*settings.json
-*c_cpp_properties.json
+.vscode/settings.json
