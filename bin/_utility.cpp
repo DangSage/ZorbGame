@@ -80,7 +80,6 @@ namespace z_util {
             return std::string(color) + text + ansi::RESET;   // Wrap the text with the specified color codes
         else
         {
-            OutputDebugString("Log: No color specified at call of FormattedText()\n\tYou may want to pass text element instead.\n");
             return text; // Return the text as is if no color is specified
         }
     }

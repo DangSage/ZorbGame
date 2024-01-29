@@ -1,5 +1,6 @@
 
 # Zorb Game Project - Applying C++ Principles
+Compiled using MINGW64 via build tasks (see .vscode/tasks.json)
 
 ## Overview
 The Zorb Game Project is a personal endeavor aimed at applying fundamental principles of C++ programming to develop a text-based terminal game. This will incorporate key concepts in object-oriented programming (OOP) including classes, functions, and modular code organization.
