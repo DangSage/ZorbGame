@@ -1,0 +1,5 @@
+*.log
+*.exe
+.saves/
+*settings.json
+*c_cpp_properties.json
