@@ -1,9 +1,16 @@
 #include "zArt.hpp"
+#include "zUtility.hpp"
+#include <fstream>
 
 //map of appearance enums to appearance strings
 std::map<appearanceEnum, std::string> appearanceMap = {
-{
-appearanceEnum::A_DEFAULT, 
+{ appearanceEnum::EMPTY,
+R"(       
+   .   
+`/\`/\`
+(     )
+`>   <`)"},
+{ appearanceEnum::A_DEFAULT, 
 R"(       
    o   
 ./\|/\.
@@ -11,9 +18,8 @@ R"(
  > ^ < )"}
 };
 
-
 //map of appearance enums to names
-std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::A_DEFAULT, "normal"}}; 
+std::map<appearanceEnum, std::string> appearanceNames = {{appearanceEnum::EMPTY, "emptier"},{appearanceEnum::A_DEFAULT, "normal"}}; 
 //map of weights (double) to appearance enums
 std::map<appearanceEnum, double> appearanceWeights = {{appearanceEnum::A_DEFAULT, 5.0}};
 
@@ -21,10 +27,6 @@ std::map<appearanceEnum, double> appearanceWeights = {{appearanceEnum::A_DEFAULT
 void initAppearanceMaps() {
     std::ifstream file("appearances.json");
     if(!file) {
-        std::cout << "ERROR: initAppearanceMaps() - appearances.json not found" << std::endl
-        << "DEFAULT appearance will be used. Press any key to continue" << std::endl;
-        std::cin.get();
-
         //write default appearance to a new appearances.json file
         json j = {
             {
@@ -42,7 +44,9 @@ void initAppearanceMaps() {
         std::ofstream outfile("appearances.json");
         outfile << std::setw(4) << j << std::endl;
         outfile.close();
-        return;
+
+        NoFileException exc = NoFileException("initAppearanceMaps()", "appearances.json");
+        z_debug::PrintError(exc);
     }
 
     json j;
@@ -110,6 +114,10 @@ std::vector<std::array<std::string, 3>> barberHair = {
         "       ",
         "   o   ",
         ".^,|,^.",
+    },
+    {
+        "       ",
+        "  _____",
+        "./\\|//]",
     }
 };
-

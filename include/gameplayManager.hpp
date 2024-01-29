@@ -1,12 +1,18 @@
 #ifndef GAMEPLAYMANAGER_HPP
 #define GAMEPLAYMANAGER_HPP
 
-#include "zUI.hpp"
+#include "zDefs.hpp"
+#include <string>
+#include <vector>
 
+// Forward declarations
+class Zorb;
+class UI;
 class Battle;
+class TempBuff;
 
 enum class GameplayState {
-    Intro,
+    Start,
     Game,
     Battle,
     Barber,
@@ -22,11 +28,13 @@ public:
     GameplayManager(UI& ui): m_ui(ui) {}
 
     ~GameplayManager() {
-        m_playerParty.clear();
-        m_enemyParty.clear();
+        m_playerz.clear();
+        m_enemyz.clear();
         m_zorbs.clear();
-        m_winCount = nullptr;
+        m_winCount = 0;
     }
+
+    std::string journeyName;
 
     void gameplayLoop();
     void updateZorbs();    
@@ -38,15 +46,16 @@ private:
     Battle* battle = nullptr;
 
     std::vector<std::shared_ptr<Zorb>> m_zorbs;
-    std::vector<std::shared_ptr<Zorb>> m_playerParty;
-    std::vector<std::shared_ptr<Zorb>> m_enemyParty;
+    std::vector<std::shared_ptr<Zorb>> m_playerz;
+    std::vector<std::shared_ptr<Zorb>> m_enemyz;
 
-    GameplayState m_gpState = GameplayState::Intro;
+    GameplayState m_gpState = GameplayState::Start;
 
-    int* m_winCount = &winCounter;
+    int& m_winCount = winCounter;
+    int& m_battleCount = battleCounter;
     std::vector<std::string> zorbNameRecord;
 
-    void handleIntroState();
+    void handleStartState();
     void handleBarberState();
     void handleRecruitState();
     void handleBattleState();
@@ -65,8 +74,7 @@ private:
 // Battle class that manages the battle loop, battlestate and attack logic
 class Battle {
 public:
-    Battle(GameplayManager& manager) : _gpM(manager),
-    b_zorbs(_gpM.m_zorbs), b_enemies(_gpM.m_enemyParty), b_players(_gpM.m_playerParty), leaveBattle(false) {}
+    Battle(GameplayManager& manager);
 
     ~Battle() {
         casualties = 0;
@@ -75,9 +83,11 @@ public:
 
     void Update();
     void End();
+
     bool leaveBattle;
     void handleEnemyTurn();
     void generateEnemyParty();
+    void Dodge(std::shared_ptr<Zorb>& zorb, int& dodgeIndex);
     std::shared_ptr<Zorb> attackLogic(std::shared_ptr<Zorb> attacker, std::shared_ptr<Zorb> defender);
 private:
     GameplayManager& _gpM;
@@ -86,9 +96,11 @@ private:
     int& turnCount = turnCounter;
     int& casualties = casualtyCounter;
 
-    std::vector<std::shared_ptr<Zorb>>& b_zorbs;
-    std::vector<std::shared_ptr<Zorb>>& b_enemies;
-    std::vector<std::shared_ptr<Zorb>>& b_players;    
+    std::vector<std::shared_ptr<Zorb>>& b_zorbs = _gpM.m_zorbs;
+
+    std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string> playerTeam;
+    std::pair<std::vector<std::shared_ptr<Zorb>>&, std::string> enemyTeam;
 };
+
 
 #endif // GAMEPLAYMANAGER_HPP

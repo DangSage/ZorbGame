@@ -7,15 +7,15 @@
 #define IDI_MYICON 101
 
 #include <iostream> // Include necessary standard library headers
-#include <iomanip>
 #include <array>
 #include <vector>
 #include <string>
-#include <cstdlib>
-#include <initializer_list>
+#include <sstream>
 
 //make magic numbers for exit command 'Q'
-#define EXITCOMMAND 'Q'
+#define USEREXIT 'Q'
+#define USERGIT 'G'
+#define USERHELP '?'
 
 // make magic numbers for team identification
 constexpr int PLAYERTEAM = 1;
@@ -37,9 +37,12 @@ namespace ansi {
     constexpr std::string_view MAGENTA = "\x1B[35m";
     constexpr std::string_view CYAN = "\x1B[36m";
     constexpr std::string_view WHITE = "\x1B[37m";
+    constexpr std::string_view GRAY = "\x1B[37;2m";
 
     constexpr std::string_view DLINE = "\033[1A\033[2K"; // ANSI escape code to delete the last line from the console
+    constexpr std::string_view DLINE2 = "\033[2K"; // ANSI escape code to delete the current line from the console
     constexpr std::string_view UPLINE = "\033[1A"; // ANSI escape code to move the cursor up one line
+    constexpr std::string_view ENDLINE = "\033[1F\033[999D"; // Ansi escape code to move the cursor the end of the last line
 }
 
 // Define which ANSI color code to use for the Zorb's color (color groups)
@@ -49,6 +52,7 @@ constexpr std::array<std::string_view, 2> CG_ENEMY = { ansi::MAGENTA, ansi::RED 
 extern int turnCounter; //turn counter for the battle segment
 extern int winCounter; //win counter for the game
 extern int casualtyCounter; //casualties counter for the game
+extern int battleCounter; //battle counter for the game
 
 //force terminal to accept ansi color codes depending on operating system, make sure it does so for ALL escape
 void ForceTerminalColor();
@@ -66,17 +70,6 @@ void ChangeDebugMode();
 void ForceTerminalBorder();
 
 void ForceTerminal();
-
-//enum for game states to be used in the game driver
-enum class GameState {
-    MainMenu,
-    OptionsMenu,
-    OptionsMenuTheme,
-    Game,
-    InfoMenu,
-    End = -1
-};
-
 
 //namespace for zorb utility functions, NOT to be confused with the Zorb class
 namespace zorb {
@@ -151,9 +144,145 @@ namespace zorb {
         "Zip",
         "Zeegul"
     };
+    // Random enemy team names for the battle segment
+    const std::array<std::string_view, 25> TEAMPREFIX = {
+        "Local",
+        "Ragged",
+        "Raggedy",
+        "Hairy",
+        "Fuzzy",
+        "Furry",
+        "Furrious",
+        "Vagrant",
+        "Vagabond",
+        "Zorg",
+        "Zleepy",
+        "Exhausted",
+        "Eepy",
+        "Deadly",
+        "Wandering",
+        "Aimless",
+        "Lost",
+        "Able",
+        "Hunter",
+        "Feral",
+        "Wild",
+        "Rabid",
+        "Ravenous",
+        "Gung-Ho",
+        "Zorbian"
+    };
+    const std::array<std::string_view, 25> TEAMSUFFIX = {
+        "Blob",
+        "Crew",
+        "Zorbos",
+        "Zorbians",
+        "Zorbites",
+        "Gang",
+        "Blorgal",
+        "Fundamentalists",
+        "Zorbianists",
+        "Locals",
+        "Zraban",
+        "School",
+        "Armed Militia",
+        "Wranglers",
+        "Bunch",
+        "Platoon",
+        "Squad",
+        "Hit Squad",
+        "Zorbs",
+        "Zorbites",
+        "Band",
+        "Zealots",
+        "Hunters",
+        "Meowcenaries",
+        "Guerilla"
+    };
+
+    const std::string N_DODGE = "DODGED";
+    const std::string N_IMPLODE = "IMPLODE";
 } // namespace zorb
 
 extern std::string BARBERNAME;
+
+namespace text {
+    namespace battle {
+        const std::initializer_list<std::string_view> encounter = {
+            "You have encountered a Zorb!",
+            "You are encountered by a group of Zorbs!",
+            "You have been ambushed by a Zorb!",
+            "You have been ambushed by a group of Zorbs!",
+            "You spot some Zorb or 2 in the distance!",
+            "You've been spotted by a group of enemies!",
+            "You've been ambushed by a group of enemies!",
+            "These Zorbs are looking for a fight!",
+            "These Zorbs don't look friendly!",
+            "These Zorbs look like they want to fight!"
+        };
+
+        const std::initializer_list<std::string_view> attackResult = {
+            "ANNIHILATED",
+            "DESTROYED",
+            "slumped",
+            "flattened",
+            "obliterated",
+            "CRUSHED",
+            "smashed",
+            "squashed",
+            "crushed",
+            "crunched",
+            "crumpled",
+            "pulverized",
+            "demolished",
+            "wrecked",
+            "put into a deep rest",
+            "put to sleep",
+            "put to rest",
+            "put to bed",
+        };
+        const std::initializer_list<std::string_view> implode = {
+            "fought", 
+            "battled", 
+            "clashed", 
+            "duked it out", 
+            "went head to head",
+            "went toe to toe",
+            "went at it",
+            "destroyed eachother",
+            "EXPLODED",
+            "imploded",
+            "combusted",
+            "self-destructed",
+            "self-imploded",
+            "self-combusted",
+            "disintegrated"
+        };
+    }
+
+    // stringstreams for the controls of the game
+    namespace help {
+        const std::string battle = 
+            "During a battle, you have several options:\n\n"
+            "1. Attack: Choose a Zorb from your party and an enemy Zorb to engage in a power comparison. \nEach Zorb has a power level and a position in the party order.\n\n"
+            "2. Dodge: Select a Zorb to dodge, which temporarily increases its power and changes its position in the party order.\n\n"
+            "3. Run Away: Attempt to disengage from the fight. This is a chance-based action and may not always succeed.\n\n"
+            "You can return to the previous battle options by typing -1.\n\n";
+
+        const std::string general = 
+        "Each menu option has a corresponding command:\n\n"
+        "In the input query, type the character of the option you want to select.\n";
+
+        const std::string debug =
+        "This menu allows you to toggle and view certain debug settings,\n"
+        "As well as some display options for the game.\n\n"
+        "- Battle Display Type: The way zorbs will appear in battle. All options in this column affect this value.\n"
+        "- Toggle Theme: Toggles the game between light and dark mode.\n"
+        "- Toggle Debug Mode: Toggles debug mode on and off. Explicitly for Development\n\n"
+        "Most of these options are self-explanatory, but if you need help, type ? at any time.\n\n";
+
+    }
+}
 
 #endif
 

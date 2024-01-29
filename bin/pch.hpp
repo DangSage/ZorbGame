@@ -9,6 +9,17 @@ Some of those constant functions and variables include the following:
 - Game Art
 */
 
-//#include _gameDefs.hpp // Include gameDefs.hpp for game definitions
+// Standard library headers
+#include <iomanip>
+#include <cstdlib>
+#include <initializer_list>
+#include <memory>
+
+// defined headers
+#include "zDefs.hpp"
 #include "zUtility.hpp"
 #include "zArt.hpp"
+
+const std::string url = "https://github.com/DangSage/ZorbGame";
+const std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
+

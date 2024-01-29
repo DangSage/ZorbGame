@@ -2,6 +2,7 @@
 #define Z_UTILITY_HPP
 
 #include "zDefs.hpp"
+#include "zExceptions.hpp"
 #include <utility>
 #include <regex>
 #include <random>
@@ -17,8 +18,7 @@ void _pauseSystem();
 namespace z_debug {
     void _tag(const std::string& a);
     
-    void PrintError(const std::string& error);
-
+    void PrintError(zException& error);
 } // namespace z_debug
 
 namespace z_util {
@@ -38,23 +38,37 @@ namespace z_util {
             std::sregex_iterator end;
             while (it != end) {
                 std::smatch match = *it;
-                    //add the length of the escape code to the total length
-                    length += match.str().length();
-                    //if the escape code is ansi::RESET, subtract the length of the escape code from the total length
-                ++it;
+                //add the length of the escape code to the total length
+                length += match.str().length();
+                it++;
             }
-        } else {
-            for (char c : input) {
+        } else { // Getting the length of the string without counting escape codes
+            for (const auto& c : input) {
                 if (c == '\x1B') {
                     inEscape = true;
-                } else if (inEscape && c == 'm') {
-                    inEscape = false;
-                } else if (!inEscape) {
-                    length++;
+                    continue;
                 }
+                else if (inEscape) {
+                    if (c == 'm') {
+                        inEscape = false;
+                    }
+                    continue;
+                }
+                length++;
             }
         }
         return length;
+    }
+
+    // Helper function to get the amount of lines in a string
+    inline size_t GetHeight(const std::string& input) {
+        size_t height = 1;
+        std::istringstream iss(input);
+        std::string line;
+        while (std::getline(iss, line)) {
+            height++;
+        }
+        return height;
     }
 
     // Function to get the length of a string without counting escape codes
@@ -70,11 +84,8 @@ namespace z_util {
     // Function to split a multi-line string into individual lines
     std::vector<std::string> SplitMultilineString(const std::string& multilineString);
 
-    // Function to center-align a SINGLE-line string within a given width
+    // Function to center-align a string within a given width (default: console width)
     std::string CenterAlignString(const std::string& input, int width = CONSOLESIZE);
-
-     // Function to center-align a MULTI-line string within a given width
-    std::string CenterAlignStrings(const std::string& input, int width = CONSOLESIZE);
 
     // Function to print a string with color and reset color codes
     void PrintFormattedText(const std::string& text, const std::string_view& color = "");
@@ -84,9 +95,9 @@ namespace z_util {
 
     // Clears the input buffer to prevent any UI errors and returns the first discarded character
     char clearInputBuffer();
-
+    
     namespace random {
-        // Function template to generate a random value within a specified range
+        // Function template to return a random value within a specified range
         template <typename T>
         T value(const T min, const T max) {
             // Check if the type T is a numeric type
@@ -102,6 +113,9 @@ namespace z_util {
             // Return a random value within the specified range
             return dist(gen);
         }
+
+        // value() function template overload for coinflip (1 or 2)
+        int value();
         
         // Function template to pick a random element from a container
         template <typename T>
@@ -125,18 +139,22 @@ namespace z_util {
 // Function template to validate user input, it can define any type of array of typename T as a parameter
 template<typename T, typename Container>
 T validatedInput(Container& validInputs) {
-    // Using the container validInputs, we can check if the user input is valid
-    // If the user input is not valid, we will ask the user to input again
+    std::string line;
     T input;
     bool valid = false;
     while (!valid) {
-        std::cin >> input;
-        
-        // if the input is a char, convert it to uppercase
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+        ss >> input;
+        if (ss.fail()) {
+            std::cout << ansi::DLINE;
+            z_util::PrintFormattedText("Invalid input type, please try again: ", ansi::RED);
+            continue;
+        }
+
+        // If the input is a char, convert it to uppercase
         if (std::is_same<T, char>::value) {
             input = std::toupper(input);
-            // limit the input to the first character
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
         // Check if the input is valid
@@ -147,9 +165,7 @@ T validatedInput(Container& validInputs) {
             }
         }
         if (!valid) {
-            // print valid inputs
             std::cout << ansi::DLINE;
-            // ask the user to try again in red text
             z_util::PrintFormattedText("Invalid input, please try again: ", ansi::RED);
         }
     }
@@ -157,23 +173,15 @@ T validatedInput(Container& validInputs) {
     return input;
 }
 
+// Dereference vector of shared pointers -> returns a vector of objects
+// Should only be used for displaying objects
 template<typename T>
-std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) { 
-    // Dereference the shared pointers and return a vector of objects
-    // Should only be used for displaying objects
+std::vector<T> SharedCast(std::vector<std::shared_ptr<T>> _objs) {
     std::vector<T> castObjs;
     for(auto& obj : _objs) {
         castObjs.emplace_back(*obj);
     }
     return castObjs;
-}
-
-// overload for single object
-template<typename T>
-T SharedCast(std::shared_ptr<T> _obj) { 
-    // Dereference the shared pointer and return an object
-    // Should only be used for displaying objects
-    return *_obj;
 }
 
 namespace zorb {

@@ -1,9 +1,15 @@
+#include "pch.hpp"
 #include "gameManager.hpp"
-
-std::string url = "https://github.com/DangSage/ZorbGame";
-std::string command = "start " + url; // "start" is a Windows command to open a URL in the default browser
+#include "gameplayManager.hpp"
+#include "Zorb.hpp"
+#include "zUI.hpp"
 
 static int m_playerScore = 0;  // Player's score
+
+GameManager::GameManager(UI& ui) : m_ui(ui) {
+        ForceTerminal();
+        initAppearanceMaps();
+    } //default constructor, initialize game manager with a UI object, then format terminal and initialize appearance maps
 
 void GameManager::setGameState(GameState gameState) { 
     m_gameState = gameState; 
@@ -15,7 +21,7 @@ void GameManager::gameLoop() {
     while (true) {
         switch (m_gameState) {
             case GameState::InfoMenu:
-                m_ui.screenInfo();
+                m_ui.screenIntro();
                 m_gameState = GameState::MainMenu;
                 break;
             case GameState::MainMenu:
@@ -27,7 +33,8 @@ void GameManager::gameLoop() {
                 handleOptionsMenuInput();
                 break;
             default:
-                z_debug::PrintError("GameManager::gameLoop() - Invalid GameState");
+                zException exc = UnexpectedCallException("GameManager::gameLoop()");
+                z_debug::PrintError(exc);
                 break;
         }
         if(m_gameState == GameState::Game) {
@@ -45,6 +52,7 @@ void GameManager::gameLoop() {
     _createStyledTextBox(z_art::endCard+"\n<3 Thank you for playing Zorb Zenith! <3\nMay you attain your own inner zen!\n\n-Dang");
     _pauseSystem();
 }
+
 void GameManager::endGame() {
     // Clean up game objects
     z_debug::CountGameObjectsInMemory();
@@ -54,11 +62,8 @@ void GameManager::endGame() {
 
 //region Input Handling
 void GameManager::handleMainMenuInput() {
-    char input[] = {'0','1','2','3','Q'};
+    char input[] = {'1','2','3',USERGIT,USERHELP,USEREXIT};
     switch (validatedInput<char>(input)) {
-        case '0':
-            system(command.c_str());
-            break;
         case '1':
             m_gameState = GameState::Game;
             break;
@@ -68,18 +73,28 @@ void GameManager::handleMainMenuInput() {
         case '3':
             m_gameState = GameState::OptionsMenu;
             break;
-        case 'Q':
+        case USERGIT:
+            system(command.c_str());
+            break;
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::general;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::general); i++)
+                std::cout << ansi::DLINE;
+            break;
+        case USEREXIT:
             endGame();
             z_debug::CountGameObjectsInMemory();
             m_gameState = GameState::End;
             break;
         default:
-            z_debug::PrintError("GameManager::handleMainMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleMainMenuInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
 void GameManager::handleOptionsMenuInput() {
-    char input[] = {'1','2','3','4','A','B','C','D','Q'};
+    char input[] = {'1','2','3','4','A','B','C','D',USEREXIT,USERHELP};
     switch (validatedInput<char>(input)) {
         case '1':
             m_ui.SetDisplayFormat(SIMPLE);
@@ -105,17 +120,24 @@ void GameManager::handleOptionsMenuInput() {
         case 'D':
             ChangeDebugMode();
             break;
-        case 'Q':
+        case USERHELP:
+            std::cout << ansi::DLINE << text::help::debug;
+            std::cin.get();
+            for(int i=0; i<z_util::GetHeight(text::help::debug); i++)
+                std::cout << ansi::DLINE;
+            break;
+        case USEREXIT:
             m_gameState = GameState::MainMenu;
             break;
         default:
-            z_debug::PrintError("GameManager::handleOptionsMenuInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleOptionsMenuInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
 void GameManager::handleGameOverInput() {
     endGame();
-    char input[] = {'1','Q'};
+    char input[] = {'1',USEREXIT};
     switch (validatedInput<char>(input)) {
         case '1':
             m_gameState = GameState::MainMenu;
@@ -123,7 +145,8 @@ void GameManager::handleGameOverInput() {
         case 'Q':
             break;
         default:
-            z_debug::PrintError("GameManager::handleGameOverInput() - HDWGH?");
+            zException exc = UnexpectedCallException("GameManager::handleGameOverInput()");
+            z_debug::PrintError(exc);
             break;
     }
 }
