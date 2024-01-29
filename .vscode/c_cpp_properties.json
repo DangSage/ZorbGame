@@ -20,7 +20,7 @@
                 "/Program Files (x86)/Windows Kits/10/Include"
             ],
             "defines": [],
-            "compilerPath": "/msys64/ucrt64/bin/g++.exe",
+            "compilerPath": "/msys64/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-gcc-x64",
